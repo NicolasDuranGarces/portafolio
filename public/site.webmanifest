@@ -1,0 +1,13 @@
+{
+  "name": "Nicolas Duran Garces — Portafolio",
+  "short_name": "NDG Portafolio",
+  "description": "Portafolio de Nicolas Duran Garces. Backend Python y UIs en React.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0c10",
+  "theme_color": "#0b0c10",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
+
