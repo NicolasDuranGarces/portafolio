@@ -1,4 +1,3 @@
-import { Navbar } from './components/Navbar'
 import { ThemeProvider } from './components/ThemeProvider'
 import { LanguageProvider } from './components/LanguageProvider'
 import { Hero } from './sections/Hero'
@@ -12,6 +11,7 @@ import { SEOHead } from './components/SEO'
 import { ScrollProgress } from './components/ScrollProgress'
 import { ParallaxOrbs } from './components/ParallaxOrbs'
 import { SideRails } from './components/SideRails'
+import { CornerControls } from './components/CornerControls'
 
 export function App() {
   return (
@@ -22,7 +22,7 @@ export function App() {
           <ScrollProgress />
           <ParallaxOrbs />
           <SideRails />
-          <Navbar />
+          <CornerControls />
           <main>
             <Hero />
             <About />
