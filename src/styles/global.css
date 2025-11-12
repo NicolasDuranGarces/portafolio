@@ -276,6 +276,87 @@ body::before {
 .pill { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem .6rem; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--text) 12%, transparent); background: color-mix(in oklab, var(--panel) 70%, transparent); color: var(--muted); font-weight: 600; }
 .pill svg { width: 16px; height: 16px; }
 
+.about-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .about-layout { grid-template-columns: 1fr; }
+}
+.about-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.about-bio__text p {
+  margin-top: 0;
+  color: var(--muted);
+}
+.about-principles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.about-principles .pill {
+  background: color-mix(in oklab, var(--panel) 60%, transparent);
+  border-color: color-mix(in oklab, var(--text) 14%, transparent);
+  font-size: .8rem;
+}
+.about-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.about-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.about-highlight {
+  padding: 1.1rem;
+  border-radius: 16px;
+  background: linear-gradient(150deg, color-mix(in oklab, var(--panel) 80%, transparent), color-mix(in oklab, var(--panel) 55%, transparent));
+  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+  min-height: 160px;
+}
+.about-highlight h3 {
+  margin: 0 0 .35rem;
+  font-size: 1rem;
+}
+.about-highlight p {
+  margin: 0;
+  color: var(--muted);
+}
+.about-systems {
+  display: grid;
+  gap: 1rem;
+}
+.about-systems h3,
+.about-systems h4 {
+  margin: 0 0 .35rem;
+}
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+.about-stat {
+  border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  padding-top: .75rem;
+}
+.about-stat__value {
+  display: block;
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+.about-stat__label {
+  color: var(--muted);
+  font-size: .85rem;
+  line-height: 1.4;
+}
+
 /* Icon tiles (alternative style so it doesn't look like pills) */
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: .6rem; }
 .tile { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: .6rem; padding: .5rem .6rem; border-radius: 12px; border: 1px solid color-mix(in oklab, var(--text) 10%, transparent); background:

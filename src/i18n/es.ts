@@ -36,13 +36,35 @@ export const es = {
   },
   about: {
     title: 'Sobre mí',
-    lead: 'Ingeniero enfocado en claridad, impacto y escalabilidad',
-    p1: 'Soy un ingeniero de software apasionado por escribir código limpio y mantenible. Con más de 4 años de experiencia profesional, construyo aplicaciones web con Python (FastAPI, Flask, Django) y Node.js (Express).',
-    p2: 'También diseño soluciones impulsadas por IA, aprovechando modelos de ML para resolver problemas reales y mejorar la experiencia de usuario. Disfruto el trabajo en equipo, aprender de otros y entregar con calidad.',
-    p3: 'Cloud y datos que utilizo: AWS (Lambda/Serverless, EC2, S3, ECR, Fargate, DynamoDB), MySQL y MongoDB.',
+    lead: 'Ejecuto backend escalable con disciplina operativa y comunicación clara',
+    p1: 'Soy ingeniero de software con 4+ años creando plataformas backend en Python, Node y Go. Me muevo con facilidad entre arquitecturas event-driven, APIs medibles y despliegues automatizados.',
+    p2: 'Trabajo cerca de producto y data para traducir objetivos en hojas de ruta técnicas. Documentación breve, pair-programming y métricas de observabilidad son parte del proceso.',
+    p3: 'Colaboro con frontend y UX cuando una entrega necesita ownership end-to-end y un traspaso impecable.',
     cloudTitle: 'Cloud y servicios',
     dataTitle: 'Bases de datos',
     highlightsAria: 'Destacados',
+    principlesAria: 'Principios de trabajo',
+    metricsAria: 'Indicadores personales',
+    principles: 'Calidad observable|Comunicación directa|Mentoría y pairing',
+    highlights: {
+      architecture: {
+        title: 'Arquitectura guiada por métricas',
+        body: 'Diseño servicios pensando en SLOs, límites de costos y playbooks de respuesta para cada equipo.',
+      },
+      leadership: {
+        title: 'Liderazgo técnico',
+        body: 'He sido referente en squads de hasta 8 personas, destrabando dependencias y asegurando foco.',
+      },
+      delivery: {
+        title: 'Entrega continua',
+        body: 'Automatizo pipelines, feature flags y chequeos para lanzar sin fricción y medir impacto temprano.',
+      },
+    },
+    metrics: {
+      years: { value: '4+', label: 'años liderando backend y plataformas' },
+      squads: { value: '6', label: 'squads guiados como referente técnico' },
+      uptime: { value: '99.95%', label: 'SLO promedio en producción' },
+    },
   },
   skills: {
     title: 'Stack y habilidades',

@@ -36,13 +36,35 @@ export const en = {
   },
   about: {
     title: 'About',
-    lead: 'Engineer focused on clarity, impact and scalability',
-    p1: "I'm a software engineer passionate about building clean, maintainable code. With 4+ years of professional experience, I build web applications using Python (FastAPI, Flask, Django) and Node.js (Express).",
-    p2: 'I also create AI‑driven solutions, leveraging ML models to solve real problems and enhance user experience. I thrive in teams, enjoy learning from others and delivering with quality.',
-    p3: 'Cloud & data I work with: AWS (Lambda/Serverless, EC2, S3, ECR, Fargate, DynamoDB), MySQL and MongoDB.',
+    lead: 'I run scalable backends with operational discipline and clear comms',
+    p1: 'Software engineer with 4+ years building backend platforms in Python, Node and Go. I am comfortable across event-driven architectures, measurable APIs and automated delivery.',
+    p2: 'I stay close to product and data to turn goals into technical roadmaps. Concise documentation, pairing sessions and observability metrics are part of the routine.',
+    p3: 'I partner with frontend and UX whenever a release needs end-to-end ownership and a clean handoff.',
     cloudTitle: 'Cloud & Services',
     dataTitle: 'Databases',
     highlightsAria: 'Highlights',
+    principlesAria: 'Operating principles',
+    metricsAria: 'Personal indicators',
+    principles: 'Observable quality|Direct communication|Mentoring & pairing',
+    highlights: {
+      architecture: {
+        title: 'Metrics-led architecture',
+        body: 'I design services by looking at SLOs, cost ceilings and incident playbooks for every team.',
+      },
+      leadership: {
+        title: 'Technical leadership',
+        body: 'Acted as tech reference for squads up to 8 people, unblocking dependencies and keeping focus.',
+      },
+      delivery: {
+        title: 'Continuous delivery',
+        body: 'Automate pipelines, flags and checks to ship without friction and capture impact early.',
+      },
+    },
+    metrics: {
+      years: { value: '4+', label: 'years leading backend & platform work' },
+      squads: { value: '6', label: 'squads guided as technical reference' },
+      uptime: { value: '99.95%', label: 'average production SLO' },
+    },
   },
   skills: {
     title: 'Stack & skills',
