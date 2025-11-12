@@ -17,7 +17,7 @@ export const es = {
     greeting: 'Nicolas Duran Garces',
     title: 'Diseño plataformas que escalan',
     highlight: 'con arquitectura limpia y datos confiables',
-    sub: 'Lidero el backend con Python, Node y arquitecturas event-driven; colaboro con el frente para entregar features completos cuando hace falta.',
+    sub: 'Lidero el backend con Python, Node o el stack que haga falta, y me acerco al front cuando un feature necesita visión end-to-end.',
     role: 'Ingeniero de software backend',
     avatarAlt: 'Retrato de Nicolas Duran Garces sonriendo',
     ctaProjects: 'Ver proyectos',
@@ -26,12 +26,12 @@ export const es = {
     specialties: 'Arquitecturas orientadas a eventos|APIs observables|Front pragmático cuando suma valor',
     spotlight: {
       title: 'Actitud y colaboración',
-      body: 'Proactivo, buen humor y entrega constante: coordino equipos, desbloqueo dependencias y mantengo la conversación técnica clara.',
+      body: 'Actitud positiva, comunicación directa y foco diario en desbloquear al equipo.',
     },
     stats: {
       years: { value: '4+', label: 'años construyendo sistemas en producción' },
-      launches: { value: '28', label: 'servicios diseñados end-to-end' },
-      systems: { value: '12', label: 'pipelines & automatizaciones integradas' },
+      launches: { value: '6', label: 'equipos guiados como referente técnico' },
+      systems: { value: '99.95%', label: 'SLO promedio de los productos que opero' },
     },
   },
   about: {

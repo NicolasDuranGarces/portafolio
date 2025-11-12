@@ -17,7 +17,7 @@ export const en = {
     greeting: 'Nicolas Duran Garces',
     title: 'I design platforms that scale',
     highlight: 'with clean architecture and trusted data',
-    sub: 'I lead backend work with Python, Node and event-driven patterns, and jump into front-end details when a feature needs end-to-end ownership.',
+    sub: 'I lead backend work across Python, Node or whatever the stack demands, and step into the front end when a feature needs end-to-end care.',
     role: 'Backend software engineer',
     avatarAlt: 'Portrait of Nicolas Duran Garces smiling',
     ctaProjects: 'View projects',
@@ -26,12 +26,12 @@ export const en = {
     specialties: 'Event-driven architectures|Observable APIs|Pragmatic front-end when it matters',
     spotlight: {
       title: 'Energy & collaboration',
-      body: 'Proactive, upbeat and dependable — I align product, data and ops, unblock teammates, and keep the technical narrative crisp.',
+      body: 'Positive attitude, clear communication, and daily focus on unblocking the team.',
     },
     stats: {
       years: { value: '4+', label: 'years operating production systems' },
-      launches: { value: '28', label: 'services designed end-to-end' },
-      systems: { value: '12', label: 'pipelines & automations landed' },
+      launches: { value: '6', label: 'teams led as the technical reference' },
+      systems: { value: '99.95%', label: 'average SLO on the products I operate' },
     },
   },
   about: {

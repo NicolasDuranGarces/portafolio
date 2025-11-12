@@ -112,6 +112,10 @@ body::before {
 @media (max-width: 960px) {
   .hero-grid { grid-template-columns: 1fr; }
 }
+@media (max-width: 768px) {
+  .hero-panel { order: -1; margin-bottom: 1.5rem; }
+  .hero-copy { order: 1; }
+}
 .hero-copy h1 {
   font-size: clamp(2.3rem, 1.6rem + 2.4vw, 3.8rem);
   line-height: 1.1;
@@ -391,4 +395,7 @@ a { color: inherit; }
   .rail-left a:hover { color: var(--text); border-color: color-mix(in oklab, var(--primary) 40%, transparent); transform: translateY(-1px); }
   .rail-left .rail-line { width: 2px; height: 140px; background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 40%, transparent), color-mix(in oklab, var(--accent) 40%, transparent)); margin-top: .25rem; border-radius: 999px; }
   .rail-left .rail-tag { writing-mode: vertical-rl; transform: rotate(180deg); font-size: .75rem; letter-spacing: .12em; color: var(--muted); margin-bottom: .25rem; }
+}
+@media (max-width: 1099px) {
+  .rail-left { display: none; }
 }
