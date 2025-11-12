@@ -180,21 +180,29 @@ body::before {
   z-index: 0;
 }
 .hero-panel > * { position: relative; z-index: 1; }
-.hero-panel__badge {
-  display: inline-flex;
+.hero-panel__identity {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: .5rem;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  font-size: .75rem;
-  color: var(--muted);
+  text-align: center;
+  gap: .65rem;
 }
-.hero-status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 12px color-mix(in oklab, var(--accent) 80%, transparent);
+.hero-avatar {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, var(--accent), color-mix(in oklab, var(--primary) 70%, transparent));
+  padding: 4px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 20px 40px color-mix(in oklab, var(--primary) 35%, transparent);
+}
+.hero-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid color-mix(in oklab, var(--panel) 70%, transparent);
 }
 .hero-panel__spotlight {
   border-radius: 16px;
@@ -213,20 +221,15 @@ body::before {
   margin: 0;
   color: var(--text);
 }
-.hero-panel__identity {
-  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
-  padding-top: 1rem;
-}
 .hero-panel__name {
   display: inline-block;
   font-size: 1.05rem;
-  letter-spacing: .28em;
+  letter-spacing: .24em;
   text-transform: uppercase;
   color: var(--text);
 }
 .hero-panel__role {
   display: inline-block;
-  margin-top: .35rem;
   text-transform: uppercase;
   letter-spacing: .32em;
   font-size: .72rem;

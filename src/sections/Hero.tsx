@@ -48,19 +48,17 @@ export function Hero() {
           variants={fade}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="hero-panel__badge">
-            <span className="hero-status-dot" />
-            <span>{t('rails.available')}</span>
+          <div className="hero-panel__identity">
+            <div className="hero-avatar">
+              <img src="/assets/avatar.jpg" alt={t('hero.avatarAlt')} loading="lazy" />
+            </div>
+            <span className="hero-panel__name">{t('hero.greeting')}</span>
+            <span className="hero-panel__role">{t('hero.role')}</span>
           </div>
 
           <div className="hero-panel__spotlight">
             <p className="hero-panel__label">{t('hero.spotlight.title')}</p>
             <p>{t('hero.spotlight.body')}</p>
-          </div>
-
-          <div className="hero-panel__identity">
-            <span className="hero-panel__name">{t('hero.greeting')}</span>
-            <span className="hero-panel__role">{t('hero.role')}</span>
           </div>
 
           <div className="hero-stats hero-stats--card">

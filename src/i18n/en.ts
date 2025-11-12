@@ -19,6 +19,7 @@ export const en = {
     highlight: 'with clean architecture and trusted data',
     sub: 'I lead backend work with Python, Node and event-driven patterns, and jump into front-end details when a feature needs end-to-end ownership.',
     role: 'Backend software engineer',
+    avatarAlt: 'Portrait of Nicolas Duran Garces smiling',
     ctaProjects: 'View projects',
     ctaContact: 'Contact',
     tagline: 'Open to senior backend roles and collaborations centered on performance and observability',
