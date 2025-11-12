@@ -2,32 +2,26 @@ import { useMemo, useState } from 'react'
 import { Section } from '../components/Section'
 import { ProjectCard } from '../components/ProjectCard'
 import { ProjectModal } from '../components/ProjectModal'
-import { TagFilter } from '../components/TagFilter'
-import { projects as data, allTags, type Project } from '../data/projects'
+import { getProjects, type ProjectCategory, type ResolvedProject } from '../data/projects'
 import { useLanguage } from '../components/LanguageProvider'
 
 export function Projects() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const data = useMemo(() => getProjects(lang), [lang])
   const [query, setQuery] = useState('')
-  const [tags, setTags] = useState<string[]>([])
-  const [category, setCategory] = useState<string>('Todos')
-  const [open, setOpen] = useState<Project | null>(null)
+  const [category, setCategory] = useState<ProjectCategory | 'all'>('all')
+  const [open, setOpen] = useState<ResolvedProject | null>(null)
 
-  const categories = useMemo(() => ['Todos', ...Array.from(new Set(data.map(d => d.category)))], [])
+  const categories = useMemo(() => ['all', ...Array.from(new Set(data.map(d => d.category)))] as const, [data])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     return data.filter(p => {
       const byQuery = q ? (p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)) : true
-      const byTags = tags.length ? tags.every(t => p.tags.includes(t)) : true
-      const byCat = category === 'Todos' ? true : p.category === category
-      return byQuery && byTags && byCat
+      const byCat = category === 'all' ? true : p.category === category
+      return byQuery && byCat
     })
-  }, [query, tags, category])
-
-  function toggleTag(t: string) {
-    setTags(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])
-  }
+  }, [query, category, data])
 
   return (
     <Section id="projects" title={t('projects.title')} lead={t('projects.lead')}>
@@ -35,26 +29,27 @@ export function Projects() {
         <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <label style={{ flex: '1 1 260px' }}>
             <input
-              placeholder="Buscar proyectos..."
+              placeholder={t('projects.searchPlaceholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              aria-label="Buscar proyectos"
+              aria-label={t('projects.searchAria')}
               style={{ width: '100%' }}
             />
           </label>
           <select
-            aria-label="Filtrar por categoría"
+            aria-label={t('projects.filterAria')}
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => setCategory(e.target.value as ProjectCategory | 'all')}
             className="badge"
             style={{ padding: '.65rem .8rem', background: 'transparent', cursor: 'pointer' }}
           >
-            {categories.map(c => <option key={c} value={c}>{c}</option>)}
+            {categories.map(c => (
+              <option key={c} value={c}>{t(`projects.categories.${c}`)}</option>
+            ))}
           </select>
           <span className="badge" aria-live="polite">{filtered.length}</span>
+        </div>
       </div>
-      <TagFilter tags={allTags as unknown as string[]} active={tags} onToggle={toggleTag} />
-    </div>
 
       <div className="projects-grid">
         {filtered.map((p) => (

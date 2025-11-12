@@ -14,8 +14,8 @@ export function ParallaxOrbs() {
   }, [mx, my])
   const sMx = useSpring(mx, { stiffness: 40, damping: 12 })
   const sMy = useSpring(my, { stiffness: 40, damping: 12 })
-  const t1 = useTransform([sMx, sMy], ([x, y]) => `translate3d(${x * 30}px, ${y * 20}px, 0)`) // small parallax
-  const t2 = useTransform([sMx, sMy], ([x, y]) => `translate3d(${x * -40}px, ${y * -30}px, 0)`)
+  const t1 = useTransform([sMx, sMy], ([x, y]: number[]) => `translate3d(${x * 30}px, ${y * 20}px, 0)`) // small parallax
+  const t2 = useTransform([sMx, sMy], ([x, y]: number[]) => `translate3d(${x * -40}px, ${y * -30}px, 0)`)
 
   return (
     <div className="orbs" aria-hidden>
@@ -24,4 +24,3 @@ export function ParallaxOrbs() {
     </div>
   )
 }
-

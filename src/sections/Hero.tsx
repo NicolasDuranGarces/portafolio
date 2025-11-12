@@ -1,43 +1,74 @@
 import { motion } from 'framer-motion'
 import { useLanguage } from '../components/LanguageProvider'
 
+const fade = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
+
 export function Hero() {
   const { t } = useLanguage()
+  const specialties = t('hero.specialties').split('|').map((item) => item.trim()).filter(Boolean)
+  const stats = [
+    { value: t('hero.stats.years.value'), label: t('hero.stats.years.label') },
+    { value: t('hero.stats.launches.value'), label: t('hero.stats.launches.label') },
+    { value: t('hero.stats.systems.value'), label: t('hero.stats.systems.label') },
+  ]
+
   return (
-    <section id="top" className="container" style={{ paddingTop: '6rem' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr .8fr', gap: '2rem' }}>
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ fontSize: 'clamp(2rem, 2.2rem + 1vw, 3rem)', marginBottom: '.5rem' }}
-          >
-            {t('hero.greeting')}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.15, duration: 0.6 }}
-            style={{ color: 'var(--muted)', fontSize: '1.05rem' }}
-          >
-            {t('hero.sub')}
-          </motion.p>
-          <div style={{ display: 'flex', gap: '.75rem', marginTop: '1.25rem' }}>
+    <section id="top" className="hero-section container">
+      <div className="hero-grid">
+        <motion.div
+          className="hero-copy"
+          initial="hidden"
+          animate="show"
+          variants={fade}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <p className="hero-overline">{t('hero.overline')}</p>
+          <h1>
+            {t('hero.title')} <span className="gradient-text">{t('hero.highlight')}</span>
+          </h1>
+          <p className="hero-description">{t('hero.sub')}</p>
+
+          <div className="hero-specialties">
+            {specialties.map((item) => (
+              <span className="hero-chip" key={item}>{item}</span>
+            ))}
+          </div>
+
+          <div className="hero-cta">
             <a className="btn" href="#projects">{t('hero.ctaProjects')}</a>
             <a className="btn ghost" href="#contact">{t('hero.ctaContact')}</a>
           </div>
-        </div>
+          <p className="hero-tagline">{t('hero.tagline')}</p>
+        </motion.div>
+
         <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="card"
-          style={{ display: 'grid', placeItems: 'center', minHeight: 220, animation: 'float 6s ease-in-out infinite' }}
+          className="hero-panel card fancy"
+          initial="hidden"
+          animate="show"
+          variants={fade}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '3.2rem' }}>🚀</div>
-            <div style={{ color: 'var(--muted)' }}>Construyendo experiencias con intención</div>
+          <div className="hero-panel__badge">
+            <span className="hero-status-dot" />
+            <span>{t('rails.available')}</span>
+          </div>
+
+          <div className="hero-panel__spotlight">
+            <p className="hero-panel__label">{t('hero.spotlight.title')}</p>
+            <p>{t('hero.spotlight.body')}</p>
+          </div>
+
+          <div className="hero-panel__signature">
+            <span>{t('hero.greeting')}</span>
+          </div>
+
+          <div className="hero-stats">
+            {stats.map((stat) => (
+              <div className="hero-stat" key={stat.label}>
+                <span className="hero-stat__value">{stat.value}</span>
+                <span className="hero-stat__label">{stat.label}</span>
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>

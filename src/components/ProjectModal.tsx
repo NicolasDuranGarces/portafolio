@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import type { Project } from '../data/projects'
+import type { ResolvedProject } from '../data/projects'
+import { useLanguage } from './LanguageProvider'
 
-type Props = { project: Project | null; onClose: () => void }
+type Props = { project: ResolvedProject | null; onClose: () => void }
 
 export function ProjectModal({ project, onClose }: Props) {
+  const { t } = useLanguage()
   return (
     <AnimatePresence>
       {project && (
@@ -26,7 +28,9 @@ export function ProjectModal({ project, onClose }: Props) {
           >
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ margin: 0 }}>{project.title}</h3>
-              <button className="btn ghost" onClick={onClose} aria-label="Cerrar modal">Cerrar</button>
+              <button className="btn ghost" onClick={onClose} aria-label={t('projects.modal.closeAria')} title={t('projects.modal.closeAria')}>
+                {t('projects.modal.close')}
+              </button>
             </header>
             <p style={{ color: 'var(--muted)' }}>{project.description}</p>
             {project.highlights && project.highlights.length > 0 && (
@@ -54,4 +58,3 @@ export function ProjectModal({ project, onClose }: Props) {
     </AnimatePresence>
   )
 }
-

@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion'
-import type { Project } from '../data/projects'
+import { useCallback } from 'react'
+import type { ResolvedProject } from '../data/projects'
 import { useLanguage } from './LanguageProvider'
 
 type Props = {
-  project: Project
-  onOpen: (p: Project) => void
+  project: ResolvedProject
+  onOpen: (p: ResolvedProject) => void
 }
 
 export function ProjectCard({ project, onOpen }: Props) {
   const { t } = useLanguage()
   const { title, description, tags } = project
+  const handleOpen = useCallback(() => onOpen(project), [onOpen, project])
   return (
     <motion.article
       className="project-card card fancy interactive"
@@ -31,9 +33,9 @@ export function ProjectCard({ project, onOpen }: Props) {
           ))}
         </div>
         <div style={{ display: 'flex', gap: '.5rem', marginTop: '1rem' }}>
-          <button className="btn" onClick={() => onOpen(project)}>{t('projects.details')}</button>
+          <button className="btn" type="button" onClick={handleOpen}>{t('projects.details')}</button>
           {project.links?.map(l => (
-            <a key={l.href} className="btn ghost" href={l.href} target="_blank" rel="noreferrer">{l.label}</a>
+            <a key={l.href} className="btn ghost" href={l.href} target="_blank" rel="noopener noreferrer">{l.label}</a>
           ))}
         </div>
       </div>

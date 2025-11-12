@@ -18,6 +18,7 @@ const map: Record<string, keyof typeof SI | string> = {
   nginx: 'SiNginx',
   postgresql: 'SiPostgresql',
   postgres: 'SiPostgresql',
+  express: 'SiExpress',
   redis: 'SiRedis',
   aws: 'SiAmazonaws', // si no existe en esta versión, caerá al fallback
   'amazon web services': 'SiAmazonaws',
@@ -38,6 +39,23 @@ const map: Record<string, keyof typeof SI | string> = {
   supabase: 'SiSupabase',
   rabbitmq: 'SiRabbitmq',
   celery: 'SiRabbitmq', // aproximación
+  serverless: 'SiServerless',
+  'serverless framework': 'SiServerless',
+  go: 'SiGo',
+  golang: 'SiGo',
+  // AWS services mapping to AWS brand icon
+  'aws lambda': 'SiAmazonaws',
+  lambda: 'SiAmazonaws',
+  ec2: 'SiAmazonaws',
+  s3: 'SiAmazonaws',
+  ecr: 'SiAmazonaws',
+  fargate: 'SiAmazonaws',
+  dynamodb: 'SiAmazonaws',
+  dynamo: 'SiAmazonaws',
+  rds: 'SiAmazonaws',
+  // Databases
+  mysql: 'SiMysql',
+  mongodb: 'SiMongodb',
 }
 
 export function TechIcon({ name, size = 16 }: { name: string; size?: number }) {

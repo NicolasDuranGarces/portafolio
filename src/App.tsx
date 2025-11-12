@@ -11,6 +11,7 @@ import { Footer } from './components/Footer'
 import { SEOHead } from './components/SEO'
 import { ScrollProgress } from './components/ScrollProgress'
 import { ParallaxOrbs } from './components/ParallaxOrbs'
+import { SideRails } from './components/SideRails'
 
 export function App() {
   return (
@@ -20,6 +21,7 @@ export function App() {
           <SEOHead />
           <ScrollProgress />
           <ParallaxOrbs />
+          <SideRails />
           <Navbar />
           <main>
             <Hero />

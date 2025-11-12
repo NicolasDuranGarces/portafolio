@@ -7,20 +7,20 @@ export function Contact() {
   return (
     <Section id="contact" title={t('contact.title')} lead={t('contact.lead')}>
       <div className="grid" style={{ gridTemplateColumns: '1.2fr .8fr' }}>
-        <form className="card" onSubmit={(e) => e.preventDefault()} aria-label="Formulario de contacto">
+        <form className="card" onSubmit={(e) => e.preventDefault()} aria-label={t('contact.formAria')}>
           <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <label>
               <div>{t('contact.name')}</div>
-              <input required placeholder="Tu nombre" name="name" />
+              <input required placeholder={t('contact.placeholders.name')} name="name" />
             </label>
             <label>
               <div>{t('contact.email')}</div>
-              <input type="email" required placeholder="correo@ejemplo.com" name="email" />
+              <input type="email" required placeholder={t('contact.placeholders.email')} name="email" />
             </label>
           </div>
           <label style={{ display: 'block', marginTop: '.75rem' }}>
             <div>{t('contact.message')}</div>
-            <textarea required rows={5} placeholder="Cuéntame sobre tu proyecto" name="message" />
+            <textarea required rows={5} placeholder={t('contact.placeholders.message')} name="message" />
           </label>
           <div style={{ marginTop: '1rem' }}>
             <button className="btn" type="submit">{t('contact.send')}</button>

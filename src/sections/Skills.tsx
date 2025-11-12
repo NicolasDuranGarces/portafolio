@@ -3,9 +3,9 @@ import { SkillPill } from '../components/SkillPill'
 import { useLanguage } from '../components/LanguageProvider'
 import { SkillsMarquee } from '../components/SkillsMarquee'
 
-const backend = ['Python', 'FastAPI', 'Django', 'SQLModel', 'PostgreSQL', 'Redis', 'Celery']
+const backend = ['Python', 'FastAPI', 'Django', 'SQLModel', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Celery', 'JavaScript', 'Express', 'Serverless', 'Go']
 const frontend = ['React', 'TypeScript', 'Vite', 'CSS Modules']
-const devops = ['Docker', 'Docker Compose', 'Nginx', 'GitHub Actions']
+const devops = ['Docker', 'Docker Compose', 'Nginx', 'GitHub Actions', 'AWS Lambda', 'EC2', 'Fargate', 'DynamoDB', 'RDS']
 const others = ['Clean Architecture', 'TDD', 'REST', 'OpenAPI', 'CI/CD']
 
 export function Skills() {

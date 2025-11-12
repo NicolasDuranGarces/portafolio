@@ -7,10 +7,10 @@ export function Navbar() {
   return (
     <header className="navbar">
       <div className="container navbar-inner">
-        <a href="#top" className="brand" aria-label="Inicio">
+        <a href="#top" className="brand" aria-label={t('nav.brandAria')}>
           Nicolas<span className="dot">.</span>
         </a>
-        <nav className="nav-links" aria-label="Secciones">
+        <nav className="nav-links" aria-label={t('nav.sectionsAria')}>
           <a href="#about">{t('nav.about')}</a>
           <a href="#skills">{t('nav.skills')}</a>
           <a href="#experience">{t('nav.experience')}</a>
