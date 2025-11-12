@@ -58,13 +58,14 @@ export function Hero() {
             <p>{t('hero.spotlight.body')}</p>
           </div>
 
-          <div className="hero-panel__signature">
-            <span>{t('hero.greeting')}</span>
+          <div className="hero-panel__identity">
+            <span className="hero-panel__name">{t('hero.greeting')}</span>
+            <span className="hero-panel__role">{t('hero.role')}</span>
           </div>
 
-          <div className="hero-stats">
-            {stats.map((stat) => (
-              <div className="hero-stat" key={stat.label}>
+          <div className="hero-stats hero-stats--card">
+            {stats.map((stat, index) => (
+              <div className={`hero-stat${index === stats.length - 1 ? ' hero-stat--full' : ''}`} key={stat.label}>
                 <span className="hero-stat__value">{stat.value}</span>
                 <span className="hero-stat__label">{stat.label}</span>
               </div>

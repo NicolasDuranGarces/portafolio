@@ -18,6 +18,7 @@ export const es = {
     title: 'Diseño plataformas que escalan',
     highlight: 'con arquitectura limpia y datos confiables',
     sub: 'Lidero el backend con Python, Node y arquitecturas event-driven; colaboro con el frente para entregar features completos cuando hace falta.',
+    role: 'Ingeniero de software backend',
     ctaProjects: 'Ver proyectos',
     ctaContact: 'Contactar',
     tagline: 'Disponible para roles backend senior y colaboraciones enfocadas en performance y observabilidad',

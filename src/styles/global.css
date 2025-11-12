@@ -165,6 +165,9 @@ body::before {
   overflow: hidden;
   animation: float 6s ease-in-out infinite;
   background: linear-gradient(160deg, color-mix(in oklab, var(--panel) 85%, transparent), color-mix(in oklab, var(--panel) 60%, transparent));
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 .hero-panel::after {
   content: '';
@@ -210,10 +213,23 @@ body::before {
   margin: 0;
   color: var(--text);
 }
-.hero-panel__signature {
+.hero-panel__identity {
+  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+  padding-top: 1rem;
+}
+.hero-panel__name {
+  display: inline-block;
+  font-size: 1.05rem;
+  letter-spacing: .28em;
   text-transform: uppercase;
-  letter-spacing: .24em;
-  font-size: .85rem;
+  color: var(--text);
+}
+.hero-panel__role {
+  display: inline-block;
+  margin-top: .35rem;
+  text-transform: uppercase;
+  letter-spacing: .32em;
+  font-size: .72rem;
   color: var(--muted);
 }
 .hero-stats {
@@ -222,10 +238,16 @@ body::before {
   gap: 1rem;
   margin-top: .5rem;
 }
+.hero-stats--card {
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 1.25rem;
+}
 .hero-stat {
   padding-top: 1rem;
   border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
 }
+.hero-stat--full { grid-column: span 2; }
 .hero-stat__value {
   display: block;
   font-size: 2rem;

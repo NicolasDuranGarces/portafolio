@@ -18,6 +18,7 @@ export const en = {
     title: 'I design platforms that scale',
     highlight: 'with clean architecture and trusted data',
     sub: 'I lead backend work with Python, Node and event-driven patterns, and jump into front-end details when a feature needs end-to-end ownership.',
+    role: 'Backend software engineer',
     ctaProjects: 'View projects',
     ctaContact: 'Contact',
     tagline: 'Open to senior backend roles and collaborations centered on performance and observability',
