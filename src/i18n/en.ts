@@ -25,8 +25,8 @@ export const en = {
     tagline: 'Open to senior backend roles and collaborations centered on performance and observability',
     specialties: 'Event-driven architectures|Observable APIs|Pragmatic front-end when it matters',
     spotlight: {
-      title: 'Platform architecture',
-      body: 'I align product, data and SRE to ship resilient services with instrumentation, guardrails and predictable deploys.',
+      title: 'Energy & collaboration',
+      body: 'Proactive, upbeat and dependable — I align product, data and ops, unblock teammates, and keep the technical narrative crisp.',
     },
     stats: {
       years: { value: '4+', label: 'years operating production systems' },

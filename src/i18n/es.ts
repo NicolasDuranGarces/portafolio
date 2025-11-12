@@ -25,8 +25,8 @@ export const es = {
     tagline: 'Disponible para roles backend senior y colaboraciones enfocadas en performance y observabilidad',
     specialties: 'Arquitecturas orientadas a eventos|APIs observables|Front pragmático cuando suma valor',
     spotlight: {
-      title: 'Arquitectura de plataforma',
-      body: 'Alineo negocio, datos y SRE para entregar servicios resilientes, instrumentados y listos para desplegar sin drama.',
+      title: 'Actitud y colaboración',
+      body: 'Proactivo, buen humor y entrega constante: coordino equipos, desbloqueo dependencias y mantengo la conversación técnica clara.',
     },
     stats: {
       years: { value: '4+', label: 'años construyendo sistemas en producción' },
