@@ -297,7 +297,7 @@ body::before {
   gap: 1.25rem;
 }
 .about-profile {
-  grid-column: span 7;
+  grid-column: span 6;
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
@@ -359,7 +359,6 @@ body::before {
 .about-focus,
 .about-teaching,
 .about-lowcode,
-.about-coffee,
 .about-highlights,
 .about-systems,
 .about-metrics {
@@ -367,13 +366,12 @@ body::before {
   flex-direction: column;
   gap: .95rem;
 }
-.about-focus { grid-column: span 5; }
-.about-teaching { grid-column: span 3; }
-.about-lowcode { grid-column: span 3; }
-.about-coffee { grid-column: span 3; }
+.about-focus { grid-column: span 6; }
+.about-teaching { grid-column: span 4; }
+.about-lowcode { grid-column: span 4; }
+.about-metrics { grid-column: span 4; }
 .about-highlights { grid-column: span 8; }
 .about-systems { grid-column: span 4; }
-.about-metrics { grid-column: span 3; }
 .about-card-heading {
   display: flex;
   gap: .75rem;

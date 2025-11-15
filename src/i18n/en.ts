@@ -87,11 +87,6 @@ export const en = {
       body: 'I prototype MVPs with Lovable, Xano, and Bubble to validate products without blocking the core team.',
       tools: 'Lovable|Xano|Bubble',
     },
-    coffee: {
-      title: 'Specialty coffee',
-      body: 'I love mindful coffee: learning the farm story and daily work of growers before brewing a cup.',
-      note: 'Let’s chat over a V60 or a well-pulled espresso anytime.',
-    },
   },
   skills: {
     title: 'Stack & skills',
