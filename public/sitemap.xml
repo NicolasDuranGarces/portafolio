@@ -1,24 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://tusitio.com/</loc>
+    <loc>https://nicolasdurangarces.com/</loc>
+    <lastmod>2025-02-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es-CO" href="https://nicolasdurangarces.com/"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://nicolasdurangarces.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://nicolasdurangarces.com/"/>
   </url>
   <url>
-    <loc>https://tusitio.com/#about</loc>
+    <loc>https://nicolasdurangarces.com/#about</loc>
+    <lastmod>2025-02-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es-CO" href="https://nicolasdurangarces.com/#about"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://nicolasdurangarces.com/?lang=en#about"/>
   </url>
   <url>
-    <loc>https://tusitio.com/#skills</loc>
+    <loc>https://nicolasdurangarces.com/#skills</loc>
+    <lastmod>2025-02-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es-CO" href="https://nicolasdurangarces.com/#skills"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://nicolasdurangarces.com/?lang=en#skills"/>
   </url>
   <url>
-    <loc>https://tusitio.com/#experience</loc>
+    <loc>https://nicolasdurangarces.com/#experience</loc>
+    <lastmod>2025-02-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es-CO" href="https://nicolasdurangarces.com/#experience"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://nicolasdurangarces.com/?lang=en#experience"/>
   </url>
   <url>
-    <loc>https://tusitio.com/#projects</loc>
+    <loc>https://nicolasdurangarces.com/#projects</loc>
+    <lastmod>2025-02-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es-CO" href="https://nicolasdurangarces.com/#projects"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://nicolasdurangarces.com/?lang=en#projects"/>
   </url>
   <url>
-    <loc>https://tusitio.com/#contact</loc>
+    <loc>https://nicolasdurangarces.com/#contact</loc>
+    <lastmod>2025-02-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es-CO" href="https://nicolasdurangarces.com/#contact"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://nicolasdurangarces.com/?lang=en#contact"/>
   </url>
 </urlset>
-

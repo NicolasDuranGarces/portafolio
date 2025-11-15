@@ -16,10 +16,26 @@ type Ctx = {
 
 const LanguageCtx = createContext<Ctx | null>(null)
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Lang>(() => (localStorage.getItem('lang') as Lang) || 'es')
+const getInitialLang = (): Lang => {
+  if (typeof window === 'undefined') return 'es'
+  const params = new URLSearchParams(window.location.search)
+  const fromQuery = params.get('lang')
+  if (fromQuery === 'es' || fromQuery === 'en') return fromQuery
+  const stored = localStorage.getItem('lang')
+  if (stored === 'es' || stored === 'en') return stored
+  return 'es'
+}
 
-  useEffect(() => { localStorage.setItem('lang', lang) }, [lang])
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [lang, setLang] = useState<Lang>(getInitialLang)
+
+  useEffect(() => {
+    localStorage.setItem('lang', lang)
+    if (typeof window === 'undefined') return
+    const url = new URL(window.location.href)
+    url.searchParams.set('lang', lang)
+    window.history.replaceState({}, '', url)
+  }, [lang])
 
   const t = useCallback((key: string) => {
     const parts = key.split('.')
@@ -46,4 +62,3 @@ export function useLanguage() {
   if (!ctx) throw new Error('useLanguage must be used within LanguageProvider')
   return ctx
 }
-

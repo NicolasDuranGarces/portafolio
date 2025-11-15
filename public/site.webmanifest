@@ -1,13 +1,29 @@
 {
-  "name": "Nicolas Duran Garces — Portafolio",
-  "short_name": "NDG Portafolio",
-  "description": "Portafolio de Nicolas Duran Garces. Backend Python y UIs en React.",
-  "start_url": "/",
+  "name": "Nicolas Duran Garces · Software Engineer",
+  "short_name": "Nicolas Duran",
+  "description": "Portafolio de Nicolas Duran Garces: ingeniería backend en Python/FastAPI, React y plataformas observables.",
+  "id": "/?lang=es",
+  "start_url": "/?lang=es",
+  "scope": "/",
+  "lang": "es-CO",
+  "dir": "ltr",
   "display": "standalone",
   "background_color": "#0b0c10",
   "theme_color": "#0b0c10",
+  "categories": ["business", "productivity", "portfolio"],
+  "shortcuts": [
+    {
+      "name": "Proyectos destacados",
+      "url": "/#projects",
+      "description": "Explora proyectos backend y DevOps."
+    },
+    {
+      "name": "Contacto",
+      "url": "/#contact",
+      "description": "Reserva una reunión con Nicolas."
+    }
+  ],
   "icons": [
     { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
   ]
 }
-

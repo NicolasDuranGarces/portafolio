@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /node_modules/
+Disallow: /dist/
 
-Sitemap: https://tusitio.com/sitemap.xml
-
+Sitemap: https://nicolasdurangarces.com/sitemap.xml
+Host: nicolasdurangarces.com

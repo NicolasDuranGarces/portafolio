@@ -271,43 +271,170 @@ body::before {
   .hero-chip { flex: 1 1 auto; text-align: center; }
 }
 
+/* Micro text */
+.eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; color: var(--muted); margin: 0; }
+
 /* About pills */
 .pill-list { display: flex; gap: .5rem; flex-wrap: wrap; }
-.pill { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem .6rem; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--text) 12%, transparent); background: color-mix(in oklab, var(--panel) 70%, transparent); color: var(--muted); font-weight: 600; }
+.pill { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem .65rem; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--text) 12%, transparent); background: color-mix(in oklab, var(--panel) 70%, transparent); color: var(--muted); font-weight: 600; font-size: .82rem; }
 .pill svg { width: 16px; height: 16px; }
 
-.about-layout {
+.about-shell {
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+  background:
+    radial-gradient(circle at top left, color-mix(in oklab, var(--primary) 24%, transparent), transparent 45%),
+    radial-gradient(circle at bottom right, color-mix(in oklab, var(--accent) 18%, transparent), transparent 50%),
+    color-mix(in oklab, var(--panel) 90%, transparent);
+}
+@media (max-width: 640px) {
+  .about-shell { padding: 1.25rem; }
+}
+.about-bento {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: 1.5rem;
-  align-items: start;
-}
-@media (max-width: 1024px) {
-  .about-layout { grid-template-columns: 1fr; }
-}
-.about-bio {
-  display: flex;
-  flex-direction: column;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 1.25rem;
 }
-.about-bio__text p {
-  margin-top: 0;
+.about-profile {
+  grid-column: span 7;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+.about-story p {
+  margin: 0;
   color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.about-story p + p {
+  margin-top: .85rem;
+}
+.about-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .about-meta { grid-template-columns: 1fr; }
+}
+.about-meta__item {
+  display: flex;
+  gap: .8rem;
+  border-radius: 18px;
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  padding: .9rem 1rem;
+  background: linear-gradient(145deg, color-mix(in oklab, var(--panel) 78%, transparent), color-mix(in oklab, var(--panel) 58%, transparent));
+}
+.about-meta__item svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent);
+  margin-top: .2rem;
+}
+.about-meta__label {
+  font-size: .72rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.about-meta__value {
+  margin: .1rem 0 0;
+  font-weight: 600;
+  color: var(--text);
 }
 .about-principles {
   display: flex;
   flex-wrap: wrap;
-  gap: .5rem;
+  gap: .6rem;
 }
 .about-principles .pill {
   background: color-mix(in oklab, var(--panel) 60%, transparent);
   border-color: color-mix(in oklab, var(--text) 14%, transparent);
-  font-size: .8rem;
 }
-.about-sidebar {
+.about-focus,
+.about-teaching,
+.about-lowcode,
+.about-highlights,
+.about-systems,
+.about-metrics {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: .95rem;
+}
+.about-focus { grid-column: span 5; }
+.about-teaching { grid-column: span 3; }
+.about-lowcode { grid-column: span 3; }
+.about-highlights { grid-column: span 8; }
+.about-systems { grid-column: span 4; }
+.about-metrics { grid-column: span 4; }
+.about-card-heading {
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+}
+.about-card-heading svg {
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
+}
+.about-card-heading h3 {
+  margin: .1rem 0 0;
+  font-size: 1.05rem;
+}
+.about-focus__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: .65rem;
+}
+.about-focus__item {
+  display: flex;
+  gap: .5rem;
+  align-items: flex-start;
+  padding: .65rem .8rem;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+  background: color-mix(in oklab, var(--panel) 65%, transparent);
+  font-weight: 600;
+}
+.about-focus__item svg {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+  margin-top: .1rem;
+}
+.about-list {
+  list-style: none;
+  margin: .5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+.about-list li {
+  display: flex;
+  gap: .5rem;
+  align-items: flex-start;
+  font-weight: 600;
+}
+.about-list svg {
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+  margin-top: .2rem;
+}
+.about-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin-top: auto;
 }
 .about-highlights {
   display: grid;
@@ -337,24 +464,16 @@ body::before {
 .about-systems h4 {
   margin: 0 0 .35rem;
 }
-.about-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-}
-.about-stat {
-  border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-  padding-top: .75rem;
-}
-.about-stat__value {
-  display: block;
-  font-size: 1.9rem;
-  font-weight: 700;
-}
-.about-stat__label {
-  color: var(--muted);
-  font-size: .85rem;
-  line-height: 1.4;
+@media (max-width: 900px) {
+  .about-profile,
+  .about-focus,
+  .about-highlights,
+  .about-systems,
+  .about-teaching,
+  .about-lowcode,
+  .about-metrics {
+    grid-column: 1 / -1;
+  }
 }
 
 /* Icon tiles (alternative style so it doesn't look like pills) */
@@ -503,4 +622,25 @@ a { color: inherit; }
 }
 @media (max-width: 1099px) {
   .rail-left { display: none; }
+}
+.about-metrics__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+.about-metric {
+  padding: .3rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+}
+.about-metric:first-child {
+  border-top: none;
+}
+.about-metric__value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+}
+.about-metric__label {
+  color: var(--muted);
+  font-size: .85rem;
 }

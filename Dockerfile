@@ -1,22 +1,25 @@
-# Multi-stage build for a production-ready static React app
+# Multi-stage build para servir el bundle estático detrás de Nginx.
 
-FROM node:20-alpine AS build
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Instalación de dependencias (mejor caché)
-COPY package.json ./
-# Si agregas package-lock.json en el futuro, cambia a: COPY package*.json ./ y usa npm ci
-RUN npm install --no-audit --no-fund
+# Instala dependencias usando el lockfile para builds reproducibles.
+COPY package*.json ./
+RUN npm ci --audit=false --fund=false
 
-# Copia del código y build
+# Copia el resto del código y genera el build optimizado.
 COPY . .
 RUN npm run build
 
-# Runtime minimal sin Nginx: servir estáticos con 'serve'
-FROM node:20-alpine AS runtime
-WORKDIR /app
-RUN npm install -g serve
-COPY --from=build /app/dist /app/dist
+# Imagen final mínima con Nginx manejando el tráfico HTTP.
+FROM nginx:1.27-alpine
 
-EXPOSE 3000
-CMD ["serve", "-s", "dist", "-l", "3000", "-n"]
+# Usa un archivo de configuración alineado con SPA + caching agresivo para assets.
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+# Verifica que Nginx siga respondiendo para que el orquestador pueda monitorear el contenedor.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -q -O /dev/null http://localhost/ || exit 1
