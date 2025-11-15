@@ -369,7 +369,10 @@ body::before {
 .about-teaching { grid-column: span 4; }
 .about-lowcode { grid-column: span 4; }
 .about-highlights { grid-column: span 8; }
-.about-systems { grid-column: span 4; }
+.about-systems {
+  grid-column: span 4;
+  grid-row: span 2;
+}
 .about-card-heading {
   display: flex;
   gap: .75rem;
@@ -478,6 +481,7 @@ body::before {
   .about-metrics {
     grid-column: 1 / -1;
   }
+  .about-systems { grid-row: auto; }
 }
 
 /* Icon tiles (alternative style so it doesn't look like pills) */

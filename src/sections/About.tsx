@@ -118,11 +118,11 @@ export function About() {
           <div className="card about-systems">
             <div>
               <h3>{t('about.cloudTitle')}</h3>
-              <IconTiles items={['AWS', 'EC2', 'S3', 'ECR', 'Fargate', 'DynamoDB', 'Lambda']} />
+              <IconTiles items={['AWS', 'EC2', 'S3', 'ECR', 'ECS', 'EKS', 'Fargate', 'Lambda', 'CloudFront', 'Route53', 'SQS', 'SNS', 'API Gateway']} />
             </div>
             <div>
               <h4>{t('about.dataTitle')}</h4>
-              <IconTiles items={['MySQL', 'PostgreSQL', 'MongoDB', 'DynamoDB']} />
+              <IconTiles items={['MySQL', 'PostgreSQL', 'MongoDB', 'DynamoDB', 'RDS', 'Aurora']} />
             </div>
           </div>
 
