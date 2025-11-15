@@ -58,6 +58,24 @@ export function About() {
             </div>
           </article>
 
+          <article className="card about-focus" aria-label={t('about.focusAria')}>
+            <div className="about-card-heading">
+              <FiLayers aria-hidden="true" />
+              <div>
+                <p className="eyebrow">{t('about.focusTitle')}</p>
+                <h3>{t('about.focusHeadline')}</h3>
+              </div>
+            </div>
+            <ul className="about-focus__list">
+              {focus.map((item) => (
+                <li key={item} className="about-focus__item">
+                  <FiServer aria-hidden="true" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+
           <article className="card about-teaching">
             <div className="about-card-heading">
               <FiBookOpen aria-hidden="true" />
@@ -122,24 +140,6 @@ export function About() {
                 </div>
               ))}
             </div>
-          </article>
-
-          <article className="card about-focus" aria-label={t('about.focusAria')}>
-            <div className="about-card-heading">
-              <FiLayers aria-hidden="true" />
-              <div>
-                <p className="eyebrow">{t('about.focusTitle')}</p>
-                <h3>{t('about.focusHeadline')}</h3>
-              </div>
-            </div>
-            <ul className="about-focus__list">
-              {focus.map((item) => (
-                <li key={item} className="about-focus__item">
-                  <FiServer aria-hidden="true" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
           </article>
         </div>
       </div>
