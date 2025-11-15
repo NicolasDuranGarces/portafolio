@@ -368,8 +368,8 @@ body::before {
 .about-focus { grid-column: 1 / -1; }
 .about-teaching { grid-column: span 4; }
 .about-lowcode { grid-column: span 4; }
-.about-highlights { grid-column: span 8; }
-.about-systems { grid-column: span 4; }
+.about-highlights { grid-column: 1 / -1; }
+.about-systems { grid-column: 1 / -1; }
 .about-card-heading {
   display: flex;
   gap: .75rem;
