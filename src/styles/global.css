@@ -360,8 +360,7 @@ body::before {
 .about-teaching,
 .about-lowcode,
 .about-highlights,
-.about-systems,
-.about-metrics {
+.about-systems {
   display: flex;
   flex-direction: column;
   gap: .95rem;
@@ -369,7 +368,6 @@ body::before {
 .about-focus { grid-column: 1 / -1; }
 .about-teaching { grid-column: span 4; }
 .about-lowcode { grid-column: span 4; }
-.about-metrics { grid-column: span 4; }
 .about-highlights { grid-column: span 8; }
 .about-systems { grid-column: span 4; }
 .about-card-heading {
@@ -628,25 +626,4 @@ a { color: inherit; }
 }
 @media (max-width: 1099px) {
   .rail-left { display: none; }
-}
-.about-metrics__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-}
-.about-metric {
-  padding: .3rem 0;
-  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
-}
-.about-metric:first-child {
-  border-top: none;
-}
-.about-metric__value {
-  display: block;
-  font-size: 2rem;
-  font-weight: 700;
-}
-.about-metric__label {
-  color: var(--muted);
-  font-size: .85rem;
 }

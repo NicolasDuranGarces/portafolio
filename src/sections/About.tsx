@@ -15,11 +15,6 @@ export function About() {
   ]
   const teachingBullets = t('about.teaching.bullets').split('|').map((item) => item.trim()).filter(Boolean)
   const lowCodeTools = t('about.lowcode.tools').split('|').map((item) => item.trim()).filter(Boolean)
-  const metrics = [
-    { value: t('about.metrics.years.value'), label: t('about.metrics.years.label') },
-    { value: t('about.metrics.squads.value'), label: t('about.metrics.squads.label') },
-    { value: t('about.metrics.uptime.value'), label: t('about.metrics.uptime.label') },
-  ]
   const meta = [
     { icon: FiMapPin, label: t('about.meta.location'), value: t('about.meta.locationValue') },
     { icon: FiClock, label: t('about.meta.experience'), value: t('about.meta.experienceValue') },
@@ -131,16 +126,6 @@ export function About() {
             </div>
           </div>
 
-          <article className="card about-metrics" aria-label={t('about.metricsAria')}>
-            <div className="about-metrics__grid">
-              {metrics.map((metric) => (
-                <div key={metric.label} className="about-metric">
-                  <span className="about-metric__value">{metric.value}</span>
-                  <span className="about-metric__label">{metric.label}</span>
-                </div>
-              ))}
-            </div>
-          </article>
         </div>
       </div>
     </Section>
