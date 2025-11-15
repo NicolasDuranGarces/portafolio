@@ -359,6 +359,7 @@ body::before {
 .about-focus,
 .about-teaching,
 .about-lowcode,
+.about-coffee,
 .about-highlights,
 .about-systems,
 .about-metrics {
@@ -369,9 +370,10 @@ body::before {
 .about-focus { grid-column: span 5; }
 .about-teaching { grid-column: span 3; }
 .about-lowcode { grid-column: span 3; }
+.about-coffee { grid-column: span 3; }
 .about-highlights { grid-column: span 8; }
 .about-systems { grid-column: span 4; }
-.about-metrics { grid-column: span 4; }
+.about-metrics { grid-column: span 3; }
 .about-card-heading {
   display: flex;
   gap: .75rem;
@@ -436,6 +438,11 @@ body::before {
   gap: .45rem;
   margin-top: auto;
 }
+.about-coffee__note {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text);
+}
 .about-highlights {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -471,6 +478,7 @@ body::before {
   .about-systems,
   .about-teaching,
   .about-lowcode,
+  .about-coffee,
   .about-metrics {
     grid-column: 1 / -1;
   }

@@ -87,6 +87,11 @@ export const es = {
       body: 'Prototipo y lanzo MVPs con Lovable, Xano y Bubble para validar productos sin frenar al equipo core.',
       tools: 'Lovable|Xano|Bubble',
     },
+    coffee: {
+      title: 'Café de especialidad',
+      body: 'Amante del café consciente: disfruto conocer la finca, los caficultores y cada proceso antes de preparar una taza.',
+      note: 'Siempre hay tiempo para conversar con una V60 o espresso bien tirado.',
+    },
   },
   skills: {
     title: 'Stack y habilidades',

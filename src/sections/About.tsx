@@ -1,4 +1,4 @@
-import { FiBookOpen, FiCode, FiLayers, FiServer, FiZap, FiClock, FiMapPin, FiCheck } from 'react-icons/fi'
+import { FiBookOpen, FiCode, FiCoffee, FiLayers, FiServer, FiZap, FiClock, FiMapPin, FiCheck } from 'react-icons/fi'
 import { Section } from '../components/Section'
 import { useLanguage } from '../components/LanguageProvider'
 import { IconTiles } from '../components/IconTiles'
@@ -15,6 +15,7 @@ export function About() {
   ]
   const teachingBullets = t('about.teaching.bullets').split('|').map((item) => item.trim()).filter(Boolean)
   const lowCodeTools = t('about.lowcode.tools').split('|').map((item) => item.trim()).filter(Boolean)
+  const coffeeNote = t('about.coffee.note')
   const metrics = [
     { value: t('about.metrics.years.value'), label: t('about.metrics.years.label') },
     { value: t('about.metrics.squads.value'), label: t('about.metrics.squads.label') },
@@ -109,6 +110,18 @@ export function About() {
                 <span key={tool} className="pill">{tool}</span>
               ))}
             </div>
+          </article>
+
+          <article className="card about-coffee">
+            <div className="about-card-heading">
+              <FiCoffee aria-hidden="true" />
+              <div>
+                <p className="eyebrow">{t('about.coffee.title')}</p>
+                <h3>{t('about.coffee.title')}</h3>
+              </div>
+            </div>
+            <p>{t('about.coffee.body')}</p>
+            <p className="about-coffee__note">{coffeeNote}</p>
           </article>
 
           <div className="card about-highlights" aria-label={t('about.highlightsAria')}>
