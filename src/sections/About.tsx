@@ -106,15 +106,6 @@ export function About() {
             </div>
           </article>
 
-          <div className="card about-highlights" aria-label={t('about.highlightsAria')}>
-            {highlights.map((item) => (
-              <article key={item.title} className="about-highlight">
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </article>
-            ))}
-          </div>
-
           <div className="card about-systems">
             <div>
               <h3>{t('about.cloudTitle')}</h3>
@@ -124,6 +115,15 @@ export function About() {
               <h4>{t('about.dataTitle')}</h4>
               <IconTiles items={['MySQL', 'PostgreSQL', 'MongoDB', 'DynamoDB', 'RDS', 'Aurora']} />
             </div>
+          </div>
+
+          <div className="card about-highlights" aria-label={t('about.highlightsAria')}>
+            {highlights.map((item) => (
+              <article key={item.title} className="about-highlight">
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
           </div>
 
         </div>
