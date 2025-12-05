@@ -34,38 +34,59 @@ body {
   isolation: isolate; /* crea un stacking context controlado */
 }
 
-/* Fondo decorativo fijo y sobredimensionado para evitar cortes */
+/* Fondo decorativo mejorado con más profundidad */
 body::before {
   content: '';
   position: fixed;
-  inset: -30vmax; /* se extiende más allá del viewport */
-  z-index: -2; /* más atrás para evitar cualquier solape */
+  inset: -30vmax;
+  z-index: -2;
   pointer-events: none;
   background:
-    radial-gradient(60vmax 40vmax at 80% -10%, color-mix(in oklab, var(--primary) 26%, transparent), transparent),
-    radial-gradient(48vmax 32vmax at -10% 10%, color-mix(in oklab, var(--accent) 24%, transparent), transparent),
-    linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--primary) 7%, transparent) 50%, transparent 100%);
-  background-color: var(--bg); /* fallback si no soporta color-mix */
-  filter: saturate(1.1);
+    radial-gradient(60vmax 40vmax at 80% -10%, color-mix(in oklab, var(--primary) 32%, transparent), transparent),
+    radial-gradient(48vmax 32vmax at -10% 10%, color-mix(in oklab, var(--accent) 28%, transparent), transparent),
+    radial-gradient(55vmax 35vmax at 50% 50%, color-mix(in oklab, var(--primary) 18%, transparent), transparent),
+    radial-gradient(40vmax 40vmax at 100% 100%, color-mix(in oklab, var(--accent) 22%, transparent), transparent),
+    linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--primary) 10%, transparent) 50%, transparent 100%);
+  background-color: var(--bg);
+  filter: saturate(1.2);
   animation: bg-pan 60s ease-in-out infinite alternate;
+}
+
+/* Capa adicional de textura sutil */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, color-mix(in oklab, var(--text) 1%, transparent) 2px, color-mix(in oklab, var(--text) 1%, transparent) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, color-mix(in oklab, var(--text) 1%, transparent) 2px, color-mix(in oklab, var(--text) 1%, transparent) 4px);
+  opacity: 0.15;
 }
 
 /* Fallback para navegadores sin color-mix */
 @supports not (background: color-mix(in oklab, white 10%, black)) {
   body::before {
     background:
-      radial-gradient(60vmax 40vmax at 80% -10%, rgba(124, 58, 237, 0.22), transparent),
-      radial-gradient(48vmax 32vmax at -10% 10%, rgba(6, 182, 212, 0.22), transparent),
-      linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.08) 50%, transparent 100%);
+      radial-gradient(60vmax 40vmax at 80% -10%, rgba(124, 58, 237, 0.28), transparent),
+      radial-gradient(48vmax 32vmax at -10% 10%, rgba(6, 182, 212, 0.26), transparent),
+      radial-gradient(55vmax 35vmax at 50% 50%, rgba(124, 58, 237, 0.16), transparent),
+      radial-gradient(40vmax 40vmax at 100% 100%, rgba(6, 182, 212, 0.20), transparent),
+      linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.10) 50%, transparent 100%);
+  }
+  body::after {
+    opacity: 0.12;
   }
 }
 
 /* (opcional: se puede volver a habilitar una capa de ruido si se desea) */
 
 @keyframes bg-pan {
-  0% { transform: translate3d(0,0,0) rotate(0deg); }
-  50% { transform: translate3d(0,-1.5%,0) rotate(2deg); }
-  100% { transform: translate3d(0,0,0) rotate(0deg); }
+  0% { transform: translate3d(0,0,0) rotate(0deg) scale(1); }
+  33% { transform: translate3d(-1%,-1%,0) rotate(1deg) scale(1.02); }
+  66% { transform: translate3d(1%,-1.5%,0) rotate(2deg) scale(1.01); }
+  100% { transform: translate3d(0,0,0) rotate(0deg) scale(1); }
 }
 
 /* Respeta preferencias de movimiento para evitar glitches visuales */
@@ -274,210 +295,172 @@ body::before {
 /* Micro text */
 .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; color: var(--muted); margin: 0; }
 
-/* About pills */
-.pill-list { display: flex; gap: .5rem; flex-wrap: wrap; }
-.pill { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem .65rem; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--text) 12%, transparent); background: color-mix(in oklab, var(--panel) 70%, transparent); color: var(--muted); font-weight: 600; font-size: .82rem; }
-.pill svg { width: 16px; height: 16px; }
-
-.about-shell {
-  border-radius: 24px;
-  padding: 2rem;
-  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
-  background:
-    radial-gradient(circle at top left, color-mix(in oklab, var(--primary) 24%, transparent), transparent 45%),
-    radial-gradient(circle at bottom right, color-mix(in oklab, var(--accent) 18%, transparent), transparent 50%),
-    color-mix(in oklab, var(--panel) 90%, transparent);
-}
-@media (max-width: 640px) {
-  .about-shell { padding: 1.25rem; }
-}
-.about-bento {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-.about-profile {
-  grid-column: 1 / -1;
+/* About Simple - Minimalista */
+.about-simple-grid {
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
+  gap: 2.5rem;
 }
-.about-story p {
-  margin: 0;
+
+.about-simple-heading {
+  font-size: clamp(1.8rem, 1.2rem + 2vw, 2.5rem);
+  margin: 0 0 .75rem;
+  line-height: 1.2;
+}
+
+.about-simple-lead {
   color: var(--muted);
-  font-size: 1rem;
+  font-size: 1.08rem;
+  margin: 0;
   line-height: 1.6;
 }
-.about-story p + p {
-  margin-top: .85rem;
+
+.about-simple-story {
+  padding: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  background: linear-gradient(160deg,
+    color-mix(in oklab, var(--panel) 88%, transparent),
+    color-mix(in oklab, var(--panel) 70%, transparent)
+  );
+  position: relative;
+  overflow: visible;
 }
-.about-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  list-style: none;
-  padding: 0;
+
+.about-simple-story::after {
+  content: '';
+  position: absolute;
+  inset: 1.5rem;
+  border-radius: 20px;
+  background: radial-gradient(circle at 20% 20%,
+    color-mix(in oklab, var(--accent) 20%, transparent),
+    transparent 65%
+  );
+  opacity: .4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.about-simple-story > * {
+  position: relative;
+  z-index: 1;
+}
+
+.about-simple-tagline {
+  text-transform: uppercase;
+  letter-spacing: .32em;
+  font-size: .78rem;
+  color: var(--muted);
   margin: 0;
 }
-@media (max-width: 640px) {
-  .about-meta { grid-template-columns: 1fr; }
-}
-.about-meta__item {
+
+.about-simple-text {
   display: flex;
-  gap: .8rem;
-  border-radius: 18px;
-  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-  padding: .9rem 1rem;
-  background: linear-gradient(145deg, color-mix(in oklab, var(--panel) 78%, transparent), color-mix(in oklab, var(--panel) 58%, transparent));
+  flex-direction: column;
+  gap: 1rem;
 }
-.about-meta__item svg {
+
+.about-simple-text p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.about-simple-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  padding-top: .5rem;
+}
+
+@media (max-width: 640px) {
+  .about-simple-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+.about-simple-meta-item {
+  display: flex;
+  gap: .9rem;
+  align-items: flex-start;
+  padding: 1rem 1.15rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  background: linear-gradient(145deg,
+    color-mix(in oklab, var(--panel) 75%, transparent),
+    color-mix(in oklab, var(--panel) 55%, transparent)
+  );
+  transition: all .2s ease;
+}
+
+.about-simple-meta-item:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, transparent);
+  transform: translateY(-2px);
+}
+
+.about-simple-meta-item svg {
   width: 20px;
   height: 20px;
   color: var(--accent);
-  margin-top: .2rem;
+  margin-top: .25rem;
+  flex-shrink: 0;
 }
-.about-meta__label {
+
+.about-simple-meta-label {
+  display: block;
   font-size: .72rem;
-  letter-spacing: .12em;
+  letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--muted);
+  margin-bottom: .25rem;
 }
-.about-meta__value {
-  margin: .1rem 0 0;
+
+.about-simple-meta-value {
+  margin: 0;
   font-weight: 600;
   color: var(--text);
+  font-size: .95rem;
 }
-.about-principles {
+
+.about-simple-principles {
   display: flex;
   flex-wrap: wrap;
-  gap: .6rem;
-}
-.about-principles .pill {
-  background: color-mix(in oklab, var(--panel) 60%, transparent);
-  border-color: color-mix(in oklab, var(--text) 14%, transparent);
-}
-.about-focus,
-.about-teaching,
-.about-lowcode,
-.about-highlights,
-.about-systems {
-  display: flex;
-  flex-direction: column;
-  gap: .95rem;
-}
-.about-focus { grid-column: 1 / -1; }
-.about-teaching { grid-column: span 4; }
-.about-lowcode { grid-column: span 4; }
-.about-highlights { grid-column: 1 / -1; }
-.about-systems { grid-column: 1 / -1; }
-.about-card-heading {
-  display: flex;
-  gap: .75rem;
-  align-items: center;
-}
-.about-card-heading svg {
-  width: 28px;
-  height: 28px;
-  color: var(--accent);
-}
-.about-card-heading h3 {
-  margin: .1rem 0 0;
-  font-size: 1.05rem;
-}
-.about-focus__list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: .65rem;
 }
-.about-focus__item {
-  display: flex;
-  gap: .5rem;
-  align-items: flex-start;
-  padding: .65rem .8rem;
-  border-radius: 14px;
-  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+
+.about-simple-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: .5rem .9rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
   background: color-mix(in oklab, var(--panel) 65%, transparent);
+  color: var(--muted);
   font-weight: 600;
+  font-size: .85rem;
+  letter-spacing: .02em;
+  transition: all .2s ease;
 }
-.about-focus__item svg {
-  width: 18px;
-  height: 18px;
-  color: var(--accent);
-  margin-top: .1rem;
-}
-.about-list {
-  list-style: none;
-  margin: .5rem 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: .45rem;
-}
-.about-list li {
-  display: flex;
-  gap: .5rem;
-  align-items: flex-start;
-  font-weight: 600;
-}
-.about-list svg {
-  width: 16px;
-  height: 16px;
-  color: var(--accent);
-  margin-top: .2rem;
-}
-.about-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .45rem;
-  margin-top: auto;
-}
-.about-coffee__note {
-  margin: 0;
-  font-weight: 600;
+
+.about-simple-chip:hover {
+  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+  background: color-mix(in oklab, var(--primary) 18%, transparent);
   color: var(--text);
 }
-.about-highlights {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-.about-highlight {
-  padding: 1.1rem;
-  border-radius: 16px;
-  background: linear-gradient(150deg, color-mix(in oklab, var(--panel) 80%, transparent), color-mix(in oklab, var(--panel) 55%, transparent));
-  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
-  min-height: 160px;
-}
-.about-highlight h3 {
-  margin: 0 0 .35rem;
-  font-size: 1rem;
-}
-.about-highlight p {
-  margin: 0;
-  color: var(--muted);
-}
-.about-systems {
-  display: grid;
-  gap: 1rem;
-}
-.about-systems h3,
-.about-systems h4 {
-  margin: 0 0 .35rem;
-}
-@media (max-width: 900px) {
-  .about-profile,
-  .about-focus,
-  .about-highlights,
-  .about-systems,
-  .about-teaching,
-  .about-lowcode,
-  .about-coffee {
-    grid-column: 1 / -1;
+
+@media (max-width: 640px) {
+  .about-simple-story {
+    padding: 1.5rem;
+    gap: 1.5rem;
   }
-  .about-systems { grid-row: auto; }
+
+  .about-simple-grid {
+    gap: 2rem;
+  }
 }
 
 /* Icon tiles (alternative style so it doesn't look like pills) */

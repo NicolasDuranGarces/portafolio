@@ -1,20 +1,13 @@
-import { FiBookOpen, FiCode, FiLayers, FiServer, FiZap, FiClock, FiMapPin, FiCheck } from 'react-icons/fi'
-import { Section } from '../components/Section'
+import { motion } from 'framer-motion'
+import { FiMapPin, FiClock, FiZap } from 'react-icons/fi'
 import { useLanguage } from '../components/LanguageProvider'
-import { IconTiles } from '../components/IconTiles'
+
+const fade = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
 
 export function About() {
   const { t } = useLanguage()
   const story = t('about.story').split('|').map((item) => item.trim()).filter(Boolean)
   const principles = t('about.principles').split('|').map((item) => item.trim()).filter(Boolean)
-  const focus = t('about.focus').split('|').map((item) => item.trim()).filter(Boolean)
-  const highlights = [
-    { title: t('about.highlights.architecture.title'), body: t('about.highlights.architecture.body') },
-    { title: t('about.highlights.leadership.title'), body: t('about.highlights.leadership.body') },
-    { title: t('about.highlights.delivery.title'), body: t('about.highlights.delivery.body') },
-  ]
-  const teachingBullets = t('about.teaching.bullets').split('|').map((item) => item.trim()).filter(Boolean)
-  const lowCodeTools = t('about.lowcode.tools').split('|').map((item) => item.trim()).filter(Boolean)
   const meta = [
     { icon: FiMapPin, label: t('about.meta.location'), value: t('about.meta.locationValue') },
     { icon: FiClock, label: t('about.meta.experience'), value: t('about.meta.experienceValue') },
@@ -22,112 +15,53 @@ export function About() {
   ]
 
   return (
-    <Section id="about" title={t('about.title')} lead={t('about.lead')}>
-      <div className="about-shell">
-        <div className="about-bento">
-          <article className="card about-profile">
-            <p className="eyebrow">{t('about.tagline')}</p>
-            <div className="about-story">
-              {story.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-            <ul className="about-meta" aria-label={t('about.metaAria')}>
-              {meta.map((item) => (
-                <li key={item.label} className="about-meta__item">
-                  <item.icon aria-hidden="true" />
-                  <div>
-                    <span className="about-meta__label">{item.label}</span>
-                    <p className="about-meta__value">{item.value}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <div className="about-principles" aria-label={t('about.principlesAria')}>
-              {principles.map((principle) => (
-                <span key={principle} className="pill">
-                  <FiCheck aria-hidden="true" />
-                  {principle}
-                </span>
-              ))}
-            </div>
-          </article>
+    <section id="about" className="section container">
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-100px' }}
+        transition={{ staggerChildren: 0.1 }}
+        className="about-simple-grid"
+      >
+        <motion.div variants={fade} transition={{ duration: 0.5 }}>
+          <h2 className="about-simple-heading">{t('about.title')}</h2>
+          <p className="about-simple-lead">{t('about.lead')}</p>
+        </motion.div>
 
-          <article className="card about-focus" aria-label={t('about.focusAria')}>
-            <div className="about-card-heading">
-              <FiLayers aria-hidden="true" />
-              <div>
-                <p className="eyebrow">{t('about.focusTitle')}</p>
-                <h3>{t('about.focusHeadline')}</h3>
-              </div>
-            </div>
-            <ul className="about-focus__list">
-              {focus.map((item) => (
-                <li key={item} className="about-focus__item">
-                  <FiServer aria-hidden="true" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="card about-teaching">
-            <div className="about-card-heading">
-              <FiBookOpen aria-hidden="true" />
-              <div>
-                <p className="eyebrow">{t('about.teaching.title')}</p>
-                <h3>{t('about.teaching.title')}</h3>
-              </div>
-            </div>
-            <p>{t('about.teaching.body')}</p>
-            <ul className="about-list">
-              {teachingBullets.map((item) => (
-                <li key={item}>
-                  <FiCheck aria-hidden="true" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="card about-lowcode">
-            <div className="about-card-heading">
-              <FiCode aria-hidden="true" />
-              <div>
-                <p className="eyebrow">{t('about.lowcode.title')}</p>
-                <h3>{t('about.lowcode.title')}</h3>
-              </div>
-            </div>
-            <p>{t('about.lowcode.body')}</p>
-            <div className="about-tools">
-              {lowCodeTools.map((tool) => (
-                <span key={tool} className="pill">{tool}</span>
-              ))}
-            </div>
-          </article>
-
-          <div className="card about-systems">
-            <div>
-              <h3>{t('about.cloudTitle')}</h3>
-              <IconTiles items={['AWS', 'EC2', 'S3', 'ECR', 'ECS', 'EKS', 'Fargate', 'Lambda', 'CloudFront', 'Route53', 'SQS', 'SNS', 'API Gateway']} />
-            </div>
-            <div>
-              <h4>{t('about.dataTitle')}</h4>
-              <IconTiles items={['MySQL', 'PostgreSQL', 'MongoDB', 'DynamoDB', 'RDS', 'Aurora']} />
-            </div>
-          </div>
-
-          <div className="card about-highlights" aria-label={t('about.highlightsAria')}>
-            {highlights.map((item) => (
-              <article key={item.title} className="about-highlight">
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </article>
+        {/* Main story card */}
+        <motion.article
+          variants={fade}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="card about-simple-story"
+        >
+          <p className="about-simple-tagline">{t('about.tagline')}</p>
+          <div className="about-simple-text">
+            {story.map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
             ))}
           </div>
 
-        </div>
-      </div>
-    </Section>
+          <div className="about-simple-meta">
+            {meta.map((item) => (
+              <div key={item.label} className="about-simple-meta-item">
+                <item.icon />
+                <div>
+                  <span className="about-simple-meta-label">{item.label}</span>
+                  <p className="about-simple-meta-value">{item.value}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="about-simple-principles">
+            {principles.map((principle) => (
+              <span key={principle} className="about-simple-chip">
+                {principle}
+              </span>
+            ))}
+          </div>
+        </motion.article>
+      </motion.div>
+    </section>
   )
 }
