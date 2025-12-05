@@ -65,7 +65,7 @@ export const experience: Record<Lang, ExperienceItem[]> = {
       company: 'EAM + EDEQ',
       role: 'Arquitecto de soluciones',
       period: 'jun. 2024 — sep. 2025',
-      location: 'Armenia, Quindío · Proyecto universidad-empresa',
+      location: 'Armenia, Quindío · Grupo de Innovación EAM',
       achievements: [
         'Diseño e implementación de la arquitectura en AWS para la plataforma Quindío Inteligente',
         'Backend en Python para ingestar y publicar mensajes MQTT utilizando Mosquitto en contenedores Docker',
@@ -143,7 +143,7 @@ export const experience: Record<Lang, ExperienceItem[]> = {
       company: 'EAM + EDEQ',
       role: 'Solutions Architect',
       period: 'Jun 2024 — Sep 2025',
-      location: 'Armenia, Quindío · University-industry project',
+      location: 'Armenia, Quindío · EAM Innovation Group',
       achievements: [
         'Designed and implemented the AWS architecture for the Quindío Inteligente platform',
         'Built a Python backend to ingest and publish MQTT messages with Mosquitto running in Docker',
