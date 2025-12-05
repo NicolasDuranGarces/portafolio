@@ -19,11 +19,11 @@ export function SEOHead() {
   const { lang, t } = useLanguage()
   const locale = lang === 'es' ? cfg.locale : cfg.alternateLocale
   const pageTitle = lang === 'es'
-    ? 'Nicolas Duran Garces · Ingeniero de software backend'
-    : 'Nicolas Duran Garces · Backend software engineer'
+    ? 'Nicolas Duran Garces (NIDUGA) · Ingeniero de Software Backend | Python FastAPI'
+    : 'Nicolas Duran Garces (NIDUGA) · Backend Software Engineer | Python FastAPI'
   const rawDesc = lang === 'es'
     ? cfg.description
-    : 'Software engineer focused on Python, FastAPI, and observable APIs with React experience for end-to-end delivery.'
+    : 'Nicolas Duran Garces (NIDUGA) - Backend software engineer specialized in Python (FastAPI, Django), scalable API architecture, and observable systems. Full-stack capabilities with React for end-to-end delivery. DevOps experience with Docker, AWS Lambda, and CI/CD pipelines.'
   const description = rawDesc.length > 155 ? `${rawDesc.slice(0, 152)}…` : rawDesc
   const isBrowser = typeof window !== 'undefined'
   const relativePath = isBrowser ? `${window.location.pathname}${window.location.search}` : '/'
