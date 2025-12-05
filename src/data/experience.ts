@@ -76,9 +76,9 @@ export const experience: Record<Lang, ExperienceItem[]> = {
     },
     {
       company: 'EAM + Osmed Gateway',
-      role: 'Full Stack Developer & Founder',
+      role: 'Full Stack Developer',
       period: 'sep. 2024 — sep. 2025',
-      location: 'Armenia, Quindío · Proyecto universidad-empresa',
+      location: 'Armenia, Quindío · Grupo de Innovación EAM',
       achievements: [
         'Creación desde cero de plataforma para historias clínicas electrónicas',
         'Sistema de gestión de horarios de médicos con múltiples roles',
@@ -154,9 +154,9 @@ export const experience: Record<Lang, ExperienceItem[]> = {
     },
     {
       company: 'EAM + Osmed Gateway',
-      role: 'Full Stack Developer & Founder',
+      role: 'Full Stack Developer',
       period: 'Sep 2024 — Sep 2025',
-      location: 'Armenia, Quindío · University-industry project',
+      location: 'Armenia, Quindío · EAM Innovation Group',
       achievements: [
         'Built from scratch a platform for electronic health records',
         'Doctor scheduling system with multiple roles management',
