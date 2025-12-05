@@ -785,7 +785,7 @@ a { color: inherit; }
   min-height: 520px;
 }
 
-/* Individual node - with card effect */
+/* Individual node */
 .timeline-zigzag-node {
   display: flex;
   flex-direction: column;
@@ -796,32 +796,11 @@ a { color: inherit; }
   animation-delay: calc(var(--node-index, 0) * 0.12s + 0.3s);
   width: calc(100% / 6 - 0.5rem);
   left: calc(var(--node-index, 0) * (100% / 6) + 0.25rem);
+  transition: transform 0.3s ease;
 }
 
-/* Glassmorphism card wrapper */
-.timeline-zigzag-node::before {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  background: linear-gradient(135deg, 
-    color-mix(in oklab, var(--panel) 50%, transparent) 0%,
-    color-mix(in oklab, var(--panel) 30%, transparent) 100%
-  );
-  border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
-  border-radius: 24px;
-  backdrop-filter: blur(12px);
-  opacity: 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: -1;
-}
-
-.timeline-zigzag-node:hover::before {
-  opacity: 1;
-  inset: -16px;
-  border-color: color-mix(in oklab, var(--primary) 30%, transparent);
-  box-shadow: 
-    0 20px 60px -15px color-mix(in oklab, var(--primary) 40%, transparent),
-    inset 0 1px 0 color-mix(in oklab, white 8%, transparent);
+.timeline-zigzag-node:hover {
+  transform: translateY(-4px);
 }
 
 /* Top nodes - above the line */
