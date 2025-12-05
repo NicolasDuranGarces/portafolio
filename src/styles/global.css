@@ -34,7 +34,7 @@ body {
   isolation: isolate; /* crea un stacking context controlado */
 }
 
-/* Fondo decorativo mejorado con más profundidad */
+/* Fondo decorativo sutil y discreto */
 body::before {
   content: '';
   position: fixed;
@@ -42,56 +42,35 @@ body::before {
   z-index: -2;
   pointer-events: none;
   background:
-    radial-gradient(60vmax 40vmax at 80% -10%, color-mix(in oklab, var(--primary) 32%, transparent), transparent),
-    radial-gradient(48vmax 32vmax at -10% 10%, color-mix(in oklab, var(--accent) 28%, transparent), transparent),
-    radial-gradient(55vmax 35vmax at 50% 50%, color-mix(in oklab, var(--primary) 18%, transparent), transparent),
-    radial-gradient(40vmax 40vmax at 100% 100%, color-mix(in oklab, var(--accent) 22%, transparent), transparent),
-    linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--primary) 10%, transparent) 50%, transparent 100%);
+    radial-gradient(60vmax 40vmax at 80% -10%, color-mix(in oklab, var(--primary) 12%, transparent), transparent),
+    radial-gradient(48vmax 32vmax at -10% 10%, color-mix(in oklab, var(--accent) 10%, transparent), transparent),
+    linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--primary) 4%, transparent) 50%, transparent 100%);
   background-color: var(--bg);
-  filter: saturate(1.2);
-  animation: bg-pan 60s ease-in-out infinite alternate;
-}
-
-/* Capa adicional de textura sutil */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 2px, color-mix(in oklab, var(--text) 1%, transparent) 2px, color-mix(in oklab, var(--text) 1%, transparent) 4px),
-    repeating-linear-gradient(90deg, transparent, transparent 2px, color-mix(in oklab, var(--text) 1%, transparent) 2px, color-mix(in oklab, var(--text) 1%, transparent) 4px);
-  opacity: 0.15;
+  filter: saturate(1);
+  animation: bg-pan 80s ease-in-out infinite alternate;
 }
 
 /* Fallback para navegadores sin color-mix */
 @supports not (background: color-mix(in oklab, white 10%, black)) {
   body::before {
     background:
-      radial-gradient(60vmax 40vmax at 80% -10%, rgba(124, 58, 237, 0.28), transparent),
-      radial-gradient(48vmax 32vmax at -10% 10%, rgba(6, 182, 212, 0.26), transparent),
-      radial-gradient(55vmax 35vmax at 50% 50%, rgba(124, 58, 237, 0.16), transparent),
-      radial-gradient(40vmax 40vmax at 100% 100%, rgba(6, 182, 212, 0.20), transparent),
-      linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.10) 50%, transparent 100%);
-  }
-  body::after {
-    opacity: 0.12;
+      radial-gradient(60vmax 40vmax at 80% -10%, rgba(124, 58, 237, 0.12), transparent),
+      radial-gradient(48vmax 32vmax at -10% 10%, rgba(6, 182, 212, 0.10), transparent),
+      linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.04) 50%, transparent 100%);
   }
 }
 
 /* (opcional: se puede volver a habilitar una capa de ruido si se desea) */
 
 @keyframes bg-pan {
-  0% { transform: translate3d(0,0,0) rotate(0deg) scale(1); }
-  33% { transform: translate3d(-1%,-1%,0) rotate(1deg) scale(1.02); }
-  66% { transform: translate3d(1%,-1.5%,0) rotate(2deg) scale(1.01); }
-  100% { transform: translate3d(0,0,0) rotate(0deg) scale(1); }
+  0% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(0,-1%,0); }
+  100% { transform: translate3d(0,0,0); }
 }
 
 /* Respeta preferencias de movimiento para evitar glitches visuales */
 @media (prefers-reduced-motion: reduce) {
-  body::before { animation: none; }
+  body::before, body::after { animation: none; }
   .btn, .project-card { transition: none; }
 }
 
