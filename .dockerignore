@@ -7,3 +7,23 @@ yarn-debug.log*
 yarn-error.log*
 .env*
 
+# Testing
+coverage
+.nyc_output
+playwright-report
+test-results
+playwright/.cache
+e2e
+
+# CI/CD
+.github
+
+# Documentation
+CLAUDE.md
+README.md
+
+# Config files not needed in container
+.eslintrc.cjs
+vitest.config.ts
+playwright.config.ts
+lighthouserc.json
