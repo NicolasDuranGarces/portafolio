@@ -3,13 +3,11 @@ import { experience } from '../data/experience'
 import { useLanguage } from '../components/LanguageProvider'
 import { useState } from 'react'
 
-// Company logo mapping
+// Company logo mapping (fallback for single logos)
 const companyLogos: Record<string, string> = {
   'BetterWay Devs': '/assets/betterway-logo.svg',
   'Atlanticsoft': '/assets/atlanticsoft-logo.png',
   'Institución Universitaria EAM': '/assets/eam-logo.png',
-  'Quindío Inteligente (EAM + EDEQ)': '/assets/logo-edeq.png',
-  'Osmed Gateway': '/assets/osmed-logo.png',
 }
 
 export function Experience() {
@@ -17,24 +15,27 @@ export function Experience() {
   const items = experience[lang]
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   
-  // Get company logo
-  const getCompanyLogo = (company: string) => {
-    return companyLogos[company] || null
+  // Get company logos - prioritize logos array from data, fallback to mapping
+  const getCompanyLogos = (company: string, logos?: string[]) => {
+    if (logos && logos.length > 0) {
+      return logos
+    }
+    const singleLogo = companyLogos[company]
+    return singleLogo ? [singleLogo] : []
   }
   
   // Function to get company initials for fallback
   const getCompanyInitials = (company: string) => {
-    const words = company.split(' ')
+    const words = company.split(' ').filter(w => w !== '+' && w !== '&')
     if (words.length === 1) return company.substring(0, 2).toUpperCase()
     return words.slice(0, 2).map(w => w[0]).join('').toUpperCase()
   }
   
   // Parse period to get start and end
   const parsePeriod = (period: string) => {
-    // Check if still ongoing
+    // Check if still ongoing - only for "Actualidad" or "Present"
     const isOngoing = period.toLowerCase().includes('actualidad') || 
-                      period.toLowerCase().includes('present') ||
-                      period.toLowerCase().includes('2025')
+                      period.toLowerCase().includes('present')
     
     // Extract years
     const years = period.match(/\d{4}/g) || []
@@ -56,7 +57,8 @@ export function Experience() {
         <div className="timeline-zigzag">
           {items.map((e, index) => {
             const { startYear, endYear, isOngoing } = parsePeriod(e.period)
-            const logo = getCompanyLogo(e.company)
+            const logos = getCompanyLogos(e.company, e.logos)
+            const hasMultipleLogos = logos.length > 1
             const isActive = activeIndex === index
             const isTop = index % 2 === 0  // Alternates: even = top, odd = bottom
             
@@ -71,11 +73,20 @@ export function Experience() {
                 {/* Connector line from node to center */}
                 <div className="timeline-connector" />
                 
-                {/* Node dot with logo */}
-                <div className="timeline-dot-large">
+                {/* Node dot with logo(s) */}
+                <div className={`timeline-dot-large ${hasMultipleLogos ? 'dual-logo' : ''}`}>
                   <div className="timeline-dot-large-inner">
-                    {logo ? (
-                      <img src={logo} alt={e.company} className="timeline-logo-large" />
+                    {logos.length > 0 ? (
+                      <div className={`timeline-logos-container ${hasMultipleLogos ? 'dual' : ''}`}>
+                        {logos.map((logo, i) => (
+                          <img 
+                            key={i} 
+                            src={logo} 
+                            alt={e.company} 
+                            className={`timeline-logo-large ${hasMultipleLogos ? 'dual-logo-img' : ''}`} 
+                          />
+                        ))}
+                      </div>
                     ) : (
                       <span className="timeline-initials-large">{getCompanyInitials(e.company)}</span>
                     )}
@@ -100,9 +111,11 @@ export function Experience() {
                 {/* Detailed popup on hover */}
                 <div className={`timeline-zigzag-popup ${isActive ? 'show' : ''}`}>
                   <div className="popup-header">
-                    <div className="popup-icon">
-                      {logo ? (
-                        <img src={logo} alt={e.company} />
+                    <div className={`popup-icon ${hasMultipleLogos ? 'dual' : ''}`}>
+                      {logos.length > 0 ? (
+                        logos.map((logo, i) => (
+                          <img key={i} src={logo} alt={e.company} />
+                        ))
                       ) : (
                         <span>{getCompanyInitials(e.company)}</span>
                       )}

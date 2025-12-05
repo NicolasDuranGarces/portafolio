@@ -7,11 +7,12 @@ export type ExperienceItem = {
   location?: string
   achievements: string[]
   stack?: string[]
+  logos?: string[]  // For companies with multiple logos (e.g., EAM + EDEQ)
 }
 
 export const experience: Record<Lang, ExperienceItem[]> = {
   es: [
-    // Ordenado de más antiguo a más reciente (izquierda a derecha)
+    // Ordenado cronológicamente de más antiguo a más reciente
     {
       company: 'Atlanticsoft',
       role: 'Software Developer (Prácticas)',
@@ -35,18 +36,6 @@ export const experience: Record<Lang, ExperienceItem[]> = {
         'Automatizaciones con extensiones de Chrome',
       ],
       stack: ['Python', 'JavaScript', 'AWS Lambda', 'Docker', 'VMs', 'Chrome Extensions'],
-    },
-    {
-      company: 'Quindío Inteligente (EAM + EDEQ)',
-      role: 'Arquitecto de soluciones',
-      period: '2023 — 2024',
-      location: 'Armenia, Quindío · Proyecto universidad-empresa',
-      achievements: [
-        'Diseño e implementación de la arquitectura en AWS para la plataforma Quindío Inteligente',
-        'Backend en Python para ingestar y publicar mensajes MQTT utilizando Mosquitto en contenedores Docker',
-        'Optimización de la app reduciendo los tiempos de respuesta mediante mejoras en infraestructura y mensajería',
-      ],
-      stack: ['AWS', 'EC2', 'Lambda', 'Docker', 'Mosquitto', 'MQTT', 'Python', 'Serverless'],
     },
     {
       company: 'Institución Universitaria EAM',
@@ -73,10 +62,23 @@ export const experience: Record<Lang, ExperienceItem[]> = {
       stack: ['Python', 'Selenium', 'OCR', 'JavaScript', 'Docker', 'AWS'],
     },
     {
-      company: 'Osmed Gateway',
+      company: 'EAM + EDEQ',
+      role: 'Arquitecto de soluciones',
+      period: 'jun. 2024 — sep. 2025',
+      location: 'Armenia, Quindío · Proyecto universidad-empresa',
+      achievements: [
+        'Diseño e implementación de la arquitectura en AWS para la plataforma Quindío Inteligente',
+        'Backend en Python para ingestar y publicar mensajes MQTT utilizando Mosquitto en contenedores Docker',
+        'Optimización de la app reduciendo los tiempos de respuesta mediante mejoras en infraestructura y mensajería',
+      ],
+      stack: ['AWS', 'EC2', 'Lambda', 'Docker', 'Mosquitto', 'MQTT', 'Python', 'Serverless'],
+      logos: ['/assets/eam-logo.png', '/assets/logo-edeq.png'],
+    },
+    {
+      company: 'EAM + Osmed Gateway',
       role: 'Full Stack Developer & Founder',
-      period: '2024 — 2025',
-      location: 'Armenia, Quindío · Proyecto personal',
+      period: 'sep. 2024 — sep. 2025',
+      location: 'Armenia, Quindío · Proyecto universidad-empresa',
       achievements: [
         'Creación desde cero de plataforma para historias clínicas electrónicas',
         'Sistema de gestión de horarios de médicos con múltiples roles',
@@ -84,10 +86,11 @@ export const experience: Record<Lang, ExperienceItem[]> = {
         'Desarrollo de plataforma web completa',
       ],
       stack: ['React', 'React Native', 'iOS', 'Node.js', 'PostgreSQL', 'AWS'],
+      logos: ['/assets/eam-logo.png'],
     },
   ],
   en: [
-    // Ordered from oldest to newest (left to right)
+    // Ordered chronologically from oldest to newest
     {
       company: 'Atlanticsoft',
       role: 'Software Developer (Internship)',
@@ -111,18 +114,6 @@ export const experience: Record<Lang, ExperienceItem[]> = {
         'Automation with Chrome extensions',
       ],
       stack: ['Python', 'JavaScript', 'AWS Lambda', 'Docker', 'VMs', 'Chrome Extensions'],
-    },
-    {
-      company: 'Quindío Inteligente (EAM + EDEQ)',
-      role: 'Solutions Architect',
-      period: '2023 — 2024',
-      location: 'Armenia, Quindío · University-industry project',
-      achievements: [
-        'Designed and implemented the AWS architecture for the Quindío Inteligente platform',
-        'Built a Python backend to ingest and publish MQTT messages with Mosquitto running in Docker',
-        'Improved app response times by tuning the infrastructure and messaging pipelines',
-      ],
-      stack: ['AWS', 'EC2', 'Lambda', 'Docker', 'Mosquitto', 'MQTT', 'Python', 'Serverless'],
     },
     {
       company: 'Institución Universitaria EAM',
@@ -149,10 +140,23 @@ export const experience: Record<Lang, ExperienceItem[]> = {
       stack: ['Python', 'Selenium', 'OCR', 'JavaScript', 'Docker', 'AWS'],
     },
     {
-      company: 'Osmed Gateway',
+      company: 'EAM + EDEQ',
+      role: 'Solutions Architect',
+      period: 'Jun 2024 — Sep 2025',
+      location: 'Armenia, Quindío · University-industry project',
+      achievements: [
+        'Designed and implemented the AWS architecture for the Quindío Inteligente platform',
+        'Built a Python backend to ingest and publish MQTT messages with Mosquitto running in Docker',
+        'Improved app response times by tuning the infrastructure and messaging pipelines',
+      ],
+      stack: ['AWS', 'EC2', 'Lambda', 'Docker', 'Mosquitto', 'MQTT', 'Python', 'Serverless'],
+      logos: ['/assets/eam-logo.png', '/assets/logo-edeq.png'],
+    },
+    {
+      company: 'EAM + Osmed Gateway',
       role: 'Full Stack Developer & Founder',
-      period: '2024 — 2025',
-      location: 'Armenia, Quindío · Personal project',
+      period: 'Sep 2024 — Sep 2025',
+      location: 'Armenia, Quindío · University-industry project',
       achievements: [
         'Built from scratch a platform for electronic health records',
         'Doctor scheduling system with multiple roles management',
@@ -160,6 +164,7 @@ export const experience: Record<Lang, ExperienceItem[]> = {
         'Full web platform development',
       ],
       stack: ['React', 'React Native', 'iOS', 'Node.js', 'PostgreSQL', 'AWS'],
+      logos: ['/assets/eam-logo.png'],
     },
   ],
 }
