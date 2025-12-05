@@ -25,9 +25,9 @@ export function App() {
           <CornerControls />
           <main>
             <Hero />
+            <Experience />
             <About />
             <Skills />
-            <Experience />
             <Projects />
             <Contact />
           </main>
