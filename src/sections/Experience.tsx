@@ -29,10 +29,19 @@ export function Experience() {
     return words.slice(0, 2).map(w => w[0]).join('').toUpperCase()
   }
   
-  // Extract year from period string
-  const extractYear = (period: string) => {
-    const match = period.match(/\d{4}/)
-    return match ? match[0] : ''
+  // Parse period to get start and end
+  const parsePeriod = (period: string) => {
+    // Check if still ongoing
+    const isOngoing = period.toLowerCase().includes('actualidad') || 
+                      period.toLowerCase().includes('present') ||
+                      period.toLowerCase().includes('2025')
+    
+    // Extract years
+    const years = period.match(/\d{4}/g) || []
+    const startYear = years[0] || ''
+    const endYear = years[1] || (isOngoing ? 'Actual' : '')
+    
+    return { startYear, endYear, isOngoing, fullPeriod: period }
   }
   
   return (
@@ -46,7 +55,7 @@ export function Experience() {
         {/* Timeline nodes in zigzag pattern */}
         <div className="timeline-zigzag">
           {items.map((e, index) => {
-            const year = extractYear(e.period)
+            const { startYear, endYear, isOngoing } = parsePeriod(e.period)
             const logo = getCompanyLogo(e.company)
             const isActive = activeIndex === index
             const isTop = index % 2 === 0  // Alternates: even = top, odd = bottom
@@ -54,7 +63,7 @@ export function Experience() {
             return (
               <div 
                 key={e.company + e.period} 
-                className={`timeline-zigzag-node ${isTop ? 'top' : 'bottom'} ${isActive ? 'active' : ''}`}
+                className={`timeline-zigzag-node ${isTop ? 'top' : 'bottom'} ${isActive ? 'active' : ''} ${isOngoing ? 'ongoing' : ''}`}
                 onMouseEnter={() => setActiveIndex(index)}
                 onMouseLeave={() => setActiveIndex(null)}
                 style={{ '--node-index': index } as React.CSSProperties}
@@ -72,11 +81,18 @@ export function Experience() {
                     )}
                   </div>
                   <div className="timeline-dot-glow" />
+                  {isOngoing && <div className="timeline-ongoing-pulse" />}
                 </div>
                 
                 {/* Basic info */}
                 <div className="timeline-zigzag-info">
-                  <span className="timeline-year-badge">{year}</span>
+                  <div className="timeline-period-range">
+                    <span className="timeline-year-start">{startYear}</span>
+                    <span className="timeline-year-separator">→</span>
+                    <span className={`timeline-year-end ${isOngoing ? 'ongoing' : ''}`}>
+                      {isOngoing ? '●' : endYear}
+                    </span>
+                  </div>
                   <h3 className="timeline-zigzag-role">{e.role}</h3>
                   <p className="timeline-zigzag-company">{e.company}</p>
                 </div>
