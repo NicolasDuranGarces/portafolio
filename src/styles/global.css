@@ -577,15 +577,52 @@ a { color: inherit; }
 }
 .modal { max-width: 720px; width: 100%; }
 
-/* ===== ZIGZAG TIMELINE - No Scroll, Alternating Layout ===== */
+/* ===== ZIGZAG TIMELINE - Premium Design with Depth ===== */
 .timeline-zigzag-container {
   position: relative;
   width: 100%;
-  padding: 2rem 0;
-  min-height: 520px;
+  padding: 3rem 0;
+  min-height: 560px;
+  overflow: visible;
 }
 
-/* Center horizontal line */
+/* Decorative floating orbs */
+.timeline-zigzag-container::before,
+.timeline-zigzag-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.timeline-zigzag-container::before {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--primary), transparent 70%);
+  top: -50px;
+  left: 10%;
+  animation: float-orb 8s ease-in-out infinite;
+}
+
+.timeline-zigzag-container::after {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, var(--accent), transparent 70%);
+  bottom: -30px;
+  right: 15%;
+  animation: float-orb 10s ease-in-out infinite reverse;
+}
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -30px) scale(1.1); }
+  66% { transform: translate(-15px, 20px) scale(0.95); }
+}
+
+/* Center horizontal line - GLOWING */
 .timeline-center-line {
   position: absolute;
   top: 50%;
@@ -594,22 +631,61 @@ a { color: inherit; }
   height: 4px;
   transform: translateY(-50%);
   background: linear-gradient(90deg, 
-    color-mix(in oklab, var(--text) 10%, transparent),
-    color-mix(in oklab, var(--text) 15%, transparent),
-    color-mix(in oklab, var(--text) 10%, transparent)
+    transparent 0%,
+    color-mix(in oklab, var(--text) 8%, transparent) 10%,
+    color-mix(in oklab, var(--text) 12%, transparent) 50%,
+    color-mix(in oklab, var(--text) 8%, transparent) 90%,
+    transparent 100%
   );
   border-radius: 999px;
-  z-index: 0;
+  z-index: 1;
 }
 
 .timeline-center-line-fill {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    var(--primary) 15%,
+    var(--accent) 50%,
+    var(--primary) 85%,
+    transparent 100%
+  );
   border-radius: 999px;
   animation: timeline-zigzag-fill 2s ease-out forwards;
-  transform-origin: left center;
-  box-shadow: 0 0 30px color-mix(in oklab, var(--primary) 40%, transparent);
+  transform-origin: center;
+  box-shadow: 
+    0 0 20px color-mix(in oklab, var(--primary) 60%, transparent),
+    0 0 40px color-mix(in oklab, var(--accent) 40%, transparent),
+    0 0 60px color-mix(in oklab, var(--primary) 25%, transparent);
+}
+
+/* Animated particles on the line */
+.timeline-center-line::before,
+.timeline-center-line::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent);
+  animation: particle-flow 6s linear infinite;
+}
+
+.timeline-center-line::after {
+  animation-delay: -3s;
+  background: var(--primary);
+  box-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary);
+}
+
+@keyframes particle-flow {
+  0% { left: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
 }
 
 @keyframes timeline-zigzag-fill {
@@ -617,99 +693,130 @@ a { color: inherit; }
   to { transform: scaleX(1); opacity: 1; }
 }
 
-/* Nodes container - flexbox evenly distributed */
+/* Nodes container */
 .timeline-zigzag {
   display: flex;
   justify-content: space-between;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   height: 100%;
-  min-height: 480px;
+  min-height: 520px;
 }
 
-/* Individual node */
+/* Individual node - with card effect */
 .timeline-zigzag-node {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: absolute;
   cursor: pointer;
-  animation: zigzag-node-appear 0.6s ease-out backwards;
-  animation-delay: calc(var(--node-index, 0) * 0.15s);
-  width: calc(100% / 6 - 1rem);
-  left: calc(var(--node-index, 0) * (100% / 6) + 0.5rem);
+  animation: zigzag-node-appear 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation-delay: calc(var(--node-index, 0) * 0.12s + 0.3s);
+  width: calc(100% / 6 - 0.5rem);
+  left: calc(var(--node-index, 0) * (100% / 6) + 0.25rem);
+}
+
+/* Glassmorphism card wrapper */
+.timeline-zigzag-node::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  background: linear-gradient(135deg, 
+    color-mix(in oklab, var(--panel) 50%, transparent) 0%,
+    color-mix(in oklab, var(--panel) 30%, transparent) 100%
+  );
+  border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+  border-radius: 24px;
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.timeline-zigzag-node:hover::before {
+  opacity: 1;
+  inset: -16px;
+  border-color: color-mix(in oklab, var(--primary) 30%, transparent);
+  box-shadow: 
+    0 20px 60px -15px color-mix(in oklab, var(--primary) 40%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 8%, transparent);
 }
 
 /* Top nodes - above the line */
 .timeline-zigzag-node.top {
   top: 0;
   flex-direction: column;
-  padding-bottom: 2rem;
+  padding-bottom: 2.5rem;
 }
 
 /* Bottom nodes - below the line */
 .timeline-zigzag-node.bottom {
   bottom: 0;
   flex-direction: column-reverse;
-  padding-top: 2rem;
+  padding-top: 2.5rem;
 }
 
 @keyframes zigzag-node-appear {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Connector from node to center line */
+/* Connector from node to center line - GLOWING */
 .timeline-connector {
   position: absolute;
   width: 3px;
-  background: linear-gradient(180deg, var(--primary), var(--accent));
+  background: linear-gradient(180deg, 
+    var(--primary),
+    color-mix(in oklab, var(--accent) 70%, var(--primary))
+  );
   border-radius: 999px;
   z-index: 0;
+  box-shadow: 0 0 12px color-mix(in oklab, var(--primary) 50%, transparent);
 }
 
 .timeline-zigzag-node.top .timeline-connector {
   bottom: 0;
-  height: 2rem;
+  height: 2.5rem;
 }
 
 .timeline-zigzag-node.bottom .timeline-connector {
   top: 0;
-  height: 2rem;
+  height: 2.5rem;
 }
 
-/* Large dot with logo - MORE VISIBLE */
+/* Large dot with logo - 3D EFFECT */
 .timeline-dot-large {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
 }
 
 .timeline-zigzag-node:hover .timeline-dot-large {
-  transform: scale(1.12);
+  transform: scale(1.1) translateY(-4px);
 }
 
 .timeline-dot-large-inner {
-  width: 76px;
-  height: 76px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   background: linear-gradient(145deg, 
-    var(--panel), 
-    color-mix(in oklab, var(--panel) 90%, transparent)
+    color-mix(in oklab, var(--panel) 100%, white 10%),
+    var(--panel)
   );
-  border: 3px solid var(--primary);
+  border: 3px solid transparent;
+  background-clip: padding-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -717,198 +824,290 @@ a { color: inherit; }
   position: relative;
   z-index: 2;
   box-shadow: 
-    0 8px 32px color-mix(in oklab, var(--primary) 35%, transparent),
-    0 0 0 4px color-mix(in oklab, var(--primary) 15%, transparent),
-    inset 0 0 20px color-mix(in oklab, var(--primary) 8%, transparent);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    0 10px 40px -10px color-mix(in oklab, var(--primary) 50%, transparent),
+    0 0 0 3px color-mix(in oklab, var(--primary) 80%, transparent),
+    inset 0 2px 4px color-mix(in oklab, white 15%, transparent),
+    inset 0 -2px 4px color-mix(in oklab, black 10%, transparent);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animated gradient border */
+.timeline-dot-large-inner::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent), var(--primary));
+  background-size: 200% 200%;
+  animation: gradient-rotate 4s linear infinite;
+  z-index: -1;
+}
+
+@keyframes gradient-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .timeline-zigzag-node:hover .timeline-dot-large-inner {
-  border-color: var(--accent);
   box-shadow: 
-    0 12px 40px color-mix(in oklab, var(--accent) 45%, transparent),
-    0 0 0 6px color-mix(in oklab, var(--accent) 20%, transparent),
-    inset 0 0 25px color-mix(in oklab, var(--accent) 12%, transparent);
+    0 20px 50px -10px color-mix(in oklab, var(--accent) 60%, transparent),
+    0 0 0 4px var(--accent),
+    0 0 30px color-mix(in oklab, var(--accent) 40%, transparent),
+    inset 0 2px 4px color-mix(in oklab, white 20%, transparent);
+  transform: translateZ(10px);
 }
 
+/* Multi-layer glow effect */
 .timeline-dot-glow {
   position: absolute;
-  inset: -8px;
+  inset: -15px;
   border-radius: 50%;
   background: radial-gradient(circle, 
-    color-mix(in oklab, var(--primary) 25%, transparent), 
+    color-mix(in oklab, var(--primary) 35%, transparent) 0%, 
+    color-mix(in oklab, var(--accent) 20%, transparent) 40%,
     transparent 70%
   );
-  opacity: 0.6;
+  opacity: 0.8;
   animation: glow-pulse 3s ease-in-out infinite;
+  filter: blur(8px);
+}
+
+.timeline-zigzag-node:hover .timeline-dot-glow {
+  animation: glow-intense 1.5s ease-in-out infinite;
+  inset: -20px;
 }
 
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.08); }
 }
 
-/* Large logo */
+@keyframes glow-intense {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Large logo - with shadow */
 .timeline-logo-large {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  transition: transform 0.3s ease;
+}
+
+.timeline-zigzag-node:hover .timeline-logo-large {
+  transform: scale(1.1);
 }
 
 .timeline-initials-large {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 800;
   background: linear-gradient(135deg, var(--primary), var(--accent));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   letter-spacing: 0.05em;
+  text-shadow: 0 2px 10px color-mix(in oklab, var(--primary) 30%, transparent);
 }
 
-/* Info below/above the dot */
+/* Info card - with glass effect */
 .timeline-zigzag-info {
   text-align: center;
-  max-width: 150px;
-  padding: 0.75rem 0;
-  transition: opacity 0.3s ease;
+  max-width: 140px;
+  padding: 0.85rem 0.5rem;
+  transition: all 0.3s ease;
+  border-radius: 16px;
+}
+
+.timeline-zigzag-node:hover .timeline-zigzag-info {
+  background: color-mix(in oklab, var(--panel) 50%, transparent);
+  backdrop-filter: blur(8px);
 }
 
 .timeline-zigzag-node.top .timeline-zigzag-info {
   order: -1;
 }
 
+/* Year badge - more prominent */
 .timeline-year-badge {
   display: inline-block;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
-  padding: 0.25rem 0.6rem;
+  letter-spacing: 0.12em;
+  padding: 0.35rem 0.85rem;
   background: linear-gradient(135deg, var(--primary), var(--accent));
   color: white;
   border-radius: 999px;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 4px 12px color-mix(in oklab, var(--primary) 35%, transparent);
+  margin-bottom: 0.6rem;
+  box-shadow: 
+    0 4px 15px color-mix(in oklab, var(--primary) 45%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 25%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer effect on year badge */
+.timeline-year-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    color-mix(in oklab, white 30%, transparent), 
+    transparent
+  );
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
 }
 
 .timeline-zigzag-role {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  margin: 0 0 0.2rem 0;
+  margin: 0 0 0.25rem 0;
   color: var(--text);
   line-height: 1.25;
+  transition: color 0.3s ease;
+}
+
+.timeline-zigzag-node:hover .timeline-zigzag-role {
+  background: linear-gradient(90deg, var(--text), var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .timeline-zigzag-company {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--muted);
   margin: 0;
   line-height: 1.3;
+  transition: color 0.3s ease;
 }
 
-/* Popup on hover */
+.timeline-zigzag-node:hover .timeline-zigzag-company {
+  color: var(--text);
+}
+
+/* Popup on hover - Premium glass card */
 .timeline-zigzag-popup {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  width: 340px;
+  transform: translateX(-50%) translateY(15px) scale(0.95);
+  width: 360px;
   max-width: 90vw;
   background: linear-gradient(160deg, 
-    color-mix(in oklab, var(--panel) 98%, transparent),
-    color-mix(in oklab, var(--panel) 92%, transparent)
+    color-mix(in oklab, var(--panel) 95%, transparent),
+    color-mix(in oklab, var(--panel) 85%, transparent)
   );
-  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-  border-radius: 20px;
-  padding: 1.25rem;
+  border: 1px solid color-mix(in oklab, var(--text) 15%, transparent);
+  border-radius: 24px;
+  padding: 1.5rem;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px) saturate(180%);
   box-shadow: 
-    0 20px 50px rgba(0, 0, 0, 0.5),
-    0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent),
-    inset 0 1px 0 color-mix(in oklab, white 6%, transparent);
+    0 25px 70px -15px rgba(0, 0, 0, 0.6),
+    0 0 0 1px color-mix(in oklab, var(--primary) 30%, transparent),
+    0 0 40px -10px color-mix(in oklab, var(--primary) 30%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 10%, transparent);
 }
 
 /* Top nodes: popup goes below */
 .timeline-zigzag-node.top .timeline-zigzag-popup {
-  top: calc(100% + 0.5rem);
+  top: calc(100% + 1rem);
 }
 
 .timeline-zigzag-node.top .timeline-zigzag-popup::before {
   content: '';
   position: absolute;
-  top: -8px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
-  width: 16px;
-  height: 16px;
-  background: color-mix(in oklab, var(--panel) 98%, transparent);
-  border-left: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-  border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, 
+    color-mix(in oklab, var(--panel) 95%, transparent),
+    color-mix(in oklab, var(--panel) 85%, transparent)
+  );
+  border-left: 1px solid color-mix(in oklab, var(--text) 15%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--text) 15%, transparent);
+  box-shadow: -3px -3px 10px color-mix(in oklab, var(--primary) 15%, transparent);
 }
 
 /* Bottom nodes: popup goes above */
 .timeline-zigzag-node.bottom .timeline-zigzag-popup {
-  bottom: calc(100% + 0.5rem);
+  bottom: calc(100% + 1rem);
   top: auto;
 }
 
 .timeline-zigzag-node.bottom .timeline-zigzag-popup::before {
   content: '';
   position: absolute;
-  bottom: -8px;
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%) rotate(225deg);
-  width: 16px;
-  height: 16px;
-  background: color-mix(in oklab, var(--panel) 98%, transparent);
-  border-left: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-  border-top: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg,
+    color-mix(in oklab, var(--panel) 95%, transparent),
+    color-mix(in oklab, var(--panel) 85%, transparent)
+  );
+  border-left: 1px solid color-mix(in oklab, var(--text) 15%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--text) 15%, transparent);
 }
 
 .timeline-zigzag-popup.show {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 /* Adjust popup position for edge nodes */
 .timeline-zigzag-node:nth-child(1) .timeline-zigzag-popup,
 .timeline-zigzag-node:nth-child(2) .timeline-zigzag-popup {
   left: 0;
-  transform: translateX(0) translateY(10px);
+  transform: translateX(0) translateY(15px) scale(0.95);
 }
 
 .timeline-zigzag-node:nth-child(1) .timeline-zigzag-popup.show,
 .timeline-zigzag-node:nth-child(2) .timeline-zigzag-popup.show {
-  transform: translateX(0) translateY(0);
+  transform: translateX(0) translateY(0) scale(1);
 }
 
 .timeline-zigzag-node:nth-child(1) .timeline-zigzag-popup::before,
 .timeline-zigzag-node:nth-child(2) .timeline-zigzag-popup::before {
-  left: 40px;
+  left: 50px;
 }
 
 .timeline-zigzag-node:nth-child(5) .timeline-zigzag-popup,
 .timeline-zigzag-node:nth-child(6) .timeline-zigzag-popup {
   left: auto;
   right: 0;
-  transform: translateX(0) translateY(10px);
+  transform: translateX(0) translateY(15px) scale(0.95);
 }
 
 .timeline-zigzag-node:nth-child(5) .timeline-zigzag-popup.show,
 .timeline-zigzag-node:nth-child(6) .timeline-zigzag-popup.show {
-  transform: translateX(0) translateY(0);
+  transform: translateX(0) translateY(0) scale(1);
 }
 
 .timeline-zigzag-node:nth-child(5) .timeline-zigzag-popup::before,
 .timeline-zigzag-node:nth-child(6) .timeline-zigzag-popup::before {
   left: auto;
-  right: 40px;
+  right: 50px;
 }
 
 /* Responsive - tablets */
