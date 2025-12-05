@@ -6,8 +6,10 @@ describe('LanguageProvider', () => {
   beforeEach(() => {
     localStorage.clear()
     // Reset window.location
-    delete (window as any).location
-    window.location = { href: 'http://localhost/', search: '', pathname: '/' } as any
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { href: 'http://localhost/', search: '', pathname: '/' },
+    })
     window.history.replaceState = vi.fn()
   })
 

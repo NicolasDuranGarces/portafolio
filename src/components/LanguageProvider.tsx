@@ -39,9 +39,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const t = useCallback((key: string) => {
     const parts = key.split('.')
-    let cur: any = dicts[lang]
+    let cur: unknown = dicts[lang]
     for (const p of parts) {
-      cur = cur?.[p]
+      cur = (cur as Record<string, unknown>)?.[p]
       if (cur == null) return key
     }
     return typeof cur === 'string' ? cur : key

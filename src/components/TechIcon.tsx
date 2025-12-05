@@ -61,7 +61,7 @@ const map: Record<string, keyof typeof SI | string> = {
 export function TechIcon({ name, size = 16 }: { name: string; size?: number }) {
   const key = name.toLowerCase()
   const iconName = map[key]
-  const Icon = (SI as any)[iconName] as IconType | undefined
+  const Icon = (SI as Record<string, IconType>)[iconName] as IconType | undefined
   if (!Icon) return createElement(FiBox, { size })
   return createElement(Icon, { size })
 }
