@@ -1,7 +1,7 @@
 import { Section } from '../components/Section'
 import { experience } from '../data/experience'
 import { useLanguage } from '../components/LanguageProvider'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // Company logo mapping (fallback for single logos)
 const companyLogos: Record<string, string> = {
@@ -13,7 +13,17 @@ const companyLogos: Record<string, string> = {
 export function Experience() {
   const { t, lang } = useLanguage()
   const items = experience[lang]
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  
+  // Close modal on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedIndex(null)
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [])
   
   // Get company logos - prioritize logos array from data, fallback to mapping
   const getCompanyLogos = (company: string, logos?: string[]) => {
@@ -44,10 +54,19 @@ export function Experience() {
     
     return { startYear, endYear, isOngoing, fullPeriod: period }
   }
+
+  const selectedExperience = selectedIndex !== null ? items[selectedIndex] : null
   
   return (
     <Section id="experience" title={t('experience.title')} lead={t('experience.lead')}>
       <div className="timeline-zigzag-container">
+        {/* Decorative floating particles */}
+        <div className="timeline-particles">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="timeline-particle" style={{ '--particle-index': i } as React.CSSProperties} />
+          ))}
+        </div>
+        
         {/* Timeline horizontal line in the middle */}
         <div className="timeline-center-line">
           <div className="timeline-center-line-fill" />
@@ -59,15 +78,16 @@ export function Experience() {
             const { startYear, endYear, isOngoing } = parsePeriod(e.period)
             const logos = getCompanyLogos(e.company, e.logos)
             const hasMultipleLogos = logos.length > 1
-            const isActive = activeIndex === index
+            const isHovered = hoveredIndex === index
             const isTop = index % 2 === 0  // Alternates: even = top, odd = bottom
             
             return (
               <div 
                 key={e.company + e.period} 
-                className={`timeline-zigzag-node ${isTop ? 'top' : 'bottom'} ${isActive ? 'active' : ''} ${isOngoing ? 'ongoing' : ''}`}
-                onMouseEnter={() => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(null)}
+                className={`timeline-zigzag-node ${isTop ? 'top' : 'bottom'} ${isHovered ? 'hovered' : ''} ${isOngoing ? 'ongoing' : ''}`}
+                onClick={() => setSelectedIndex(index)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
                 style={{ '--node-index': index } as React.CSSProperties}
               >
                 {/* Connector line from node to center */}
@@ -93,6 +113,11 @@ export function Experience() {
                   </div>
                   <div className="timeline-dot-glow" />
                   {isOngoing && <div className="timeline-ongoing-pulse" />}
+                  
+                  {/* Click indicator */}
+                  <div className="timeline-click-hint">
+                    <span>👆</span>
+                  </div>
                 </div>
                 
                 {/* Basic info */}
@@ -107,48 +132,74 @@ export function Experience() {
                   <h3 className="timeline-zigzag-role">{e.role}</h3>
                   <p className="timeline-zigzag-company">{e.company}</p>
                 </div>
-                
-                {/* Detailed popup on hover */}
-                <div className={`timeline-zigzag-popup ${isActive ? 'show' : ''}`}>
-                  <div className="popup-header">
-                    <div className={`popup-icon ${hasMultipleLogos ? 'dual' : ''}`}>
-                      {logos.length > 0 ? (
-                        logos.map((logo, i) => (
-                          <img key={i} src={logo} alt={e.company} />
-                        ))
-                      ) : (
-                        <span>{getCompanyInitials(e.company)}</span>
-                      )}
-                    </div>
-                    <div className="popup-title">
-                      <h4>{e.role}</h4>
-                      <p className="popup-company">{e.company}</p>
-                      {e.location && <span className="popup-location">{e.location}</span>}
-                    </div>
-                    <span className="popup-period">{e.period}</span>
-                  </div>
-                  
-                  <div className="popup-content">
-                    <ul className="popup-achievements">
-                      {e.achievements.map((a, i) => (
-                        <li key={i}>{a}</li>
-                      ))}
-                    </ul>
-                    
-                    {e.stack && (
-                      <div className="popup-stack">
-                        {e.stack.map((s) => (
-                          <span key={s} className="popup-tag">{s}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
             )
           })}
         </div>
       </div>
+
+      {/* Modal overlay */}
+      {selectedExperience && (
+        <div className="experience-modal-overlay" onClick={() => setSelectedIndex(null)}>
+          <div className="experience-modal" onClick={(e) => e.stopPropagation()}>
+            {/* Close button */}
+            <button className="experience-modal-close" onClick={() => setSelectedIndex(null)}>
+              ✕
+            </button>
+            
+            {/* Modal header */}
+            <div className="experience-modal-header">
+              <div className={`experience-modal-logos ${(getCompanyLogos(selectedExperience.company, selectedExperience.logos).length > 1) ? 'dual' : ''}`}>
+                {getCompanyLogos(selectedExperience.company, selectedExperience.logos).length > 0 ? (
+                  getCompanyLogos(selectedExperience.company, selectedExperience.logos).map((logo, i) => (
+                    <img key={i} src={logo} alt={selectedExperience.company} />
+                  ))
+                ) : (
+                  <span className="modal-initials">{getCompanyInitials(selectedExperience.company)}</span>
+                )}
+              </div>
+              <div className="experience-modal-title">
+                <h3>{selectedExperience.role}</h3>
+                <p className="modal-company">{selectedExperience.company}</p>
+                <span className="modal-period">{selectedExperience.period}</span>
+              </div>
+            </div>
+            
+            {/* Location */}
+            {selectedExperience.location && (
+              <div className="experience-modal-location">
+                📍 {selectedExperience.location}
+              </div>
+            )}
+            
+            {/* Achievements */}
+            <div className="experience-modal-achievements">
+              <h4>{lang === 'es' ? 'Logros' : 'Achievements'}</h4>
+              <ul>
+                {selectedExperience.achievements.map((a, i) => (
+                  <li key={i}>
+                    <span className="achievement-bullet">✓</span>
+                    {a}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            {/* Tech stack */}
+            {selectedExperience.stack && (
+              <div className="experience-modal-stack">
+                <h4>{lang === 'es' ? 'Tecnologías' : 'Tech Stack'}</h4>
+                <div className="modal-tags">
+                  {selectedExperience.stack.map((s) => (
+                    <span key={s} className="modal-tag">{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </Section>
   )
 }
+
