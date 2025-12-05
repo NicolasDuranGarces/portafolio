@@ -1,0 +1,38 @@
+/* Horizontal timeline CSS - to be merged */
+.timeline-horizontal-container {
+  position: relative;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.timeline-horizontal {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+.experience-card-compact {
+  min-width: 200px;
+  width: 200px;
+  height: 280px;
+  background: linear-gradient(145deg,
+    color-mix(in oklab, var(--panel) 95%, transparent),
+    color-mix(in oklab, var(--panel) 88%, transparent)
+  );
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  border-radius: 16px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.experience-card-compact:hover {
+  width: 400px;
+  height: auto;
+  min-height: 320px;
+  transform: translateY(-8px);
+  z-index: 10;
+}

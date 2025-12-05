@@ -104,21 +104,3 @@ doctor:
 ## Show image healthcheck
 inspect-health:
 	@docker image inspect $(IMAGE):$(TAG) --format '{{json .ContainerConfig.Healthcheck}}' || true
-
-## Build development image (Vite)
-## Run container detached (Vite on 3000)
-run:
-	docker run -d --name $(CONTAINER) -p $(PORT):3000 $(IMAGE):$(TAG)
-
-## Run container in foreground
-run-fg:
-	docker run --rm --name $(CONTAINER) -p $(PORT):3000 $(IMAGE):$(TAG)
-
-## Run with code mounted for HMR (without overriding node_modules)
-run-mount:
-	docker run -d --name $(CONTAINER) -e CHOKIDAR_USEPOLLING=1 -p $(PORT):3000 \
-	  -v $(PWD)/src:/app/src \
-	  -v $(PWD)/index.html:/app/index.html \
-	  -v $(PWD)/vite.config.ts:/app/vite.config.ts \
-	  -v $(PWD)/tsconfig.json:/app/tsconfig.json \
-	  $(IMAGE):$(TAG)
