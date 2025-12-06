@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Section } from '../components/Section'
 import { ProjectCard } from '../components/ProjectCard'
+import { FeaturedProject } from '../components/FeaturedProject'
 import { ProjectModal } from '../components/ProjectModal'
 import { getProjects, type ProjectCategory, type ResolvedProject } from '../data/projects'
 import { useLanguage } from '../components/LanguageProvider'
@@ -23,11 +24,15 @@ export function Projects() {
     })
   }, [query, category, data])
 
+  // First project is featured, rest go in grid
+  const [featured, ...gridProjects] = filtered
+
   return (
     <Section id="projects" title={t('projects.title')} lead={t('projects.lead')}>
-      <div className="projects-toolbar card" style={{ display: 'grid', gap: '1rem' }}>
-        <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          <label style={{ flex: '1 1 260px' }}>
+      {/* Toolbar */}
+      <div className="projects-toolbar card fancy" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <label style={{ flex: '1 1 280px' }}>
             <input
               placeholder={t('projects.searchPlaceholder')}
               value={query}
@@ -41,21 +46,45 @@ export function Projects() {
             value={category}
             onChange={(e) => setCategory(e.target.value as ProjectCategory | 'all')}
             className="badge"
-            style={{ padding: '.65rem .8rem', background: 'transparent', cursor: 'pointer' }}
+            style={{ padding: '.7rem 1rem', background: 'transparent', cursor: 'pointer', fontSize: '0.9rem' }}
           >
             {categories.map(c => (
               <option key={c} value={c}>{t(`projects.categories.${c}`)}</option>
             ))}
           </select>
-          <span className="badge" aria-live="polite">{filtered.length}</span>
+          <span className="badge" aria-live="polite" style={{ padding: '0.7rem 1rem' }}>
+            {filtered.length} {filtered.length === 1 ? 'proyecto' : 'proyectos'}
+          </span>
         </div>
       </div>
 
-      <div className="projects-grid">
-        {filtered.map((p) => (
-          <ProjectCard key={p.slug} project={p} onOpen={setOpen} />
-        ))}
-      </div>
+      {/* Featured Project */}
+      {featured && (
+        <div style={{ marginBottom: '3rem' }}>
+          <FeaturedProject project={featured} onOpen={setOpen} />
+        </div>
+      )}
+
+      {/* Projects Grid (Masonry-style) */}
+      {gridProjects.length > 0 && (
+        <>
+          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 600 }}>
+            Más Proyectos
+          </h3>
+          <div className="projects-masonry-grid">
+            {gridProjects.map((p) => (
+              <ProjectCard key={p.slug} project={p} onOpen={setOpen} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* No results state */}
+      {filtered.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--muted)' }}>
+          <p style={{ fontSize: '1.1rem' }}>No se encontraron proyectos que coincidan con tu búsqueda.</p>
+        </div>
+      )}
 
       <ProjectModal project={open} onClose={() => setOpen(null)} />
     </Section>
