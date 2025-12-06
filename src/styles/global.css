@@ -1742,3 +1742,36 @@ a { color: inherit; }
     font-size: 1.15rem;
   }
 }
+
+/* ============================================
+   PROFESSIONAL PROJECTS GRID
+   ============================================ */
+
+/* Clean professional grid */
+.projects-grid-professional {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 1200px) {
+  .projects-grid-professional {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-grid-professional {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Remove old split view styles - keep grid simple */
+.projects-split-view,
+.projects-list,
+.projects-preview,
+.project-list-item {
+  display: none !important;
+}

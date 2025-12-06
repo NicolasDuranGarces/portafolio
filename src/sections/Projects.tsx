@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import { Section } from '../components/Section'
 import { ProjectCard } from '../components/ProjectCard'
-import { FeaturedProject } from '../components/FeaturedProject'
 import { ProjectModal } from '../components/ProjectModal'
 import { getProjects, type ProjectCategory, type ResolvedProject } from '../data/projects'
 import { useLanguage } from '../components/LanguageProvider'
@@ -24,13 +24,13 @@ export function Projects() {
     })
   }, [query, category, data])
 
-  // First project is featured, rest go in grid
-  const [featured, ...gridProjects] = filtered
+  const container = { show: { transition: { staggerChildren: 0.08 } } }
+  const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
 
   return (
     <Section id="projects" title={t('projects.title')} lead={t('projects.lead')}>
       {/* Toolbar */}
-      <div className="projects-toolbar card fancy" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
+      <div className="card fancy" style={{ padding: '1.5rem', marginBottom: '2.5rem' }}>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <label style={{ flex: '1 1 280px' }}>
             <input
@@ -58,31 +58,26 @@ export function Projects() {
         </div>
       </div>
 
-      {/* Featured Project */}
-      {featured && (
-        <div style={{ marginBottom: '3rem' }}>
-          <FeaturedProject project={featured} onOpen={setOpen} />
-        </div>
-      )}
-
-      {/* Projects Grid (Masonry-style) */}
-      {gridProjects.length > 0 && (
-        <>
-          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 600 }}>
-            Más Proyectos
-          </h3>
-          <div className="projects-masonry-grid">
-            {gridProjects.map((p) => (
-              <ProjectCard key={p.slug} project={p} onOpen={setOpen} />
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* No results state */}
-      {filtered.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--muted)' }}>
-          <p style={{ fontSize: '1.1rem' }}>No se encontraron proyectos que coincidan con tu búsqueda.</p>
+      {/* Projects Grid - Professional Masonry */}
+      {filtered.length > 0 ? (
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="projects-grid-professional"
+        >
+          {filtered.map((p) => (
+            <motion.div key={p.slug} variants={item}>
+              <ProjectCard project={p} onOpen={setOpen} />
+            </motion.div>
+          ))}
+        </motion.div>
+      ) : (
+        <div className="card fancy" style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--muted)' }}>
+          <p style={{ fontSize: '1.1rem', margin: 0 }}>
+            No se encontraron proyectos que coincidan con tu búsqueda.
+          </p>
         </div>
       )}
 
