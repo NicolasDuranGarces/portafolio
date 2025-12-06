@@ -1,204 +1,215 @@
 import { motion } from 'framer-motion'
-import { FiMapPin, FiClock, FiZap, FiCoffee, FiCode, FiCpu } from 'react-icons/fi'
+import { FiMapPin, FiClock, FiZap, FiCoffee, FiCode, FiCpu, FiServer, FiAward, FiTrendingUp } from 'react-icons/fi'
 import { useLanguage } from '../components/LanguageProvider'
+import { Section } from '../components/Section'
 
-const fade = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
-const stagger = { show: { transition: { staggerChildren: 0.08 } } }
-
-// Estrellas flotantes
-const Star = ({ delay, duration, top, left }: { delay: number; duration: number; top: string; left: string }) => (
-  <motion.div
-    className="about-star"
-    style={{ top, left }}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{
-      opacity: [0, 1, 0.8, 1, 0],
-      scale: [0, 1, 0.9, 1, 0],
-      rotate: [0, 180, 360],
-    }}
-    transition={{
-      duration,
-      delay,
-      repeat: Infinity,
-      repeatDelay: 1,
-    }}
-  >
-    ⭐
-  </motion.div>
-)
+const container = { show: { transition: { staggerChildren: 0.1 } } }
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
 
 export function About() {
   const { t } = useLanguage()
   const story = t('about.story').split('|').map((item) => item.trim()).filter(Boolean)
   const principles = t('about.principles').split('|').map((item) => item.trim()).filter(Boolean)
-  const meta = [
-    { icon: FiMapPin, label: t('about.meta.location'), value: t('about.meta.locationValue') },
-    { icon: FiClock, label: t('about.meta.experience'), value: t('about.meta.experienceValue') },
-    { icon: FiZap, label: t('about.meta.availability'), value: t('about.meta.availabilityValue') },
-  ]
 
   return (
-    <section id="about" className="section container about-full">
-      {/* Estrellas flotantes decorativas */}
-      <div className="about-stars-container">
-        <Star delay={0} duration={3} top="10%" left="15%" />
-        <Star delay={0.5} duration={3.5} top="20%" left="85%" />
-        <Star delay={1} duration={2.8} top="70%" left="10%" />
-        <Star delay={1.5} duration={3.2} top="80%" left="90%" />
-        <Star delay={0.8} duration={3} top="40%" left="5%" />
-        <Star delay={1.2} duration={3.3} top="60%" left="95%" />
-      </div>
-
+    <Section id="about" title={t('about.title')} lead={t('about.lead')}>
       <motion.div
+        variants={container}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: '-100px' }}
-        variants={stagger}
-        className="about-wide-layout"
+        viewport={{ once: true, margin: '-50px' }}
+        style={{ display: 'grid', gap: '2rem' }}
       >
-        {/* Header */}
-        <motion.div variants={fade} className="about-wide-header">
-          <h2 className="about-wide-title">{t('about.title')}</h2>
-          <p className="about-wide-subtitle">{t('about.lead')}</p>
-        </motion.div>
-
-        {/* Grid layout: 2 columnas en desktop */}
-        <div className="about-wide-grid">
-          {/* Columna izquierda: Personal */}
-          <motion.div variants={fade} className="about-wide-column">
-            <article className="card about-card-main">
-              <div className="about-card-icon">
-                <FiCoffee />
+        {/* Profile Card - Expanded */}
+        <motion.article variants={item} className="card fancy" style={{ padding: '2.5rem' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+              <FiCoffee style={{ fontSize: '2rem', color: 'var(--primary)' }} />
+              <h2 style={{ margin: 0, fontSize: '2rem', fontWeight: 700 }}>{t('about.tagline')}</h2>
+            </div>
+            <div style={{ color: 'var(--muted)', lineHeight: '1.7', fontSize: '1rem' }}>
+              {story.map((paragraph, i) => (
+                <p key={i} style={{ marginBottom: '1rem' }}>{paragraph}</p>
+              ))}
+              
+              {/* Expertise adicional */}
+              <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'color-mix(in oklab, var(--primary) 5%, transparent)', borderRadius: '12px', border: '1px solid color-mix(in oklab, var(--primary) 15%, transparent)' }}>
+                <h4 style={{ margin: '0 0 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <FiTrendingUp style={{ color: 'var(--primary)' }} />
+                  Experiencia Destacada
+                </h4>
+                <ul style={{ margin: 0, paddingLeft: '1.5rem', lineHeight: '1.8' }}>
+                  <li>Diseño e implementación de arquitecturas escalables con microservicios en AWS/Azure</li>
+                  <li>Optimización de bases de datos relacionales y NoSQL para alto rendimiento</li>
+                  <li>Integración de LLMs y sistemas de IA en aplicaciones empresariales</li>
+                  <li>Liderazgo técnico en equipos distribuidos y mentoría de desarrolladores junior</li>
+                  <li>Implementación de pipelines CI/CD completos con GitLab CI y GitHub Actions</li>
+                  <li>Desarrollo de APIs RESTful y GraphQL con documentación OpenAPI</li>
+                </ul>
               </div>
-              <h3>{t('about.tagline')}</h3>
-              <div className="about-story-text">
-                {story.map((paragraph, i) => (
-                  <p key={i}>{paragraph}</p>
-                ))}
-              </div>
+            </div>
+          </div>
+        </motion.article>
 
-              {/* Personal facts */}
-              <div className="about-personal-facts">
-                <div className="about-fact">
-                  <FiCoffee className="about-fact-icon" />
-                  <div>
-                    <strong>Amante del café</strong>
-                    <p>El mejor código se escribe con una taza de café al lado ☕</p>
-                  </div>
-                </div>
-                <div className="about-fact">
-                  <FiCpu className="about-fact-icon" />
-                  <div>
-                    <strong>Entusiasta de IA</strong>
-                    <p>Explorando LLMs, RAG, y el futuro de la automatización inteligente 🤖</p>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </motion.div>
+        {/* Stats Row - Enhanced */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          <motion.article variants={item} className="card fancy" style={{ padding: '2rem' }}>
+            <FiMapPin style={{ fontSize: '2rem', color: 'var(--primary)', marginBottom: '1rem' }} />
+            <strong style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{t('about.meta.location')}</strong>
+            <span style={{ color: 'var(--muted)', fontSize: '0.95rem' }}>{t('about.meta.locationValue')}</span>
+            <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
+              Disponible para trabajo remoto en América Latina, USA y Europa
+            </p>
+          </motion.article>
 
-          {/* Columna derecha: Meta info */}
-          <motion.div variants={fade} className="about-wide-column">
-            <article className="card about-card-meta">
-              <div className="about-card-icon">
-                <FiCode />
-              </div>
-              <h3>Información Profesional</h3>
+          <motion.article variants={item} className="card fancy" style={{ padding: '2rem' }}>
+            <FiClock style={{ fontSize: '2rem', color: 'var(--primary)', marginBottom: '1rem' }} />
+            <strong style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{t('about.meta.experience')}</strong>
+            <span style={{ color: 'var(--muted)', fontSize: '0.95rem' }}>{t('about.meta.experienceValue')}</span>
+            <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
+              Liderazgo en backend, arquitectura de datos, y DevOps cloud-native
+            </p>
+          </motion.article>
 
-              <div className="about-meta-grid">
-                {meta.map((item) => (
-                  <div key={item.label} className="about-meta-card">
-                    <item.icon />
-                    <div>
-                      <span className="about-meta-label">{item.label}</span>
-                      <p className="about-meta-value">{item.value}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="about-divider" />
-
-              <div className="about-principles-section">
-                <p className="about-principles-title">Principios de trabajo</p>
-                <div className="about-principles-grid">
-                  {principles.map((principle) => (
-                    <span key={principle} className="about-principle-tag">
-                      {principle}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </article>
-          </motion.div>
+          <motion.article variants={item} className="card fancy" style={{ padding: '2rem' }}>
+            <FiZap style={{ fontSize: '2rem', color: 'var(--success)', marginBottom: '1rem' }} />
+            <strong style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{t('about.meta.availability')}</strong>
+            <span style={{ color: 'var(--success)', fontWeight: 600, fontSize: '0.95rem' }}>{t('about.meta.availabilityValue')}</span>
+            <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
+              Roles backend senior, arquitectura de soluciones, consultorías DevOps
+            </p>
+          </motion.article>
         </div>
 
-        {/* Sección técnica full width */}
-        <motion.div variants={fade} className="about-tech-section">
-          <article className="card about-card-tech">
-            <div className="about-tech-header">
-              <div className="about-card-icon">
-                <FiCpu />
-              </div>
-              <div>
-                <h3>Stack Técnico & Especialización</h3>
-                <p className="about-tech-lead">
-                  Backend Python (FastAPI, Django), APIs escalables, arquitectura limpia,
-                  y experiencia con IA/ML para automatización y optimización de sistemas.
-                </p>
-              </div>
+        {/* Certifications & Achievements */}
+        <motion.article variants={item} className="card fancy" style={{ padding: '2.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+            <FiAward style={{ fontSize: '2rem', color: 'var(--primary)' }} />
+            <h3 style={{ margin: 0, fontSize: '1.5rem' }}>Logros Profesionales</h3>
+          </div>
+          <div style={{ display: 'grid', gap: '1.25rem' }}>
+            <div>
+              <strong style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--primary)' }}>
+                🚀 Escalabilidad & Performance
+              </strong>
+              <p style={{ margin: 0, color: 'var(--muted)', lineHeight: '1.6' }}>
+                Optimización de sistemas procesando 1M+ requests/día, reduciendo latencia en ~60% mediante caching estratégico y arquitectura asíncrona
+              </p>
             </div>
-
-            <div className="about-tech-grid">
-              <div className="about-tech-category">
-                <h4>🐍 Backend & APIs</h4>
-                <div className="about-tech-tags">
-                  <span>Python</span>
-                  <span>FastAPI</span>
-                  <span>Django</span>
-                  <span>Node.js</span>
-                  <span>Express</span>
-                  <span>REST</span>
-                  <span>GraphQL</span>
-                </div>
-              </div>
-
-              <div className="about-tech-category">
-                <h4>🤖 IA & Automatización</h4>
-                <div className="about-tech-tags">
-                  <span>LLMs</span>
-                  <span>RAG</span>
-                  <span>OpenAI API</span>
-                  <span>Langchain</span>
-                  <span>Prompt Engineering</span>
-                </div>
-              </div>
-
-              <div className="about-tech-category">
-                <h4>☁️ Cloud & DevOps</h4>
-                <div className="about-tech-tags">
-                  <span>AWS Lambda</span>
-                  <span>Docker</span>
-                  <span>GitHub Actions</span>
-                  <span>Serverless</span>
-                  <span>Nginx</span>
-                </div>
-              </div>
-
-              <div className="about-tech-category">
-                <h4>💾 Bases de Datos</h4>
-                <div className="about-tech-tags">
-                  <span>PostgreSQL</span>
-                  <span>MySQL</span>
-                  <span>MongoDB</span>
-                  <span>Redis</span>
-                  <span>DynamoDB</span>
-                </div>
-              </div>
+            <div>
+              <strong style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--primary)' }}>
+                ☁️ Cloud Migration & Infrastructure
+              </strong>
+              <p style={{ margin: 0, color: 'var(--muted)', lineHeight: '1.6' }}>
+                Migración exitosa de monolitos a microservicios en AWS/Azure, implementando IaC con Terraform y automatización completa
+              </p>
             </div>
-          </article>
-        </motion.div>
+            <div>
+              <strong style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--primary)' }}>
+                🤖 AI & Innovation
+              </strong>
+              <p style={{ margin: 0, color: 'var(--muted)', lineHeight: '1.6' }}>
+                Integración de LLMs en productos empresariales (RAG, AI Agents, MCP), entrega de features de IA generativa en producción
+              </p>
+            </div>
+          </div>
+        </motion.article>
+
+        {/* Principles Card - Enhanced */}
+        <motion.article variants={item} className="card fancy" style={{ padding: '2.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+            <FiCode style={{ fontSize: '2rem', color: 'var(--primary)' }} />
+            <h3 style={{ margin: 0, fontSize: '1.5rem' }}>Principios de Trabajo & Metodologías</h3>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+            {principles.map((principle) => (
+              <span key={principle} className="badge" style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
+                {principle}
+              </span>
+            ))}
+          </div>
+          <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+            <div>
+              <strong style={{ display: 'block', marginBottom: '0.75rem', color: 'var(--text)' }}>Testing & Quality</strong>
+              <ul style={{ margin: 0, paddingLeft: '1.5rem', color: 'var(--muted)', fontSize: '0.9rem' }}>
+                <li>TDD / BDD</li>
+                <li>Unit & Integration Testing</li>
+                <li>Code Coverage +80%</li>
+              </ul>
+            </div>
+            <div>
+              <strong style={{ display: 'block', marginBottom: '0.75rem', color: 'var(--text)' }}>Architecture</strong>
+              <ul style={{ margin: 0, paddingLeft: '1.5rem', color: 'var(--muted)', fontSize: '0.9rem' }}>
+                <li>Clean Architecture</li>
+                <li>Domain-Driven Design</li>
+                <li>SOLID Principles</li>
+              </ul>
+            </div>
+            <div>
+              <strong style={{ display: 'block', marginBottom: '0.75rem', color: 'var(--text)' }}>Collaboration</strong>
+              <ul style={{ margin: 0, paddingLeft: '1.5rem', color: 'var(--muted)', fontSize: '0.9rem' }}>
+                <li>Agile / Scrum</li>
+                <li>Code Reviews</li>
+                <li>Technical Mentoring</li>
+              </ul>
+            </div>
+          </div>
+        </motion.article>
+
+        {/* Home Lab Card - Enhanced */}
+        <motion.article variants={item} className="card fancy" style={{ padding: '2.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+            <FiServer style={{ fontSize: '2rem', color: 'var(--primary)' }} />
+            <h3 style={{ margin: 0, fontSize: '1.5rem' }}>Home Lab & Infraestructura Personal</h3>
+          </div>
+          <p style={{ color: 'var(--muted)', marginBottom: '2rem', lineHeight: '1.7' }}>
+            Entusiasta del auto-hospedaje y DevOps casero. Gestiono una infraestructura de servidores dedicados expuestos a internet con monitoreo 24/7, 
+            seguridad enterprise-grade, y alta disponibilidad. Experiencia hands-on en administración de sistemas Linux, networking, y containerización.
+          </p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ padding: '1.25rem', background: 'color-mix(in oklab, var(--panel) 50%, transparent)', borderRadius: '12px' }}>
+                  <strong style={{ display: 'block', marginBottom: '0.75rem', fontSize: '1rem' }}>🖥️ Virtualización & Containers</strong>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span className="badge">Proxmox VE</span>
+                    <span className="badge">Docker Swarm</span>
+                    <span className="badge">Portainer</span>
+                    <span className="badge">Ubuntu Server</span>
+                  </div>
+                </div>
+                
+                <div style={{ padding: '1.25rem', background: 'color-mix(in oklab, var(--panel) 50%, transparent)', borderRadius: '12px' }}>
+                  <strong style={{ display: 'block', marginBottom: '0.75rem', fontSize: '1rem' }}>🔒 Security & Networking</strong>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span className="badge">Cloudflare Tunnels</span>
+                    <span className="badge">Nginx Proxy Manager</span>
+                    <span className="badge">SSL/TLS Certs</span>
+                    <span className="badge">Firewall Rules</span>
+                  </div>
+                </div>
+                
+                <div style={{ padding: '1.25rem', background: 'color-mix(in oklab, var(--panel) 50%, transparent)', borderRadius: '12px' }}>
+                  <strong style={{ display: 'block', marginBottom: '0.75rem', fontSize: '1rem' }}>📊 Monitoring & Observability</strong>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span className="badge">Grafana</span>
+                    <span className="badge">Prometheus</span>
+                    <span className="badge">Uptime Kuma</span>
+                    <span className="badge">Logs Aggregation</span>
+                  </div>
+                </div>
+                
+                <div style={{ padding: '1.25rem', background: 'color-mix(in oklab, var(--panel) 50%, transparent)', borderRadius: '12px' }}>
+                  <strong style={{ display: 'block', marginBottom: '0.75rem', fontSize: '1rem' }}>🎮 Services & Apps</strong>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span className="badge">Minecraft Server</span>
+                    <span className="badge">Terraria Server</span>
+                    <span className="badge">Media Server</span>
+                    <span className="badge">Git Server</span>
+                  </div>
+                </div>
+              </div>
+        </motion.article>
       </motion.div>
-    </section>
+    </Section>
   )
 }
