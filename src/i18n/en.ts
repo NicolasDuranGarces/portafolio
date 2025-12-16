@@ -29,9 +29,10 @@ export const en = {
       body: 'Positive attitude, clear communication, and daily focus on unblocking the team.',
     },
     stats: {
-      years: { value: '4+', label: 'years operating production systems' },
-      launches: { value: '6', label: 'teams led as the technical reference' },
-      systems: { value: '99.95%', label: 'average SLO on the products I operate' },
+      years: { value: '5+', label: 'years building production systems' },
+      projects: { value: '15+', label: 'projects deployed to production' },
+      repos: { value: '20', label: 'open source repos on GitHub' },
+      coffee: { value: '∞', label: 'cups of coffee while debugging' },
     },
   },
   about: {
@@ -53,7 +54,7 @@ export const en = {
       location: 'Location',
       locationValue: 'Armenia, Quindío · GMT-5',
       experience: 'Experience',
-      experienceValue: '4+ years leading backend & platform work',
+      experienceValue: '5+ years leading backend & platform work',
       availability: 'Availability',
       availabilityValue: 'Open to senior backend roles and DevOps consulting',
     },
@@ -73,9 +74,9 @@ export const en = {
       },
     },
     metrics: {
-      years: { value: '4+', label: 'years leading backend & platform work' },
-      squads: { value: '6', label: 'squads guided as technical reference' },
-      uptime: { value: '99.95%', label: 'average production SLO' },
+      years: { value: '5+', label: 'years leading backend & platform work' },
+      projects: { value: '15+', label: 'projects deployed' },
+      repos: { value: '30+', label: 'open source repos' },
     },
     teaching: {
       title: 'Teaching & Mentoring',

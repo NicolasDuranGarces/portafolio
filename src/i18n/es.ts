@@ -29,9 +29,10 @@ export const es = {
       body: 'Actitud positiva, comunicación directa y foco diario en desbloquear al equipo.',
     },
     stats: {
-      years: { value: '4+', label: 'años construyendo sistemas en producción' },
-      launches: { value: '6', label: 'equipos guiados como referente técnico' },
-      systems: { value: '99.95%', label: 'SLO promedio de los productos que opero' },
+      years: { value: '5+', label: 'años construyendo sistemas en producción' },
+      projects: { value: '15+', label: 'proyectos desplegados en producción' },
+      repos: { value: '20', label: 'repositorios open source en GitHub' },
+      coffee: { value: '∞', label: 'cafés tomados mientras debuggeo' },
     },
   },
   about: {
@@ -53,7 +54,7 @@ export const es = {
       location: 'Ubicación',
       locationValue: 'Armenia, Quindío · GMT-5',
       experience: 'Experiencia',
-      experienceValue: '4+ años liderando backend y plataformas',
+      experienceValue: '5+ años liderando backend y plataformas',
       availability: 'Disponibilidad',
       availabilityValue: 'Disponible para roles backend senior y consultorías DevOps',
     },
@@ -73,9 +74,9 @@ export const es = {
       },
     },
     metrics: {
-      years: { value: '4+', label: 'años liderando backend y plataformas' },
-      squads: { value: '6', label: 'squads guiados como referente técnico' },
-      uptime: { value: '99.95%', label: 'SLO promedio en producción' },
+      years: { value: '5+', label: 'años liderando backend y plataformas' },
+      projects: { value: '15+', label: 'proyectos desplegados' },
+      repos: { value: '30+', label: 'repos open source' },
     },
     teaching: {
       title: 'Docencia y mentoría',

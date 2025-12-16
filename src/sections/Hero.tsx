@@ -8,8 +8,9 @@ export function Hero() {
   const specialties = t('hero.specialties').split('|').map((item) => item.trim()).filter(Boolean)
   const stats = [
     { value: t('hero.stats.years.value'), label: t('hero.stats.years.label') },
-    { value: t('hero.stats.launches.value'), label: t('hero.stats.launches.label') },
-    { value: t('hero.stats.systems.value'), label: t('hero.stats.systems.label') },
+    { value: t('hero.stats.projects.value'), label: t('hero.stats.projects.label') },
+    { value: t('hero.stats.repos.value'), label: t('hero.stats.repos.label') },
+    { value: t('hero.stats.coffee.value'), label: t('hero.stats.coffee.label') },
   ]
 
   return (
