@@ -18,6 +18,21 @@
   --primary: #7c3aed;
   --primary-600: #6d28d9;
   --accent: #0891b2;
+  --orb-primary-opacity: 35%;
+  --orb-accent-opacity: 30%;
+}
+
+/* Orbs más intensos en modo claro */
+[data-theme="light"] body::after {
+  background:
+    radial-gradient(400px 400px at 5% 15%, color-mix(in oklab, var(--primary) 35%, transparent), transparent),
+    radial-gradient(300px 300px at 90% 10%, color-mix(in oklab, var(--accent) 32%, transparent), transparent),
+    radial-gradient(200px 200px at 95% 45%, color-mix(in oklab, var(--primary) 28%, transparent), transparent),
+    radial-gradient(350px 350px at 10% 80%, color-mix(in oklab, var(--accent) 30%, transparent), transparent),
+    radial-gradient(450px 450px at 85% 85%, color-mix(in oklab, var(--primary) 32%, transparent), transparent),
+    radial-gradient(250px 250px at 50% 50%, color-mix(in oklab, var(--accent) 15%, transparent), transparent);
+  filter: blur(100px);
+  opacity: 0.9;
 }
 
 * { box-sizing: border-box; }
@@ -50,6 +65,53 @@ body::before {
   animation: bg-pan 80s ease-in-out infinite alternate;
 }
 
+/* Orbs flotantes globales */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    /* Orb grande violeta arriba izquierda */
+    radial-gradient(400px 400px at 5% 15%, color-mix(in oklab, var(--primary) 20%, transparent), transparent),
+    /* Orb mediano cyan arriba derecha */
+    radial-gradient(300px 300px at 90% 10%, color-mix(in oklab, var(--accent) 18%, transparent), transparent),
+    /* Orb pequeño violeta medio derecha */
+    radial-gradient(200px 200px at 95% 45%, color-mix(in oklab, var(--primary) 15%, transparent), transparent),
+    /* Orb mediano cyan abajo izquierda */
+    radial-gradient(350px 350px at 10% 80%, color-mix(in oklab, var(--accent) 16%, transparent), transparent),
+    /* Orb grande violeta abajo derecha */
+    radial-gradient(450px 450px at 85% 85%, color-mix(in oklab, var(--primary) 18%, transparent), transparent),
+    /* Orb extra cyan medio */
+    radial-gradient(250px 250px at 50% 50%, color-mix(in oklab, var(--accent) 8%, transparent), transparent);
+  filter: blur(80px);
+  animation: orbs-float 20s ease-in-out infinite alternate;
+}
+
+@keyframes orbs-float {
+  0% { 
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.8;
+  }
+  25% { 
+    transform: translate3d(15px, -25px, 0) scale(1.02);
+    opacity: 0.9;
+  }
+  50% { 
+    transform: translate3d(-10px, 10px, 0) scale(0.98);
+    opacity: 0.85;
+  }
+  75% { 
+    transform: translate3d(20px, 15px, 0) scale(1.01);
+    opacity: 0.9;
+  }
+  100% { 
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.8;
+  }
+}
+
 /* Fallback para navegadores sin color-mix */
 @supports not (background: color-mix(in oklab, white 10%, black)) {
   body::before {
@@ -57,6 +119,14 @@ body::before {
       radial-gradient(60vmax 40vmax at 80% -10%, rgba(124, 58, 237, 0.12), transparent),
       radial-gradient(48vmax 32vmax at -10% 10%, rgba(6, 182, 212, 0.10), transparent),
       linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.04) 50%, transparent 100%);
+  }
+  body::after {
+    background:
+      radial-gradient(400px 400px at 5% 15%, rgba(124, 58, 237, 0.2), transparent),
+      radial-gradient(300px 300px at 90% 10%, rgba(6, 182, 212, 0.18), transparent),
+      radial-gradient(350px 350px at 10% 80%, rgba(6, 182, 212, 0.16), transparent),
+      radial-gradient(450px 450px at 85% 85%, rgba(124, 58, 237, 0.18), transparent);
+    filter: blur(80px);
   }
 }
 
@@ -82,14 +152,61 @@ body::before {
 .grid { display: grid; gap: 1rem; }
 .btn {
   display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
-  background: var(--primary); color: white; border: none; border-radius: 12px;
-  padding: .75rem 1rem; font-weight: 600; letter-spacing: .2px;
-  box-shadow: 0 8px 30px color-mix(in oklab, var(--primary) 35%, transparent);
-  transition: transform .15s ease, box-shadow .15s ease, opacity .2s ease;
+  position: relative;
+  background: linear-gradient(135deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 70%, var(--accent)) 100%);
+  color: white; border: none; border-radius: 50px;
+  padding: 1rem 2rem; font-weight: 700; font-size: 0.95rem;
+  letter-spacing: .5px; text-transform: uppercase; text-decoration: none;
+  box-shadow: 
+    0 0 20px color-mix(in oklab, var(--primary) 50%, transparent),
+    0 4px 15px rgba(0,0,0,0.2),
+    inset 0 1px 1px rgba(255,255,255,0.3);
+  transition: all .3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
 }
-.btn:hover { transform: translateY(-1px); box-shadow: 0 12px 35px color-mix(in oklab, var(--primary) 45%, transparent); }
-.btn.ghost { background: color-mix(in oklab, var(--primary) 18%, transparent); color: var(--text); }
-.btn.ghost:hover { background: color-mix(in oklab, var(--primary) 24%, transparent); }
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, var(--primary), var(--accent), var(--primary));
+  border-radius: 50px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.btn:hover::before { opacity: 1; }
+.btn:hover { 
+  transform: translateY(-4px) scale(1.05); 
+  box-shadow: 
+    0 0 40px color-mix(in oklab, var(--primary) 70%, transparent),
+    0 10px 30px rgba(0,0,0,0.25),
+    inset 0 1px 1px rgba(255,255,255,0.4);
+  text-decoration: none;
+}
+.btn:active { transform: translateY(-2px) scale(1.02); }
+
+.btn.ghost { 
+  background: transparent;
+  color: var(--text); 
+  border: 2px solid var(--primary);
+  box-shadow: 
+    0 0 15px color-mix(in oklab, var(--primary) 25%, transparent),
+    inset 0 0 20px color-mix(in oklab, var(--primary) 8%, transparent);
+  text-decoration: none;
+}
+.btn.ghost::before {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  opacity: 0;
+}
+.btn.ghost:hover { 
+  background: linear-gradient(135deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 70%, var(--accent)) 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 
+    0 0 35px color-mix(in oklab, var(--primary) 60%, transparent),
+    0 8px 25px rgba(0,0,0,0.2);
+  text-decoration: none;
+}
 
 .card {
   background: linear-gradient(180deg, color-mix(in oklab, var(--panel) 88%, transparent), var(--panel));
