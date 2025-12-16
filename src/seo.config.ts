@@ -39,7 +39,7 @@ export const SEO = {
     'Software engineer Quindio',
   ],
   twitter: undefined,
-  image: '/assets/avatar.jpg',
+  image: '/og-image.png',
   sameAs: [
     'https://github.com/NicolasDuranGarces',
     'https://www.linkedin.com/in/garcesnicolas/',
