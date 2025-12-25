@@ -22,6 +22,8 @@ export const en = {
     avatarAlt: 'Portrait of Nicolas Duran Garces smiling',
     ctaProjects: 'View projects',
     ctaContact: 'Contact',
+    ctaCV: 'Download CV',
+    downloadCV: 'Download my resume in PDF format',
     tagline: 'Open to senior backend roles and collaborations centered on performance and observability',
     specialties: 'Event-driven architectures|Observable APIs|Pragmatic front-end when it matters',
     spotlight: {

@@ -38,6 +38,9 @@ export function Hero() {
           <div className="hero-cta">
             <a className="btn" href="#projects">{t('hero.ctaProjects')}</a>
             <a className="btn ghost" href="#contact">{t('hero.ctaContact')}</a>
+            <a className="btn ghost" href="/CV_NICOLAS_DURAN.pdf" download aria-label={t('hero.downloadCV')}>
+              📄 {t('hero.ctaCV')}
+            </a>
           </div>
           <p className="hero-tagline">{t('hero.tagline')}</p>
         </motion.div>
