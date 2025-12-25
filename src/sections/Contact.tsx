@@ -18,15 +18,28 @@ export function Contact() {
     e.preventDefault()
     setStatus('sending')
     
-    // Simulate sending (replace with actual email service like EmailJS, Formspree, etc.)
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // For now, just show success message
-    setStatus('success')
-    setFormData({ name: '', email: '', message: '' })
-    
-    // Reset after 5 seconds
-    setTimeout(() => setStatus('idle'), 5000)
+    try {
+      const response = await fetch('https://formspree.io/f/xwjqaopj', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      
+      if (response.ok) {
+        setStatus('success')
+        setFormData({ name: '', email: '', message: '' })
+        setTimeout(() => setStatus('idle'), 5000)
+      } else {
+        setStatus('error')
+        setTimeout(() => setStatus('idle'), 3000)
+      }
+    } catch {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 3000)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -174,8 +187,8 @@ export function Contact() {
           <p style={{ color: 'var(--muted)', marginTop: 0 }}>{t('contact.socialLead')}</p>
           <SocialLinks
             github="https://github.com/NicolasDuranGarces"
-            linkedin="https://www.linkedin.com/in/nicolas-duran-garces/"
-            email="nicolasdurangarces@gmail.com"
+            linkedin="https://www.linkedin.com/in/garcesnicolas/"
+            email="niduga@outlook.es"
           />
         </motion.div>
       </motion.div>
