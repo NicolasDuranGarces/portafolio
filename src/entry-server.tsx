@@ -8,7 +8,7 @@ export function renderPage(pathname: string) {
   const locale = getLocaleFromPathname(pathname)
   const appHtml = renderToString(
     <SEOProvider context={helmetContext}>
-      <App initialLang={locale} pathname={pathname} />
+      <App initialLang={locale} />
     </SEOProvider>
   )
 

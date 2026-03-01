@@ -18,15 +18,14 @@ import type { Lang } from './components/LanguageProvider'
 
 type Props = {
   initialLang?: Lang
-  pathname?: string
 }
 
-export function App({ initialLang, pathname }: Props) {
+export function App({ initialLang }: Props) {
   return (
     <LanguageProvider initialLang={initialLang}>
       <ThemeProvider>
         <div className="app">
-          <SEOHead pathname={pathname} />
+          <SEOHead />
           <ScrollProgress />
           <ParallaxOrbs />
           <SideRails />
