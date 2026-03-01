@@ -1,11 +1,13 @@
-import { motion } from 'framer-motion'
 import { useLanguage } from '../components/LanguageProvider'
-
-const fade = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
+import { HeroBentoScene } from '../components/HeroBentoScene'
 
 export function Hero() {
-  const { t } = useLanguage()
-  const specialties = t('hero.specialties').split('|').map((item) => item.trim()).filter(Boolean)
+  const { lang, t } = useLanguage()
+  const specialties = t('hero.specialties')
+    .split('|')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
   const stats = [
     { value: t('hero.stats.years.value'), label: t('hero.stats.years.label') },
     { value: t('hero.stats.projects.value'), label: t('hero.stats.projects.label') },
@@ -14,68 +16,41 @@ export function Hero() {
   ]
 
   return (
-    <section id="top" className="hero-section container" aria-labelledby="hero-title">
-      <div className="hero-grid">
-        <motion.div
-          className="hero-copy"
-          initial="hidden"
-          animate="show"
-          variants={fade}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <p className="hero-overline">{t('hero.overline')}</p>
-          <h1 id="hero-title">{t('hero.headline')}</h1>
-          <p className="lead" style={{ marginBottom: '1rem' }}>
-            <span className="gradient-text">{t('hero.title')}</span>
-          </p>
-          <p className="hero-description">{t('hero.sub')}</p>
-
-          <div className="hero-specialties">
-            {specialties.map((item) => (
-              <span className="hero-chip" key={item}>{item}</span>
-            ))}
-          </div>
-
-          <div className="hero-cta">
-            <a className="btn" href="#projects">{t('hero.ctaProjects')}</a>
-            <a className="btn ghost" href="#contact">{t('hero.ctaContact')}</a>
-            <a className="btn ghost" href="/CV_NICOLAS_DURAN.pdf" download aria-label={t('hero.downloadCV')}>
-              📄 {t('hero.ctaCV')}
-            </a>
-          </div>
-          <p className="hero-tagline">{t('hero.tagline')}</p>
-        </motion.div>
-
-        <motion.div
-          className="hero-panel card fancy"
-          initial="hidden"
-          animate="show"
-          variants={fade}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className="hero-panel__identity">
-            <div className="hero-avatar">
-              <img src="/assets/avatar.jpg" alt={t('hero.avatarAlt')} loading="eager" />
-            </div>
-            <span className="hero-panel__name">{t('hero.greeting')}</span>
-            <span className="hero-panel__role">{t('hero.role')}</span>
-          </div>
-
-          <div className="hero-panel__spotlight">
-            <p className="hero-panel__label">{t('hero.spotlight.title')}</p>
-            <p>{t('hero.spotlight.body')}</p>
-          </div>
-
-          <div className="hero-stats hero-stats--card">
-            {stats.map((stat, index) => (
-              <div className={`hero-stat${index === stats.length - 1 ? ' hero-stat--full' : ''}`} key={stat.label}>
-                <span className="hero-stat__value">{stat.value}</span>
-                <span className="hero-stat__label">{stat.label}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </section>
+    <HeroBentoScene
+      overline={t('hero.overline')}
+      kicker={t('hero.bento.kicker')}
+      headline={t('hero.headline')}
+      title={t('hero.title')}
+      description={t('hero.sub')}
+      greeting={t('hero.greeting')}
+      role={t('hero.role')}
+      avatarAlt={t('hero.avatarAlt')}
+      specialtiesAria={t('hero.bento.specialtiesAria')}
+      signalLabel={t('hero.bento.locationLabel')}
+      signalValue={t('hero.bento.locationValue')}
+      signalBody={t('hero.bento.locationBody')}
+      profileLabel={t('hero.bento.centralCardTitle')}
+      availabilityLabel={t('hero.bento.availabilityLabel')}
+      availabilityValue={t('hero.bento.availabilityValue')}
+      spotlightTitle={t('hero.spotlight.title')}
+      spotlightBody={t('hero.spotlight.body')}
+      metricsLabel={t('hero.bento.metricsLabel')}
+      terminalLines={[
+        t('hero.bento.terminal.0'),
+        t('hero.bento.terminal.1'),
+        t('hero.bento.terminal.2'),
+        t('hero.bento.terminal.3'),
+      ]}
+      specialties={specialties}
+      stats={stats}
+      tagline={t('hero.bento.centralCardBody')}
+      ctaProjects={t('hero.ctaProjects')}
+      ctaContact={t('hero.ctaContact')}
+      ctaCV={t('hero.ctaCV')}
+      downloadCV={t('hero.downloadCV')}
+      ctaAriaLabel={lang === 'es' ? 'Acciones principales' : 'Primary actions'}
+      scrollLabel={lang === 'es' ? 'Seguir bajando' : 'Keep scrolling'}
+      scrollAriaLabel={lang === 'es' ? 'Ir a la seccion de experiencia' : 'Jump to the experience section'}
+    />
   )
 }

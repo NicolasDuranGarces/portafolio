@@ -1,88 +1,91 @@
-import { test, expect } from '@playwright/test'
+import { expect, test, type Locator, type Page } from '@playwright/test'
+
+async function clickByHref(page: Page, href: string) {
+  await page.evaluate((targetHref) => {
+    const element = document.querySelector<HTMLAnchorElement>(`a[href="${targetHref}"]`)
+    if (!element) throw new Error(`Missing anchor for ${targetHref}`)
+    element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+  }, href)
+}
+
+async function expectHashNavigation(page: Page, href: string, expectedHash: string, target: Locator) {
+  await clickByHref(page, href)
+
+  await expect(page).toHaveURL(new RegExp(`${expectedHash.replace('#', '\\#')}$`))
+  await expect(target).toBeInViewport()
+
+  await expect
+    .poll(async () => {
+      const box = await target.boundingBox()
+      return box?.y ?? Number.POSITIVE_INFINITY
+    })
+    .toBeLessThan(220)
+}
 
 test.describe('Navigation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    await page.waitForLoadState('domcontentloaded')
   })
 
-  test('should navigate to About section', async ({ page }) => {
-    // Click on About link (could be in navigation)
-    const aboutLink = page.locator('a[href*="#about"]').first()
-    if (await aboutLink.count() > 0) {
-      await aboutLink.click()
-      await page.waitForTimeout(500)
+  test('uses the hero CTA to navigate to the projects section', async ({ page }) => {
+    await expectHashNavigation(
+      page,
+      '#projects',
+      '#projects',
+      page.locator('#projects'),
+    )
 
-      // Check if we're near the about section
-      const aboutSection = page.locator('#about')
-      await expect(aboutSection).toBeVisible()
-    }
+    await expect(page.locator('#projects-title')).toHaveText('Proyectos')
+    await expect(page.locator('.project-bento-card.featured')).toBeVisible()
   })
 
-  test('should navigate to Projects section', async ({ page }) => {
-    const projectsLink = page.locator('a[href*="#projects"]').first()
-    if (await projectsLink.count() > 0) {
-      await projectsLink.click()
-      await page.waitForTimeout(500)
+  test('uses the hero CTA to navigate to the contact section', async ({ page }) => {
+    await expectHashNavigation(
+      page,
+      '#contact',
+      '#contact',
+      page.locator('#contact'),
+    )
 
-      const projectsSection = page.locator('#projects')
-      await expect(projectsSection).toBeVisible()
-    }
+    await expect(page.locator('#contact-title')).toHaveText('Contacto')
+    await expect(page.getByRole('heading', { name: 'También en redes' })).toBeVisible()
   })
 
-  test('should navigate to Contact section', async ({ page }) => {
-    const contactLink = page.locator('a[href*="#contact"]').first()
-    if (await contactLink.count() > 0) {
-      await contactLink.click()
-      await page.waitForTimeout(500)
+  test('supports direct deep links to sections in the new layout', async ({ page }) => {
+    await page.goto('/#about')
 
-      const contactSection = page.locator('#contact')
-      await expect(contactSection).toBeVisible()
-    }
+    await expect(page).toHaveURL(/\/#about$/)
+    await expect(page.locator('#about')).toBeInViewport()
+    await expect(page.locator('#about-title')).toHaveText('Sobre mí')
   })
 
-  test('should scroll smoothly between sections', async ({ page }) => {
-    await page.waitForLoadState('networkidle')
+  test('opens the featured project modal from the bento grid', async ({ page }) => {
+    const featuredCard = page.locator('.project-bento-card.featured')
 
-    // Get initial scroll position
-    const initialY = await page.evaluate(() => window.scrollY)
+    await expect(featuredCard).toBeVisible()
+    await featuredCard.dispatchEvent('click')
 
-    // Navigate to contact (bottom of page)
-    await page.locator('a[href*="#contact"]').first().click()
-    await page.waitForTimeout(1000)
-
-    const afterScrollY = await page.evaluate(() => window.scrollY)
-
-    // Should have scrolled down
-    expect(afterScrollY).toBeGreaterThan(initialY)
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByRole('button', { name: 'Cerrar modal' })).toBeVisible()
+    await expect(dialog.getByRole('heading')).toBeVisible()
+    expect(await dialog.locator('.badge').count()).toBeGreaterThan(0)
   })
 
-  test('should display project cards', async ({ page }) => {
-    await page.waitForLoadState('networkidle')
+  test('keeps external social links explicit and safe', async ({ page }) => {
+    const githubLink = page.getByRole('link', { name: 'GitHub' }).first()
+    const linkedInLink = page.getByRole('link', { name: 'LinkedIn' }).first()
+    const emailLink = page.getByRole('link', { name: 'Email' }).first()
 
-    await page.goto('/#projects')
-    await page.waitForTimeout(500)
+    await expect(githubLink).toHaveAttribute('href', 'https://github.com/NicolasDuranGarces')
+    await expect(githubLink).toHaveAttribute('target', '_blank')
+    await expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer')
 
-    const projectCards = page.locator('.project-bento-card')
-    const count = await projectCards.count()
+    await expect(linkedInLink).toHaveAttribute('href', 'https://www.linkedin.com/in/garcesnicolas/')
+    await expect(linkedInLink).toHaveAttribute('target', '_blank')
+    await expect(linkedInLink).toHaveAttribute('rel', 'noopener noreferrer')
 
-    expect(count).toBeGreaterThan(0)
-  })
-
-  test('should have working GitHub link', async ({ page }) => {
-    const githubLink = page.locator('a[href*="github.com/NicolasDuranGarces"]').first()
-
-    if (await githubLink.count() > 0) {
-      await expect(githubLink).toHaveAttribute('target', '_blank')
-      await expect(githubLink).toHaveAttribute('rel', /noopener/)
-    }
-  })
-
-  test('should have working LinkedIn link', async ({ page }) => {
-    const linkedinLink = page.locator('a[href*="linkedin.com"]').first()
-
-    if (await linkedinLink.count() > 0) {
-      await expect(linkedinLink).toHaveAttribute('target', '_blank')
-      await expect(linkedinLink).toHaveAttribute('rel', /noopener/)
-    }
+    await expect(emailLink).toHaveAttribute('href', 'mailto:niduga@outlook.es')
   })
 })
