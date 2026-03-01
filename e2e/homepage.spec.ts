@@ -5,13 +5,12 @@ test.describe('Homepage', () => {
     await page.goto('/')
   })
 
-  test('should display page title with NIDUGA keyword', async ({ page }) => {
-    await expect(page).toHaveTitle(/Nicolas Duran Garces.*NIDUGA/)
+  test('should display page title with brand and location keywords', async ({ page }) => {
+    await expect(page).toHaveTitle(/Nicolas Duran Garces.*Armenia, Quindio/)
   })
 
   test('should render all main sections', async ({ page }) => {
-    // Hero section
-    await expect(page.locator('text=Nicolas Duran Garces')).toBeVisible()
+    await expect(page.locator('h1')).toContainText('Nicolas Duran Garces')
 
     // Check sections exist
     await expect(page.locator('#experience')).toBeVisible()
@@ -23,7 +22,7 @@ test.describe('Homepage', () => {
 
   test('should have proper meta description with SEO keywords', async ({ page }) => {
     const description = await page.locator('meta[name="description"]').getAttribute('content')
-    expect(description).toContain('NIDUGA')
+    expect(description).toContain('Armenia, Quindio')
     expect(description).toBeTruthy()
   })
 
@@ -43,7 +42,7 @@ test.describe('Homepage', () => {
   test('should have canonical URL', async ({ page }) => {
     const canonical = await page.locator('link[rel="canonical"]').getAttribute('href')
     expect(canonical).toBeTruthy()
-    expect(canonical).toContain('nicolasdurangarces.com')
+    expect(canonical).toBe('https://niduga.dev/')
   })
 
   test('should have hreflang alternate tags for SEO', async ({ page }) => {
@@ -65,24 +64,30 @@ test.describe('Homepage', () => {
       expect(data['@context']).toBe('https://schema.org')
       expect(data['@graph']).toBeDefined()
 
-      // Check for Person schema
       const person = data['@graph'].find((item: any) => item['@type'] === 'Person')
       expect(person).toBeDefined()
       expect(person.name).toBe('Nicolas Duran Garces')
-      expect(person.jobTitle).toBeTruthy()
+      expect(person.address.addressLocality).toBe('Armenia')
 
-      // Check for WebSite schema
       const website = data['@graph'].find((item: any) => item['@type'] === 'WebSite')
       expect(website).toBeDefined()
 
-      // Check for BreadcrumbList schema
-      const breadcrumbs = data['@graph'].find((item: any) => item['@type'] === 'BreadcrumbList')
-      expect(breadcrumbs).toBeDefined()
+      const faqPage = data['@graph'].find((item: any) => item['@type'] === 'FAQPage')
+      expect(faqPage).toBeDefined()
     }
+  })
+
+  test('should expose a dedicated english route with localized metadata', async ({ page }) => {
+    await page.goto('/en/')
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+    await expect(page).toHaveTitle(/Backend software engineer/)
+
+    const canonical = await page.locator('link[rel="canonical"]').getAttribute('href')
+    expect(canonical).toBe('https://niduga.dev/en/')
   })
 
   test('should be responsive on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
-    await expect(page.locator('text=Nicolas Duran Garces')).toBeVisible()
+    await expect(page.locator('h1')).toContainText('Nicolas Duran Garces')
   })
 })

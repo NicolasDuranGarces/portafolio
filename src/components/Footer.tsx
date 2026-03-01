@@ -5,7 +5,7 @@ export function Footer() {
   const year = new Date().getFullYear()
   return (
     <footer>
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
         <small>© {year} {t('footer.owner')}. {t('footer.rights')}</small>
         <small>{t('footer.madeWith')}</small>
       </div>

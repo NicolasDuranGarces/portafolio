@@ -69,7 +69,8 @@ describe('SocialLinks Component', () => {
       
       const link = screen.getByRole('link', { name: /github/i })
       expect(link).toHaveAttribute('target', '_blank')
-      expect(link).toHaveAttribute('rel', 'noreferrer')
+      expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'))
+      expect(link).toHaveAttribute('rel', expect.stringContaining('noreferrer'))
     })
 
     it('should NOT open email links in new tab', () => {

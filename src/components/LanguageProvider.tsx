@@ -1,8 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { es } from '../i18n/es'
 import { en } from '../i18n/en'
+import {
+  type SiteLocale,
+  getLocalizedPath,
+  getPreferredLocale,
+  getLocaleFromPathname,
+} from '../lib/site'
 
-export type Lang = 'es' | 'en'
+export type Lang = SiteLocale
 type Dict = typeof es
 
 const dicts: Record<Lang, Dict> = { es, en }
@@ -16,26 +22,42 @@ type Ctx = {
 
 const LanguageCtx = createContext<Ctx | null>(null)
 
-const getInitialLang = (): Lang => {
-  if (typeof window === 'undefined') return 'es'
-  const params = new URLSearchParams(window.location.search)
-  const fromQuery = params.get('lang')
-  if (fromQuery === 'es' || fromQuery === 'en') return fromQuery
-  const stored = localStorage.getItem('lang')
-  if (stored === 'es' || stored === 'en') return stored
-  return 'es'
+type Props = {
+  children: React.ReactNode
+  initialLang?: Lang
 }
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Lang>(getInitialLang)
+const getInitialLang = (initialLang?: Lang): Lang => {
+  if (initialLang) return initialLang
+  if (typeof window === 'undefined') return 'es'
+  return getPreferredLocale(window.location.pathname, window.location.search, localStorage.getItem('lang'))
+}
+
+export function LanguageProvider({ children, initialLang }: Props) {
+  const [lang, setLang] = useState<Lang>(() => getInitialLang(initialLang))
 
   useEffect(() => {
-    localStorage.setItem('lang', lang)
     if (typeof window === 'undefined') return
-    const url = new URL(window.location.href)
-    url.searchParams.set('lang', lang)
-    window.history.replaceState({}, '', url)
+    localStorage.setItem('lang', lang)
+
+    const targetPath = getLocalizedPath(lang, window.location.hash)
+    const currentPath = `${window.location.pathname}${window.location.hash}`
+    if (currentPath !== targetPath) {
+      window.history.replaceState({}, '', targetPath)
+    }
   }, [lang])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const syncLocaleFromPath = () => {
+      const nextLang = getLocaleFromPathname(window.location.pathname)
+      setLang(currentLang => (currentLang === nextLang ? currentLang : nextLang))
+    }
+
+    window.addEventListener('popstate', syncLocaleFromPath)
+    return () => window.removeEventListener('popstate', syncLocaleFromPath)
+  }, [])
 
   const t = useCallback((key: string) => {
     const parts = key.split('.')
@@ -49,7 +71,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<Ctx>(() => ({
     lang,
-    toggle: () => setLang(l => (l === 'es' ? 'en' : 'es')),
+    toggle: () => setLang(current => (current === 'es' ? 'en' : 'es')),
     set: setLang,
     t,
   }), [lang, t])

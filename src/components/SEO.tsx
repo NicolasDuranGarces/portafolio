@@ -1,75 +1,55 @@
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { SEO as cfg } from '../seo.config'
 import { useLanguage } from './LanguageProvider'
+import { getFaqEntries } from '../content/faq'
+import { getAbsoluteUrl, getAlternateUrls, getCanonicalPath } from '../lib/site'
 
-const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'ref']
-
-export function SEOProvider({ children }: { children: React.ReactNode }) {
-  return <HelmetProvider>{children}</HelmetProvider>
+export function SEOProvider({ children, context }: { children: React.ReactNode; context?: Record<string, unknown> }) {
+  return <HelmetProvider context={context}>{children}</HelmetProvider>
 }
 
-const getAbsoluteUrl = (path: string) => {
-  const base = cfg.siteUrl.endsWith('/') ? cfg.siteUrl.slice(0, -1) : cfg.siteUrl
-  if (path.startsWith('http')) return path
-  if (path.startsWith('/')) return `${base}${path}`
-  return `${base}/${path}`
+type Props = {
+  pathname?: string
 }
 
-export function SEOHead() {
+export function SEOHead({ pathname }: Props) {
   const { lang, t } = useLanguage()
   const locale = lang === 'es' ? cfg.locale : cfg.alternateLocale
-  const pageTitle = lang === 'es'
-    ? 'Nicolas Duran Garces (NIDUGA) · Ingeniero de Software Backend | Python FastAPI'
-    : 'Nicolas Duran Garces (NIDUGA) · Backend Software Engineer | Python FastAPI'
-  const rawDesc = lang === 'es'
-    ? cfg.description
-    : 'Nicolas Duran Garces (NIDUGA) - Backend software engineer specialized in Python (FastAPI, Django), scalable API architecture, and observable systems. Full-stack capabilities with React for end-to-end delivery. DevOps experience with Docker, AWS Lambda, and CI/CD pipelines.'
-  const description = rawDesc.length > 155 ? `${rawDesc.slice(0, 152)}…` : rawDesc
-  const isBrowser = typeof window !== 'undefined'
-  const relativePath = isBrowser ? `${window.location.pathname}${window.location.search}` : '/'
-  const absoluteUrl = getAbsoluteUrl(relativePath || '/')
-  const canonicalUrl = (() => {
-    const url = new URL(absoluteUrl)
-    trackingParams.forEach(param => url.searchParams.delete(param))
-    return url.toString()
-  })()
+  const canonicalPath = getCanonicalPath(lang)
+  const canonicalUrl = getAbsoluteUrl(pathname && pathname.startsWith('/en') ? '/en/' : canonicalPath)
+  const description = t('seo.description')
+  const pageTitle = t('seo.title')
   const ogImage = getAbsoluteUrl(cfg.image)
   const robots = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
-  const keywords = cfg.keywords?.join(', ')
-  const alternates = [
-    { hrefLang: 'es-CO', href: getAbsoluteUrl('/') },
-    { hrefLang: 'en-US', href: getAbsoluteUrl('/?lang=en') },
-    { hrefLang: 'x-default', href: getAbsoluteUrl('/') },
-  ]
-  const breadcrumbs = [
-    { id: '#about', label: t('nav.about') },
-    { id: '#skills', label: t('nav.skills') },
-    { id: '#experience', label: t('nav.experience') },
-    { id: '#projects', label: t('nav.projects') },
-    { id: '#contact', label: t('nav.contact') },
-  ].map((item, index) => ({
-    '@type': 'ListItem',
-    position: index + 1,
-    name: item.label,
-    item: getAbsoluteUrl(`/${item.id}`.replace('//', '/')),
-  }))
+  const keywords = [...cfg.keywords.shared, ...cfg.keywords[lang]].join(', ')
+  const alternates = getAlternateUrls()
+  const faqEntries = getFaqEntries(lang)
+  const sameAs = cfg.sameAs
+
   const schemaGraph = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'Person',
+        '@id': `${getAbsoluteUrl('/') }#person`,
         name: cfg.author,
-        jobTitle: cfg.jobTitle,
+        alternateName: cfg.alternateName,
+        jobTitle: lang === 'es' ? 'Ingeniero de software backend' : 'Backend software engineer',
         description,
         url: canonicalUrl,
-        sameAs: cfg.sameAs,
-        email: `mailto:${cfg.contact.email}`,
+        sameAs,
+        email: `mailto:${cfg.email}`,
         address: {
           '@type': 'PostalAddress',
-          addressLocality: cfg.contact.location,
-          addressCountry: 'CO',
+          addressLocality: cfg.location.city,
+          addressRegion: cfg.location.region,
+          addressCountry: cfg.location.countryCode,
         },
-        knowsAbout: cfg.keywords ?? [],
+        homeLocation: {
+          '@type': 'Place',
+          name: `${cfg.location.city}, ${cfg.location.region}, ${cfg.location.country}`,
+        },
+        knowsAbout: [...cfg.keywords.shared, ...cfg.keywords[lang]],
         worksFor: {
           '@type': 'Organization',
           name: cfg.worksFor.name,
@@ -77,22 +57,48 @@ export function SEOHead() {
       },
       {
         '@type': 'WebSite',
+        '@id': `${getAbsoluteUrl('/')}#website`,
         name: cfg.siteName,
         url: getAbsoluteUrl('/'),
-        inLanguage: locale,
+        inLanguage: ['es-CO', 'en-US'],
         description,
         publisher: {
-          '@type': 'Person',
-          name: cfg.author,
-        },
-        potentialAction: {
-          '@type': 'ContactAction',
-          target: `${getAbsoluteUrl('/#contact')}`,
+          '@id': `${getAbsoluteUrl('/')}#person`,
         },
       },
       {
-        '@type': 'BreadcrumbList',
-        itemListElement: breadcrumbs,
+        '@type': 'WebPage',
+        '@id': `${canonicalUrl}#webpage`,
+        url: canonicalUrl,
+        name: pageTitle,
+        description,
+        inLanguage: locale,
+        isPartOf: {
+          '@id': `${getAbsoluteUrl('/')}#website`,
+        },
+        about: {
+          '@id': `${getAbsoluteUrl('/')}#person`,
+        },
+      },
+      {
+        '@type': 'CollectionPage',
+        name: lang === 'es' ? 'Portafolio backend y proyectos destacados' : 'Backend portfolio and featured projects',
+        url: canonicalUrl,
+        inLanguage: locale,
+        about: {
+          '@id': `${getAbsoluteUrl('/')}#person`,
+        },
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: faqEntries.map((entry) => ({
+          '@type': 'Question',
+          name: entry.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: entry.answer,
+          },
+        })),
       },
     ],
   }
@@ -125,7 +131,7 @@ export function SEOHead() {
       <meta property="og:locale" content={locale} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:secure_url" content={ogImage} />
-      <meta property="og:image:alt" content={`${cfg.author} portfolio preview`} />
+      <meta property="og:image:alt" content={lang === 'es' ? 'Vista previa del portafolio de Nicolas Duran Garces' : 'Preview of Nicolas Duran Garces portfolio'} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -138,7 +144,7 @@ export function SEOHead() {
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
-      <meta name="twitter:image:alt" content={`${cfg.author} portfolio preview`} />
+      <meta name="twitter:image:alt" content={lang === 'es' ? 'Vista previa del portafolio de Nicolas Duran Garces' : 'Preview of Nicolas Duran Garces portfolio'} />
 
       {/* JSON-LD */}
       <script type="application/ld+json">

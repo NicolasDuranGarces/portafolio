@@ -16,7 +16,7 @@ export function CornerControls() {
   return (
     <div className="corner-controls" role="group" aria-label="display preferences">
       <button className="corner-btn" type="button" onClick={toggleLang} aria-label={langLabel} title={langLabel}>
-        <span>{lang.toUpperCase()}</span>
+        <span>{nextLang}</span>
       </button>
       <button className="corner-btn" type="button" onClick={toggleTheme} aria-label={themeLabel} title={themeLabel}>
         <span>{mounted ? (theme === 'dark' ? '🌙' : '☀️') : '•'}</span>

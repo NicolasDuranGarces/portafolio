@@ -5,12 +5,8 @@ import { LanguageProvider, useLanguage } from './LanguageProvider'
 describe('LanguageProvider', () => {
   beforeEach(() => {
     localStorage.clear()
-    // Reset window.location
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { href: 'http://localhost/', search: '', pathname: '/' },
-    })
-    window.history.replaceState = vi.fn()
+    window.history.replaceState({}, '', '/')
+    vi.restoreAllMocks()
   })
 
   it('should initialize with default language (es)', () => {
@@ -31,9 +27,9 @@ describe('LanguageProvider', () => {
     expect(result.current.lang).toBe('en')
   })
 
-  it('should prioritize query param over localStorage', () => {
+  it('should use legacy query param as a fallback when path is root', () => {
     localStorage.setItem('lang', 'es')
-    window.location.search = '?lang=en'
+    window.history.replaceState({}, '', '/?lang=en')
 
     const { result } = renderHook(() => useLanguage(), {
       wrapper: LanguageProvider,
@@ -43,6 +39,7 @@ describe('LanguageProvider', () => {
   })
 
   it('should toggle language from es to en', () => {
+    const replaceState = vi.spyOn(window.history, 'replaceState')
     const { result } = renderHook(() => useLanguage(), {
       wrapper: LanguageProvider,
     })
@@ -55,10 +52,11 @@ describe('LanguageProvider', () => {
 
     expect(result.current.lang).toBe('en')
     expect(localStorage.getItem('lang')).toBe('en')
+    expect(replaceState).toHaveBeenCalledWith({}, '', '/en/')
   })
 
   it('should toggle language from en to es', () => {
-    localStorage.setItem('lang', 'en')
+    window.history.replaceState({}, '', '/en/')
 
     const { result } = renderHook(() => useLanguage(), {
       wrapper: LanguageProvider,
@@ -72,6 +70,7 @@ describe('LanguageProvider', () => {
 
     expect(result.current.lang).toBe('es')
     expect(localStorage.getItem('lang')).toBe('es')
+    expect(window.location.pathname).toBe('/')
   })
 
   it('should set language directly', () => {
@@ -104,7 +103,7 @@ describe('LanguageProvider', () => {
   })
 
   it('should translate keys correctly in English', () => {
-    localStorage.setItem('lang', 'en')
+    window.history.replaceState({}, '', '/en/')
 
     const { result } = renderHook(() => useLanguage(), {
       wrapper: LanguageProvider,
@@ -127,7 +126,7 @@ describe('LanguageProvider', () => {
       wrapper: LanguageProvider,
     })
 
-    expect(result.current.t('hero.title')).toBe('Diseño plataformas que escalan')
+    expect(result.current.t('hero.title')).toBe('Backend con Python, FastAPI, Node.js y arquitectura lista para produccion')
     expect(result.current.t('about.title')).toBe('Sobre mí')
   })
 
@@ -141,7 +140,8 @@ describe('LanguageProvider', () => {
     consoleError.mockRestore()
   })
 
-  it('should update URL with lang query param when language changes', () => {
+  it('should update URL with localized path when language changes', () => {
+    const replaceState = vi.spyOn(window.history, 'replaceState')
     const { result } = renderHook(() => useLanguage(), {
       wrapper: LanguageProvider,
     })
@@ -150,6 +150,6 @@ describe('LanguageProvider', () => {
       result.current.set('en')
     })
 
-    expect(window.history.replaceState).toHaveBeenCalled()
+    expect(replaceState).toHaveBeenCalledWith({}, '', '/en/')
   })
 })

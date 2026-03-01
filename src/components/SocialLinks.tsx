@@ -17,11 +17,10 @@ export function SocialLinks({ github, linkedin, twitter, email }: Props) {
   return (
     <div style={{ display: 'flex', gap: '.6rem', flexWrap: 'wrap' }}>
       {items.map(i => (
-        <a key={i.label} className="btn ghost" href={i.href} target={i.href.startsWith('mailto:') ? undefined : '_blank'} rel="noreferrer">
+        <a key={i.label} className="btn ghost" href={i.href} target={i.href.startsWith('mailto:') ? undefined : '_blank'} rel={i.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}>
           {i.label}
         </a>
       ))}
     </div>
   )
 }
-

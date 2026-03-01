@@ -25,11 +25,11 @@ A modern, fully-featured portfolio website built with React, TypeScript, and Vit
 ## Features
 
 ### Core Functionality
-- **Bilingual Support**: Full internationalization (Spanish/English) with URL query params and localStorage persistence
+- **Bilingual Support**: Full internationalization (Spanish/English) with dedicated routes (`/` and `/en/`) plus localStorage preference
 - **Theme Switching**: Light/dark theme with system preference detection and persistence
 - **Smooth Animations**: Powered by Framer Motion with accessibility considerations
 - **Responsive Design**: Mobile-first approach with optimized layouts for all screen sizes
-- **SEO Optimized**: Meta tags, JSON-LD structured data, sitemap, and hreflang tags
+- **SEO Optimized**: Prerendered HTML, meta tags, JSON-LD structured data, sitemap, canonical, and hreflang tags
 - **PWA Ready**: Manifest file and service worker support
 
 ### Sections
@@ -61,8 +61,9 @@ A modern, fully-featured portfolio website built with React, TypeScript, and Vit
 - **CSS Variables**: Theme-aware styling with custom properties
 
 ### SEO & Meta
-- **React Helmet Async**: Dynamic meta tags and structured data
-- **JSON-LD**: Structured data for Person, WebSite, and BreadcrumbList schemas
+- **React Helmet Async**: SEO meta tags and structured data
+- **JSON-LD**: Structured data for Person, WebSite, WebPage, CollectionPage, and FAQPage
+- **Prerendering**: Static HTML generation for `/` and `/en/`
 - **Sitemap**: Bilingual sitemap for search engines
 
 ### Testing
@@ -293,10 +294,10 @@ Manages light/dark theme with:
 
 #### LanguageProvider (`src/components/LanguageProvider.tsx`)
 Handles internationalization with:
-- ES/EN localization with localStorage + URL query params
+- ES/EN localization with route-based locales plus localStorage preference
 - `useLanguage()` hook exposing `{ lang, toggle, set, t }`
 - `t(key)` function for dot-notation translation keys (e.g., `t('hero.title')`)
-- Query param `?lang=en|es` overrides stored preference
+- `/` serves Spanish and `/en/` serves English
 
 Both providers wrap the entire app in `src/App.tsx`.
 
@@ -333,8 +334,8 @@ All text content lives in `src/i18n/{es,en}.ts` dictionaries.
 - `src/components/SEO.tsx` uses `react-helmet-async` to inject:
   - `<title>` and `<meta>` tags
   - Open Graph and Twitter Card tags
-  - JSON-LD structured data (Person, WebSite, BreadcrumbList)
-  - Hreflang tags for bilingual support
+  - JSON-LD structured data (Person, WebSite, WebPage, CollectionPage, FAQPage)
+  - Canonical and hreflang tags for bilingual support
 - Localized SEO content from `i18n/{lang}.seo.*`
 - Configuration in `src/seo.config.ts`
 
@@ -399,12 +400,10 @@ const { t } = useLanguage()
 
 ### Optimizations Implemented
 
-1. **Lazy Loading & Code Splitting**
-   - Heavy sections lazy-loaded via `React.lazy()` in `App.tsx`
-   - Suspense fallbacks with min-height to prevent layout shift
-   - Automatic chunk splitting by Vite
-   - Main bundle: ~300KB (includes React, Framer Motion)
-   - Section chunks: 1-11KB each (lazy loaded)
+1. **Prerendered Delivery**
+   - Static HTML generated for `/` and `/en/`
+   - Metadata and main content available before client hydration
+   - Automatic chunk splitting by Vite for the client bundle
 
 2. **Bundle Analysis**
    - Run `npm run build` to see chunk sizes
@@ -422,18 +421,19 @@ const { t } = useLanguage()
 ## SEO
 
 ### Keywords Strategy
-**Primary**: Nicolas Duran Garces, NIDUGA, niduga
-**Secondary**: Backend Python, FastAPI, DevOps, Clean Architecture
+**Primary**: Nicolas Duran Garces, NIDUGA, niduga.dev
+**Secondary**: Ingeniero de software Armenia Quindio, backend developer, Python FastAPI, software architecture
 
 Configure in `src/seo.config.ts`.
 
 ### SEO Features
-- **Meta Tags**: Dynamic via react-helmet-async
-- **Structured Data**: JSON-LD schemas (Person, WebSite, BreadcrumbList)
-- **Canonical URLs**: With tracking param cleanup
-- **Hreflang Tags**: ES/EN localization
+- **Meta Tags**: Localized via react-helmet-async
+- **Structured Data**: JSON-LD schemas (Person, WebSite, WebPage, CollectionPage, FAQPage)
+- **Canonical URLs**: `https://niduga.dev/` and `https://niduga.dev/en/`
+- **Hreflang Tags**: ES/EN route localization
 - **Social Media**: Open Graph and Twitter Card meta tags
-- **Sitemap**: `public/sitemap.xml` with bilingual support
+- **Prerendered HTML**: Static HTML output for crawlers and social scrapers
+- **Sitemap**: `public/sitemap.xml` with `/` and `/en/`
 - **Robots**: `public/robots.txt` configured
 - **PWA**: `public/site.webmanifest`
 
