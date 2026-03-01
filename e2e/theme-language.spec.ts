@@ -57,6 +57,24 @@ test.describe('Theme and Language Toggle', () => {
     }
   })
 
+  test('should update canonical when toggling from english to spanish', async ({ page }) => {
+    await page.goto('/en/')
+    await page.waitForLoadState('networkidle')
+
+    const canonicalEn = await page.locator('link[rel="canonical"]').getAttribute('href')
+    expect(canonicalEn).toBe('https://niduga.dev/en/')
+
+    const langButton = page.locator('button[aria-label*="language"], button[aria-label*="idioma"]').first()
+    await langButton.click()
+    await page.waitForTimeout(300)
+
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es')
+    expect(new URL(page.url()).pathname).toBe('/')
+
+    const canonicalEs = await page.locator('link[rel="canonical"]').getAttribute('href')
+    expect(canonicalEs).toBe('https://niduga.dev/')
+  })
+
   test('should persist language in localStorage and path', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 

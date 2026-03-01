@@ -8,15 +8,11 @@ export function SEOProvider({ children, context }: { children: React.ReactNode; 
   return <HelmetProvider context={context}>{children}</HelmetProvider>
 }
 
-type Props = {
-  pathname?: string
-}
-
-export function SEOHead({ pathname }: Props) {
+export function SEOHead() {
   const { lang, t } = useLanguage()
   const locale = lang === 'es' ? cfg.locale : cfg.alternateLocale
   const canonicalPath = getCanonicalPath(lang)
-  const canonicalUrl = getAbsoluteUrl(pathname && pathname.startsWith('/en') ? '/en/' : canonicalPath)
+  const canonicalUrl = getAbsoluteUrl(canonicalPath)
   const description = t('seo.description')
   const pageTitle = t('seo.title')
   const ogImage = getAbsoluteUrl(cfg.image)
