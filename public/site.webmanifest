@@ -1,9 +1,9 @@
 {
   "name": "Nicolas Duran Garces · Software Engineer",
   "short_name": "Nicolas Duran",
-  "description": "Portafolio de Nicolas Duran Garces: ingeniería backend en Python/FastAPI, React y plataformas observables.",
-  "id": "/?lang=es",
-  "start_url": "/?lang=es",
+  "description": "Portafolio de Nicolas Duran Garces (NIDUGA): backend engineering, Python/FastAPI, Docker y arquitectura de software.",
+  "id": "/",
+  "start_url": "/",
   "scope": "/",
   "lang": "es-CO",
   "dir": "ltr",

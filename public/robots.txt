@@ -3,5 +3,5 @@ Allow: /
 Disallow: /node_modules/
 Disallow: /dist/
 
-Sitemap: https://nicolasdurangarces.com/sitemap.xml
-Host: nicolasdurangarces.com
+Sitemap: https://niduga.dev/sitemap.xml
+Host: niduga.dev

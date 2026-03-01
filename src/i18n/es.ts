@@ -1,7 +1,7 @@
 export const es = {
   seo: {
-    title: 'Nicolas Duran Garces — Portafolio',
-    description: 'Desarrollador de software. Backend con Python (FastAPI, Django), UIs en React y despliegue con Docker. Experiencia creando APIs escalables y productos de calidad.'
+    title: 'Nicolas Duran Garces (NIDUGA) | Ingeniero de software backend en Armenia, Quindio',
+    description: 'Portafolio de Nicolas Duran Garces, ingeniero de software backend en Armenia, Quindio. Especialista en Python, FastAPI, APIs escalables, Docker, AWS y arquitectura de software para equipos remotos.'
   },
   nav: {
     about: 'Sobre mí',
@@ -13,19 +13,20 @@ export const es = {
     sectionsAria: 'Navegación principal',
   },
   hero: {
-    overline: 'Software engineer · Backend specialist',
+    overline: 'NIDUGA · Software engineer · Backend specialist',
     greeting: 'Nicolas Duran Garces',
-    title: 'Diseño plataformas que escalan',
+    headline: 'Nicolas Duran Garces, ingeniero de software backend en Armenia, Quindio',
+    title: 'Backend con Python, FastAPI, Node.js y arquitectura lista para produccion',
     highlight: 'con arquitectura limpia y datos confiables',
-    sub: 'Lidero el backend con Python, Node o el stack que haga falta, y me acerco al front cuando un feature necesita visión end-to-end.',
+    sub: 'Trabajo como backend developer para equipos que necesitan APIs escalables, despliegues con Docker y AWS, y una ejecucion tecnica que tambien entiende producto.',
     role: 'Ingeniero de software backend',
     avatarAlt: 'Retrato de Nicolas Duran Garces sonriendo',
     ctaProjects: 'Ver proyectos',
     ctaContact: 'Contactar',
     ctaCV: 'Descargar CV',
     downloadCV: 'Descargar mi hoja de vida en formato PDF',
-    tagline: 'Disponible para roles backend senior y colaboraciones enfocadas en performance y observabilidad',
-    specialties: 'Arquitecturas orientadas a eventos|APIs observables|Front pragmático cuando suma valor',
+    tagline: 'Disponible para roles backend senior, arquitectura de software y colaboraciones remotas desde Armenia, Quindio',
+    specialties: 'Python y FastAPI|APIs observables|Docker y AWS|Backend para producto y plataforma',
     spotlight: {
       title: 'Actitud y colaboración',
       body: 'Actitud positiva, comunicación directa y foco diario en desbloquear al equipo.',
@@ -39,13 +40,13 @@ export const es = {
   },
   about: {
     title: 'Sobre mí',
-    lead: 'Arquitecto, construyo y opero backends escalables con métricas claras',
-    tagline: 'Partner técnico para productos data-driven',
-    story: 'Soy un apasionado por las plataformas backend: diseño arquitectura en Python, Node/TypeScript y Java, empaquetando servicios en Docker y Lambdas con métricas claras.|Trabajo en conjunto con producto, data y DevOps para transformar objetivos en servicios observables, cubriendo bases de datos como DynamoDB, MongoDB, MySQL y PostgreSQL.',
+    lead: 'Construyo y opero plataformas backend escalables con foco en claridad, observabilidad y entrega real',
+    tagline: 'Partner tecnico para producto, plataforma y APIs',
+    story: 'Soy Nicolas Duran Garces, tambien conocido como NIDUGA. Trabajo como ingeniero de software backend desde Armenia, Quindio, construyendo plataformas en Python, FastAPI, Node.js y Java para equipos que quieren crecer sin perder control tecnico.|Me muevo bien entre arquitectura de APIs, modelado de datos, Docker, AWS y automatizacion de despliegues. Cuando un feature lo necesita, tambien cubro el frente web con React para cerrar la entrega completa.',
     focusTitle: 'En qué me enfoco hoy',
     focusHeadline: 'Arquitectura & Backend',
     focusAria: 'Lista de focos actuales',
-    focus: 'Arquitectura de software observable para Python, Java y TypeScript|Backends en Docker listos para AWS Lambda y contenedores|Modelado de datos en DynamoDB, MongoDB, MySQL y PostgreSQL|Docencia y mentoría en diseño de APIs y operaciones|Vibe coding y apps sin código con Lovable, Xano y Bubble',
+    focus: 'Arquitectura backend para producto y plataforma|APIs en Python, FastAPI y Node.js|Docker, Nginx, AWS Lambda y despliegues cloud|Modelado de datos en PostgreSQL, MySQL, MongoDB y DynamoDB|Mentoria tecnica, code review y discovery de arquitectura',
     cloudTitle: 'Cloud y servicios',
     dataTitle: 'Bases de datos',
     highlightsAria: 'Destacados',
@@ -58,9 +59,9 @@ export const es = {
       experience: 'Experiencia',
       experienceValue: '5+ años liderando backend y plataformas',
       availability: 'Disponibilidad',
-      availabilityValue: 'Disponible para roles backend senior y consultorías DevOps',
+      availabilityValue: 'Disponible para roles backend senior y consultorias tecnicas',
     },
-    principles: 'Backend observable|Arquitectura limpia|Mentoría activa|Producto + data',
+    principles: 'Backend observable|Arquitectura limpia|Mentoria activa|Producto + data',
     highlights: {
       architecture: {
         title: 'Arquitecturas medibles',
@@ -122,7 +123,7 @@ export const es = {
   },
   contact: {
     title: 'Contacto',
-    lead: '¿Hablamos? Estoy abierto a nuevas oportunidades',
+    lead: '¿Hablamos? Estoy abierto a nuevas oportunidades backend y consultoria tecnica',
     name: 'Nombre',
     email: 'Email',
     message: 'Mensaje',
@@ -153,6 +154,14 @@ export const es = {
   footer: {
     owner: 'Nicolas Duran Garces',
     rights: 'Todos los derechos reservados.',
-    madeWith: 'Hecho con React + Vite',
+    madeWith: 'Hecho con React + Vite y optimizado para SEO tecnico',
+  },
+  services: {
+    title: 'Como aporto',
+    lead: 'Servicios y frentes donde mas valor entrego como backend developer y software engineer',
+  },
+  faq: {
+    title: 'Preguntas frecuentes',
+    lead: 'Respuestas rapidas para busquedas sobre Nicolas Duran Garces, NIDUGA y mi trabajo como ingeniero de software backend.',
   },
 }

@@ -1,4 +1,3 @@
-import { lazy, Suspense } from 'react'
 import { ThemeProvider } from './components/ThemeProvider'
 import { LanguageProvider } from './components/LanguageProvider'
 import { Hero } from './sections/Hero'
@@ -8,41 +7,39 @@ import { ScrollProgress } from './components/ScrollProgress'
 import { ParallaxOrbs } from './components/ParallaxOrbs'
 import { SideRails } from './components/SideRails'
 import { CornerControls } from './components/CornerControls'
+import { About } from './sections/About'
+import { Skills } from './sections/Skills'
+import { Projects } from './sections/Projects'
+import { Contact } from './sections/Contact'
+import { Experience } from './sections/Experience'
+import { Services } from './sections/Services'
+import { FAQ } from './sections/FAQ'
+import type { Lang } from './components/LanguageProvider'
 
-// Lazy load heavy sections for better performance
-const About = lazy(() => import('./sections/About').then(m => ({ default: m.About })))
-const Skills = lazy(() => import('./sections/Skills').then(m => ({ default: m.Skills })))
-const Projects = lazy(() => import('./sections/Projects').then(m => ({ default: m.Projects })))
-const Contact = lazy(() => import('./sections/Contact').then(m => ({ default: m.Contact })))
-const Experience = lazy(() => import('./sections/Experience').then(m => ({ default: m.Experience })))
+type Props = {
+  initialLang?: Lang
+  pathname?: string
+}
 
-export function App() {
+export function App({ initialLang, pathname }: Props) {
   return (
-    <LanguageProvider>
+    <LanguageProvider initialLang={initialLang}>
       <ThemeProvider>
         <div className="app">
-          <SEOHead />
+          <SEOHead pathname={pathname} />
           <ScrollProgress />
           <ParallaxOrbs />
           <SideRails />
           <CornerControls />
-          <main>
+          <main id="main-content">
             <Hero />
-            <Suspense fallback={<div style={{ minHeight: '400px' }} />}>
-              <Experience />
-            </Suspense>
-            <Suspense fallback={<div style={{ minHeight: '400px' }} />}>
-              <About />
-            </Suspense>
-            <Suspense fallback={<div style={{ minHeight: '400px' }} />}>
-              <Skills />
-            </Suspense>
-            <Suspense fallback={<div style={{ minHeight: '600px' }} />}>
-              <Projects />
-            </Suspense>
-            <Suspense fallback={<div style={{ minHeight: '400px' }} />}>
-              <Contact />
-            </Suspense>
+            <Experience />
+            <About />
+            <Skills />
+            <Services />
+            <Projects />
+            <FAQ />
+            <Contact />
           </main>
           <Footer />
         </div>

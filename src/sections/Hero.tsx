@@ -14,7 +14,7 @@ export function Hero() {
   ]
 
   return (
-    <section id="top" className="hero-section container">
+    <section id="top" className="hero-section container" aria-labelledby="hero-title">
       <div className="hero-grid">
         <motion.div
           className="hero-copy"
@@ -24,9 +24,10 @@ export function Hero() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
           <p className="hero-overline">{t('hero.overline')}</p>
-          <h1>
-            {t('hero.title')} <span className="gradient-text">{t('hero.highlight')}</span>
-          </h1>
+          <h1 id="hero-title">{t('hero.headline')}</h1>
+          <p className="lead" style={{ marginBottom: '1rem' }}>
+            <span className="gradient-text">{t('hero.title')}</span>
+          </p>
           <p className="hero-description">{t('hero.sub')}</p>
 
           <div className="hero-specialties">
@@ -54,7 +55,7 @@ export function Hero() {
         >
           <div className="hero-panel__identity">
             <div className="hero-avatar">
-              <img src="/assets/avatar.jpg" alt={t('hero.avatarAlt')} loading="lazy" />
+              <img src="/assets/avatar.jpg" alt={t('hero.avatarAlt')} loading="eager" />
             </div>
             <span className="hero-panel__name">{t('hero.greeting')}</span>
             <span className="hero-panel__role">{t('hero.role')}</span>

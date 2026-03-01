@@ -4,15 +4,21 @@ type Theme = 'light' | 'dark'
 type Ctx = { theme: Theme; toggle: () => void; set: (t: Theme) => void }
 const ThemeCtx = createContext<Ctx | null>(null)
 
+const getInitialTheme = (): Theme => {
+  if (typeof window === 'undefined') return 'dark'
+
+  const saved = window.localStorage.getItem('theme') as Theme | null
+  if (saved) return saved
+
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  return prefersDark ? 'dark' : 'light'
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const saved = window.localStorage.getItem('theme') as Theme | null
-    if (saved) return saved
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    return prefersDark ? 'dark' : 'light'
-  })
+  const [theme, setTheme] = useState<Theme>(getInitialTheme)
 
   useEffect(() => {
+    if (typeof document === 'undefined') return
     const root = document.documentElement
     root.setAttribute('data-theme', theme)
     window.localStorage.setItem('theme', theme)
@@ -32,4 +38,3 @@ export function useTheme() {
   if (!ctx) throw new Error('useTheme must be used within ThemeProvider')
   return ctx
 }
-

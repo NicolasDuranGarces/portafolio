@@ -59,12 +59,10 @@ test.describe('Navigation', () => {
   test('should display project cards', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 
-    // Navigate to projects section
     await page.goto('/#projects')
     await page.waitForTimeout(500)
 
-    // Check if project cards are visible
-    const projectCards = page.locator('.project-card')
+    const projectCards = page.locator('.project-bento-card')
     const count = await projectCards.count()
 
     expect(count).toBeGreaterThan(0)

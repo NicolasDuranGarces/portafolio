@@ -3,151 +3,75 @@ import { Section } from '../components/Section'
 import { useLanguage } from '../components/LanguageProvider'
 import { FiCpu, FiCode, FiCloud, FiShield, FiZap, FiDatabase, FiTerminal } from 'react-icons/fi'
 
-// Expanded skill lists with comprehensive AWS services
-const backend = [
-  'Python', 'FastAPI', 'Django', 'Flask', 
-  'Java', 'Spring Boot', 'Spring Cloud',
-  'Node.js', 'Express', 'NestJS',
-  'Go', 'Gin', 'Echo',
-  'GraphQL', 'REST APIs', 'gRPC',
-  'ORM (SQLAlchemy, Hibernate)', 'DB Architecture', 'Query Optimization'
-]
-
-const databases = [
-  'PostgreSQL', 'MySQL', 'MariaDB',
-  'MongoDB', 'DynamoDB', 'Cassandra',
-  'Redis', 'Memcached', 'ElastiCache',
-  'Elasticsearch', 'OpenSearch',
-  'TimescaleDB', 'InfluxDB'
-]
-
-const frontend = [
-  'React', 'TypeScript', 'JavaScript',
-  'Vite', 'Webpack', 'CSS Modules', 
-  'Tailwind CSS', 'Material-UI',
-  'Next.js', 'React Query'
-]
-
-const ai = [
-  'AI Agents', 'MCP (Model Context Protocol)',
-  'LLMs Integration', 'RAG (Retrieval Augmented Generation)',
-  'OpenAI API', 'Anthropic Claude', 'Gemini API',
-  'Langchain', 'LlamaIndex',
-  'Prompt Engineering', 'Vector Databases',
-  'Embeddings', 'Fine-tuning'
-]
-
-// Comprehensive AWS services list
-const aws = [
-  // Compute
-  'EC2', 'ECS', 'Fargate', 'Lambda', 'Batch',
-  // Storage
-  'S3', 'EBS', 'EFS', 'Glacier',
-  // Database
-  'RDS (PostgreSQL/MySQL)', 'DynamoDB', 'ElastiCache', 'DocumentDB',
-  // Networking
-  'VPC', 'Route 53', 'CloudFront', 'API Gateway', 'Load Balancer (ALB/NLB)',
-  // Security & Identity
-  'IAM', 'Secrets Manager', 'KMS', 'Cognito', 'WAF', 'Shield',
-  // Monitoring & Management
-  'CloudWatch', 'CloudTrail', 'X-Ray', 'Systems Manager',
-  // CI/CD & Developer Tools
-  'CodePipeline', 'CodeBuild', 'CodeDeploy', 'ECR',
-  // Messaging & Integration
-  'SQS', 'SNS', 'EventBridge', 'Step Functions',
-  // Analytics
-  'Athena', 'Glue', 'Kinesis'
-]
-
-const cloudDevOps = [
-  // Azure
-  'Azure App Service', 'Azure Functions', 'Azure DevOps', 'Azure Storage',
-  // Container Orchestration
-  'Kubernetes', 'Docker', 'Docker Compose', 'Helm',
-  // CI/CD
-  'GitLab CI/CD', 'GitHub Actions', 'Jenkins', 'ArgoCD',
-  // Infrastructure as Code
-  'Terraform', 'CloudFormation', 'Ansible',
-  // Web Servers & Proxies
-  'Nginx', 'Apache', 'Traefik', 'HAProxy',
-  // Linux & Scripting
-  'Linux Administration', 'Bash', 'PowerShell'
-]
-
-const qualitySecurity = [
-  // Testing
-  'Unit Testing (pytest, JUnit)', 'Integration Testing', 
-  'E2E Testing', 'Load Testing (Locust, JMeter)',
-  'TDD', 'BDD',
-  // Code Quality
-  'Static Analysis (SonarQube, Pylint)', 'Code Coverage',
-  'Pre-commit Hooks', 'Linting',
-  // Security
-  'Security Best Practices', 'OWASP Top 10',
-  'Dependency Scanning', 'Container Security',
-  'Secrets Management', 'SSL/TLS',
-  // Architecture
-  'Clean Architecture', 'Domain-Driven Design',
-  'Microservices', 'Event-Driven Architecture',
-  // Standards
-  'OpenAPI/Swagger', 'API Versioning'
-]
-
 const container = { show: { transition: { staggerChildren: 0.08 } } }
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
 
 export function Skills() {
-  const { t } = useLanguage()
-  
+  const { t, lang } = useLanguage()
+
   const categories = [
-    { 
-      icon: FiCpu, 
-      title: 'Backend & Application Development', 
-      skills: backend, 
+    {
+      icon: FiCpu,
+      title: lang === 'es' ? 'Backend y desarrollo de APIs' : 'Backend and API engineering',
+      skills: ['Python', 'FastAPI', 'Django', 'Node.js', 'TypeScript', 'Java', 'Spring Boot', 'REST APIs', 'GraphQL'],
       color: 'var(--primary)',
-      description: 'Experiencia profunda en desarrollo backend con múltiples frameworks y lenguajes'
+      description: lang === 'es'
+        ? 'Construccion de servicios backend, contratos API y capas de dominio para producto y plataformas internas.'
+        : 'Production backend services, API contracts, and domain layers for product and internal platforms.',
     },
-    { 
-      icon: FiDatabase, 
-      title: 'Databases & Data Engineering', 
-      skills: databases, 
+    {
+      icon: FiDatabase,
+      title: lang === 'es' ? 'Datos y persistencia' : 'Data and persistence',
+      skills: ['PostgreSQL', 'MySQL', 'MongoDB', 'DynamoDB', 'Redis', 'Query optimization', 'Data modeling'],
       color: 'var(--accent)',
-      description: 'Arquitectura de datos, optimización de queries, y gestión de bases relacionales y NoSQL'
+      description: lang === 'es'
+        ? 'Modelado de datos, consultas criticas y decisiones de almacenamiento para sistemas que crecen.'
+        : 'Data modeling, critical queries, and storage decisions for systems that need to scale cleanly.',
     },
-    { 
-      icon: FiCloud, 
-      title: 'AWS Cloud Services (Comprehensive)', 
-      skills: aws, 
+    {
+      icon: FiCloud,
+      title: lang === 'es' ? 'AWS y plataforma cloud' : 'AWS and cloud platform work',
+      skills: ['AWS Lambda', 'EC2', 'ECR', 'SQS', 'SNS', 'API Gateway', 'CloudWatch', 'Route 53'],
       color: '#FF9900',
-      description: 'Experiencia extensa con servicios AWS - compute, storage, networking, security, y más'
+      description: lang === 'es'
+        ? 'Infraestructura y servicios cloud para despliegues backend, procesos asincronos y observabilidad.'
+        : 'Cloud infrastructure for backend delivery, asynchronous workflows, and observable systems.',
     },
-    { 
-      icon: FiTerminal, 
-      title: 'Cloud, DevOps & Infrastructure', 
-      skills: cloudDevOps, 
+    {
+      icon: FiTerminal,
+      title: lang === 'es' ? 'DevOps e infraestructura' : 'DevOps and infrastructure',
+      skills: ['Docker', 'Nginx', 'GitHub Actions', 'GitLab CI', 'Terraform', 'Linux', 'Containers', 'CI/CD'],
       color: 'var(--primary)',
-      description: 'Azure, Kubernetes, CI/CD, IaC, y administración de sistemas Linux'
+      description: lang === 'es'
+        ? 'Automatizacion de builds, despliegues y operacion para que los cambios lleguen con control.'
+        : 'Build, deployment, and operations automation so changes reach production with control.',
     },
-    { 
-      icon: FiZap, 
-      title: 'AI & Machine Learning Integration', 
-      skills: ai, 
+    {
+      icon: FiZap,
+      title: lang === 'es' ? 'IA aplicada y automatizacion' : 'Applied AI and automation',
+      skills: ['AI agents', 'MCP', 'RAG', 'OCR', 'LLM integrations', 'Prompt engineering'],
       color: 'var(--success)',
-      description: 'Integración de LLMs, RAG, AI Agents, y soluciones de IA generativa en producción'
+      description: lang === 'es'
+        ? 'Integracion de LLMs y automatizaciones utiles cuando el problema realmente lo necesita.'
+        : 'LLM integration and practical automation when it genuinely improves the product.',
     },
-    { 
-      icon: FiCode, 
-      title: 'Frontend & UI Development', 
-      skills: frontend, 
+    {
+      icon: FiCode,
+      title: lang === 'es' ? 'Frontend pragmatico' : 'Pragmatic frontend',
+      skills: ['React', 'Vite', 'TypeScript', 'CSS', 'Accessibility', 'UI states'],
       color: 'var(--accent)',
-      description: 'Desarrollo frontend moderno con React, TypeScript, y tooling contemporáneo'
+      description: lang === 'es'
+        ? 'Front-end suficiente para cerrar features end-to-end sin perder foco en el backend.'
+        : 'Enough front-end depth to ship end-to-end features without losing the backend focus.',
     },
-    { 
-      icon: FiShield, 
-      title: 'Quality, Security & Architecture', 
-      skills: qualitySecurity, 
+    {
+      icon: FiShield,
+      title: lang === 'es' ? 'Calidad, seguridad y arquitectura' : 'Quality, security, and architecture',
+      skills: ['Clean Architecture', 'DDD', 'Testing', 'Observability', 'Code review', 'Technical mentoring'],
       color: '#dc2626',
-      description: 'Testing exhaustivo, seguridad, arquitectura limpia, y mejores prácticas'
+      description: lang === 'es'
+        ? 'Practicas para mantener software mantenible, medible y confiable en produccion.'
+        : 'Practices that keep software maintainable, measurable, and reliable in production.',
     },
   ]
 
@@ -192,7 +116,7 @@ export function Skills() {
               ))}
             </div>
             <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid color-mix(in oklab, var(--text) 8%, transparent)', fontSize: '0.85rem', color: 'var(--muted)' }}>
-              {category.skills.length} tecnologías
+              {category.skills.length} {lang === 'es' ? 'capacidades clave' : 'core capabilities'}
             </div>
           </motion.article>
         ))}

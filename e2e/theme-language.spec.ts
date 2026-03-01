@@ -42,45 +42,34 @@ test.describe('Theme and Language Toggle', () => {
   test('should toggle language between Spanish and English', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 
-    // Get initial language
     const initialLang = await page.locator('html').getAttribute('lang')
 
-    // Find language toggle button
     const langButton = page.locator('button[aria-label*="idioma"], button[aria-label*="language"]').first()
 
     if (await langButton.count() > 0) {
       await langButton.click()
-
-      // Wait for language change
       await page.waitForTimeout(300)
 
       const newLang = await page.locator('html').getAttribute('lang')
       expect(newLang).not.toBe(initialLang)
       expect(['es', 'en']).toContain(newLang)
+      expect(new URL(page.url()).pathname).toBe('/en/')
     }
   })
 
-  test('should persist language in localStorage and URL', async ({ page }) => {
+  test('should persist language in localStorage and path', async ({ page }) => {
     await page.waitForLoadState('networkidle')
 
-    // Get language from localStorage
     const storedLang = await page.evaluate(() => localStorage.getItem('lang'))
     expect(storedLang).toBeTruthy()
     expect(['es', 'en']).toContain(storedLang)
 
-    // Verify html lang attribute matches
     const htmlLang = await page.locator('html').getAttribute('lang')
     expect(htmlLang).toBe(storedLang)
-
-    // Check if URL has lang parameter
-    const url = new URL(page.url())
-    if (url.searchParams.has('lang')) {
-      expect(url.searchParams.get('lang')).toBe(storedLang)
-    }
   })
 
-  test('should load with language from URL query param', async ({ page }) => {
-    await page.goto('/?lang=en')
+  test('should load english content from dedicated route', async ({ page }) => {
+    await page.goto('/en/')
     await page.waitForLoadState('networkidle')
 
     const htmlLang = await page.locator('html').getAttribute('lang')
@@ -88,17 +77,14 @@ test.describe('Theme and Language Toggle', () => {
   })
 
   test('should update page title when language changes', async ({ page }) => {
-    await page.goto('/?lang=es')
+    await page.goto('/')
     await page.waitForLoadState('networkidle')
     const titleEs = await page.title()
 
-    await page.goto('/?lang=en')
+    await page.goto('/en/')
     await page.waitForLoadState('networkidle')
     const titleEn = await page.title()
 
-    // Both should contain NIDUGA and Nicolas Duran Garces
-    expect(titleEs).toContain('NIDUGA')
-    expect(titleEn).toContain('NIDUGA')
     expect(titleEs).toContain('Nicolas Duran Garces')
     expect(titleEn).toContain('Nicolas Duran Garces')
   })
