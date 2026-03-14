@@ -126,7 +126,7 @@ describe('LanguageProvider', () => {
       wrapper: LanguageProvider,
     })
 
-    expect(result.current.t('hero.title')).toBe('Backend con Python, FastAPI, Node.js y arquitectura lista para produccion')
+    expect(result.current.t('hero.title')).toBe('Backend Engineer especializado en Python, Node.js, Java, AWS y arquitectura de producto')
     expect(result.current.t('about.title')).toBe('Sobre mí')
   })
 

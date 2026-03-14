@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { FiMapPin, FiClock, FiZap, FiCoffee, FiCode, FiTrendingUp } from 'react-icons/fi'
+import { FiCode, FiTrendingUp } from 'react-icons/fi'
 import { useLanguage } from '../components/LanguageProvider'
 import { Section } from '../components/Section'
 
@@ -8,36 +8,36 @@ const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
 
 export function About() {
   const { t, lang } = useLanguage()
-  const story = t('about.story').split('|').map((item) => item.trim()).filter(Boolean)
-  const principles = t('about.principles').split('|').map((item) => item.trim()).filter(Boolean)
-  const focus = t('about.focus').split('|').map((item) => item.trim()).filter(Boolean)
+  const story = t('about.story').split('|').map((entry) => entry.trim()).filter(Boolean)
+  const principles = t('about.principles').split('|').map((entry) => entry.trim()).filter(Boolean)
+  const focus = t('about.focus').split('|').map((entry) => entry.trim()).filter(Boolean)
   const highlights = lang === 'es'
     ? [
         {
           title: 'Backend con foco de negocio',
-          body: 'Trabajo como backend developer y software engineer priorizando APIs claras, tiempos de respuesta sanos y decisiones que sostengan producto y operacion.',
+          body: 'Priorizo APIs claras, rendimiento sano y decisiones de arquitectura que aguanten producto y operacion, no solo una demo.',
         },
         {
-          title: 'Armenia, Quindio con alcance remoto',
-          body: 'Estoy basado en Armenia, Quindio, y colaboro de forma remota con equipos que necesitan seniority backend en Colombia y fuera de ella.',
+          title: 'Remote-first desde Armenia, Quindio',
+          body: 'Estoy basado en Colombia y colaboro con equipos que necesitan seniority backend sin importar si el equipo esta local o distribuido.',
         },
         {
           title: 'Entrega completa cuando hace falta',
-          body: 'Puedo moverme entre Python, FastAPI, Node.js, Docker, AWS y algo de React cuando un feature necesita una mirada end-to-end.',
+          body: 'Puedo moverme entre Python, FastAPI, Node.js, Docker, AWS y piezas puntuales de React cuando un feature exige mirada end-to-end.',
         },
       ]
     : [
         {
           title: 'Backend tied to business impact',
-          body: 'I work as a backend developer and software engineer with a strong focus on clear APIs, healthy response times, and decisions that support product and operations.',
+          body: 'I prioritize clear APIs, healthy performance, and architecture decisions that can support product and operations beyond a demo.',
         },
         {
-          title: 'Armenia, Quindio with remote reach',
-          body: 'I am based in Armenia, Quindio, and collaborate remotely with teams that need senior backend execution in Colombia and internationally.',
+          title: 'Remote-first from Armenia, Quindio',
+          body: 'I am based in Colombia and collaborate with teams that need senior backend execution whether the team is local or distributed.',
         },
         {
           title: 'Full delivery when needed',
-          body: 'I move comfortably across Python, FastAPI, Node.js, Docker, AWS, and selected React work when a feature needs end-to-end ownership.',
+          body: 'I work across Python, FastAPI, Node.js, Docker, AWS, and focused React pieces when a feature needs end-to-end ownership.',
         },
       ]
 
@@ -48,79 +48,97 @@ export function About() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: '-50px' }}
-        style={{ display: 'grid', gap: '2rem' }}
+        style={{ display: 'grid', gap: '1.5rem' }}
       >
-        <motion.article variants={item} className="card fancy" style={{ padding: '2.5rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-              <FiCoffee style={{ fontSize: '2rem', color: 'var(--primary)' }} />
-              <h2 style={{ margin: 0, fontSize: '2rem', fontWeight: 700 }}>{t('about.tagline')}</h2>
-            </div>
-            <div style={{ color: 'var(--muted)', lineHeight: '1.7', fontSize: '1rem' }}>
-              {story.map((paragraph, i) => (
-                <p key={i} style={{ marginBottom: '1rem' }}>{paragraph}</p>
-              ))}
-              <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'color-mix(in oklab, var(--primary) 5%, transparent)', borderRadius: '12px', border: '1px solid color-mix(in oklab, var(--primary) 15%, transparent)' }}>
-                <h4 style={{ margin: '0 0 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <FiTrendingUp style={{ color: 'var(--primary)' }} />
-                  {lang === 'es' ? 'Donde aporto mas valor' : 'Where I add the most value'}
-                </h4>
-                <ul style={{ margin: 0, paddingLeft: '1.5rem', lineHeight: '1.8' }}>
-                  {focus.map((entry) => (
-                    <li key={entry}>{entry}</li>
-                  ))}
-                </ul>
+        <div className="about-story-layout">
+          <motion.article
+            variants={item}
+            className="card fancy about-story-card"
+          >
+            <div className="about-story-header">
+              <FiCode aria-hidden="true" className="about-story-icon" />
+              <div>
+                <p className="about-story-eyebrow">
+                  {lang === 'es' ? 'Detras del build' : 'Behind the build'}
+                </p>
+                <h3 className="about-story-title">{t('about.tagline')}</h3>
               </div>
             </div>
-          </div>
-        </motion.article>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-          <motion.article variants={item} className="card fancy" style={{ padding: '2rem' }}>
-            <FiMapPin style={{ fontSize: '2rem', color: 'var(--primary)', marginBottom: '1rem' }} />
-            <strong style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{t('about.meta.location')}</strong>
-            <span style={{ color: 'var(--muted)', fontSize: '0.95rem' }}>{t('about.meta.locationValue')}</span>
-            <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
-              {lang === 'es' ? 'Disponible para trabajo remoto en Colombia, Latinoamerica, USA y Europa.' : 'Available for remote work across Colombia, Latin America, the US, and Europe.'}
-            </p>
-          </motion.article>
+            <div className="about-story-copy">
+              {story.map((paragraph, index) => (
+                <p key={index} style={{ margin: 0 }}>{paragraph}</p>
+              ))}
+            </div>
 
-          <motion.article variants={item} className="card fancy" style={{ padding: '2rem' }}>
-            <FiClock style={{ fontSize: '2rem', color: 'var(--primary)', marginBottom: '1rem' }} />
-            <strong style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{t('about.meta.experience')}</strong>
-            <span style={{ color: 'var(--muted)', fontSize: '0.95rem' }}>{t('about.meta.experienceValue')}</span>
-            <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
-              {lang === 'es' ? 'Experiencia en backend, arquitectura de datos y despliegue cloud-native.' : 'Experience across backend engineering, data architecture, and cloud-native delivery.'}
-            </p>
-          </motion.article>
-
-          <motion.article variants={item} className="card fancy" style={{ padding: '2rem' }}>
-            <FiZap style={{ fontSize: '2rem', color: 'var(--success)', marginBottom: '1rem' }} />
-            <strong style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{t('about.meta.availability')}</strong>
-            <span style={{ color: 'var(--success)', fontWeight: 600, fontSize: '0.95rem' }}>{t('about.meta.availabilityValue')}</span>
-            <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
-              {lang === 'es' ? 'Busco roles senior de backend, arquitectura de software y consultoria tecnica.' : 'Targeting senior backend, software architecture, and technical consulting work.'}
-            </p>
+            <div
+              style={{
+                display: 'grid',
+                gap: '0.9rem',
+                padding: '1.3rem',
+                borderRadius: '18px',
+                background: 'color-mix(in oklab, var(--primary) 5%, transparent)',
+                border: '1px solid color-mix(in oklab, var(--primary) 15%, transparent)',
+              }}
+            >
+              <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <FiTrendingUp aria-hidden="true" style={{ color: 'var(--primary)' }} />
+                {lang === 'es' ? 'Donde aporto mas valor' : 'Where I add the most value'}
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.8rem' }}>
+                {focus.map((entry, index) => (
+                  <div
+                    key={entry}
+                    style={{
+                      padding: '0.95rem 1rem',
+                      borderRadius: '14px',
+                      background: 'color-mix(in oklab, var(--panel) 72%, transparent)',
+                      border: '1px solid color-mix(in oklab, var(--text) 10%, transparent)',
+                    }}
+                  >
+                    <span style={{ display: 'block', marginBottom: '0.55rem', color: 'var(--primary)', fontSize: '.76rem', fontWeight: 700 }}>
+                      0{index + 1}
+                    </span>
+                    <p style={{ margin: 0, lineHeight: '1.6', color: 'var(--text)' }}>{entry}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </motion.article>
         </div>
 
-        <motion.article variants={item} className="card fancy" style={{ padding: '2.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-            <FiCode style={{ fontSize: '2rem', color: 'var(--primary)' }} />
-            <h3 style={{ margin: 0, fontSize: '1.5rem' }}>{lang === 'es' ? 'Principios de trabajo' : 'Working principles'}</h3>
+        <motion.article variants={item} className="card fancy" style={{ padding: '2.2rem', display: 'grid', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <FiCode aria-hidden="true" style={{ fontSize: '1.9rem', color: 'var(--primary)' }} />
+            <div>
+              <p style={{ margin: '0 0 0.3rem', textTransform: 'uppercase', letterSpacing: '.24em', fontSize: '.72rem', color: 'var(--muted)' }}>
+                {lang === 'es' ? 'Forma de trabajo' : 'Operating style'}
+              </p>
+              <h3 style={{ margin: 0, fontSize: '1.5rem' }}>{lang === 'es' ? 'Principios y alcance de ejecucion' : 'Principles and execution scope'}</h3>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             {principles.map((principle) => (
               <span key={principle} className="badge" style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
                 {principle}
               </span>
             ))}
           </div>
-          <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.1rem' }}>
             {highlights.map((highlight) => (
-              <article key={highlight.title} style={{ padding: '1.25rem', borderRadius: '16px', border: '1px solid color-mix(in oklab, var(--text) 8%, transparent)', background: 'color-mix(in oklab, var(--panel) 70%, transparent)' }}>
-                <strong style={{ display: 'block', marginBottom: '0.75rem' }}>{highlight.title}</strong>
-                <p style={{ margin: 0, color: 'var(--muted)', lineHeight: '1.6' }}>{highlight.body}</p>
+              <article
+                key={highlight.title}
+                style={{
+                  padding: '1.2rem',
+                  borderRadius: '16px',
+                  border: '1px solid color-mix(in oklab, var(--text) 8%, transparent)',
+                  background: 'color-mix(in oklab, var(--panel) 72%, transparent)',
+                }}
+              >
+                <strong style={{ display: 'block', marginBottom: '0.7rem' }}>{highlight.title}</strong>
+                <p style={{ margin: 0, color: 'var(--muted)', lineHeight: '1.65' }}>{highlight.body}</p>
               </article>
             ))}
           </div>
