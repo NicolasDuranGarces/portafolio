@@ -15,6 +15,35 @@ export function Experience() {
   const items = experience[lang]
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const summary = lang === 'es'
+    ? [
+        {
+          title: 'Backend y plataforma',
+          body: '5+ años construyendo APIs, integraciones y operación backend en producción para equipos de producto.',
+        },
+        {
+          title: 'Arquitectura con criterio',
+          body: 'Decisiones aterrizadas a mantenibilidad, costo, performance y velocidad de entrega, no solo a features.',
+        },
+        {
+          title: 'Cloud y ejecución real',
+          body: 'Python, Node.js, AWS, Docker y datos para llevar ideas a producción con control técnico.',
+        },
+      ]
+    : [
+        {
+          title: 'Backend and platform',
+          body: '5+ years building APIs, integrations, and backend operations in production for product teams.',
+        },
+        {
+          title: 'Architecture with judgment',
+          body: 'Decisions grounded in maintainability, cost, performance, and delivery speed, not only features.',
+        },
+        {
+          title: 'Cloud and real execution',
+          body: 'Python, Node.js, AWS, Docker, and data systems to take ideas into production with technical control.',
+        },
+      ]
   
   // Close modal on escape key
   useEffect(() => {
@@ -59,6 +88,30 @@ export function Experience() {
   
   return (
     <Section id="experience" title={t('experience.title')} lead={t('experience.lead')}>
+      <div className="experience-summary">
+        <div className="experience-summary-head">
+          <p className="experience-summary-eyebrow">{lang === 'es' ? 'Resumen de experiencia' : 'Experience summary'}</p>
+          <h3 className="experience-summary-title">
+            {lang === 'es'
+              ? 'Experiencia orientada a backend, plataforma y entrega en producción'
+              : 'Experience focused on backend, platform, and production delivery'}
+          </h3>
+          <p className="experience-summary-copy">
+            {lang === 'es'
+              ? 'Trabajo con equipos que necesitan construir, escalar y operar software backend con claridad técnica y foco en producto.'
+              : 'I work with teams that need to build, scale, and operate backend software with technical clarity and product focus.'}
+          </p>
+        </div>
+        <div className="experience-summary-grid">
+          {summary.map((entry) => (
+            <article key={entry.title} className="experience-summary-card">
+              <strong>{entry.title}</strong>
+              <p>{entry.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+
       <div className="timeline-zigzag-container">
         {/* Decorative floating particles */}
         <div className="timeline-particles">
@@ -202,4 +255,3 @@ export function Experience() {
     </Section>
   )
 }
-

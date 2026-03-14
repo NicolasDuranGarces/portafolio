@@ -93,7 +93,7 @@ test.describe('Theme and Language Toggle', () => {
 
     await expect(page).toHaveURL(/\/en\/$/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-    await expect(page.locator('.hero-bento__panel--profile .hero-bento__role')).toHaveText('Backend software engineer')
+    await expect(page.locator('.hero-bento__panel--profile .hero-bento__role')).toHaveText('FullStack software engineer')
     await expect
       .poll(async () => page.evaluate(() => window.localStorage.getItem('lang')))
       .toBe('en')

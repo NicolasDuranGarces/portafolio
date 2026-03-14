@@ -1,0 +1,4 @@
+interface:
+  display_name: "SEO Presentation Copy"
+  short_description: "SEO rewrite for web presentation copy"
+  default_prompt: "Use $seo-presentation-copy to review and rewrite my website presentation text for SEO, clarity, and content design."

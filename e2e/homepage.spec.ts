@@ -9,7 +9,7 @@ const seo = {
     canonical: 'https://niduga.dev/',
     ogLocale: 'es_CO',
     heading: 'Ingeniero de software backend en Colombia que construye APIs escalables y plataformas confiables',
-    role: 'Ingeniero de software backend',
+    role: 'Ingeniero de software FullStack',
     spotlight: 'Delivery con contexto de producto',
   },
   en: {
@@ -20,7 +20,7 @@ const seo = {
     canonical: 'https://niduga.dev/en/',
     ogLocale: 'en_US',
     heading: 'Backend software engineer in Colombia building scalable APIs and reliable platform systems',
-    role: 'Backend software engineer',
+    role: 'FullStack software engineer',
     spotlight: 'Delivery with product context',
   },
 } as const
@@ -59,7 +59,7 @@ test.describe('Homepage', () => {
     ])
 
     await expect(page.getByRole('link', { name: 'Ver proyectos' })).toHaveAttribute('href', '#projects')
-    await expect(page.getByRole('link', { name: 'Contactar' })).toHaveAttribute('href', '#contact')
+    await expect(page.getByRole('link', { name: 'Trabaja conmigo' })).toHaveAttribute('href', '#contact')
     await expect(page.getByRole('link', { name: 'Descargar mi hoja de vida en formato PDF' })).toHaveAttribute(
       'href',
       '/CV_NICOLAS_DURAN.pdf',

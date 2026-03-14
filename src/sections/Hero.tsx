@@ -1,56 +1,94 @@
 import { useLanguage } from '../components/LanguageProvider'
 import { HeroBentoScene } from '../components/HeroBentoScene'
 
+const backendItems = [
+  { name: 'Python',     icon: 'python' },
+  { name: 'Node.js',    icon: 'node.js' },
+  { name: 'Serverless', icon: 'serverless' },
+  { name: 'AWS',        icon: 'aws' },
+  { name: 'FastAPI',    icon: 'fastapi' },
+  { name: 'Docker',     icon: 'docker' },
+  { name: 'PostgreSQL', icon: 'postgresql' },
+  { name: 'Java',       icon: 'java' },
+]
+
 export function Hero() {
   const { lang, t } = useLanguage()
-  const specialties = t('hero.specialties')
+
+  const chips = t('hero.specialties')
     .split('|')
-    .map((item) => item.trim())
+    .map((s) => s.trim())
     .filter(Boolean)
 
+  const frontendItems = t('hero.bento.educationItems')
+    .split('|')
+    .map((name) => ({ name: name.trim(), icon: 'education' }))
+    .filter((item) => item.name)
+
+  const aiItems = t('hero.bento.certificationItems')
+    .split('|')
+    .map((name, index) => ({
+      name: name.trim(),
+      icon: index === 0 ? 'aws' : 'certificate',
+    }))
+    .filter((item) => item.name)
+
   const stats = [
-    { value: t('hero.stats.years.value'), label: t('hero.stats.years.label') },
-    { value: t('hero.stats.projects.value'), label: t('hero.stats.projects.label') },
-    { value: t('hero.stats.repos.value'), label: t('hero.stats.repos.label') },
-    { value: t('hero.stats.coffee.value'), label: t('hero.stats.coffee.label') },
+    {
+      value: '5+',
+      label: lang === 'es' ? 'años de experiencia' : 'years of experience',
+    },
+    {
+      value: '15+',
+      label: lang === 'es' ? 'proyectos en producción' : 'projects in production',
+    },
+    {
+      value: '20',
+      label: lang === 'es' ? 'repos open source' : 'open source repos',
+    },
+    {
+      value: lang === 'es' ? 'Bilingüe' : 'Bilingual',
+      label: lang === 'es' ? 'español e inglés' : 'Spanish & English',
+    },
   ]
+
+  const currentJob = {
+    company: 'BetterWay Devs',
+    role: lang === 'es' ? 'Software Engineer' : 'Software Engineer',
+    period: lang === 'es' ? 'may. 2024 — Actualidad' : 'May 2024 — Present',
+    stack: ['Python', 'Node.js', 'AWS Lambda', 'Docker', 'OCR/IA'],
+  }
 
   return (
     <HeroBentoScene
       overline={t('hero.overline')}
-      kicker={t('hero.bento.kicker')}
       headline={t('hero.headline')}
       title={t('hero.title')}
       description={t('hero.sub')}
+      chips={chips}
       greeting={t('hero.greeting')}
       role={t('hero.role')}
       avatarAlt={t('hero.avatarAlt')}
-      specialtiesAria={t('hero.bento.specialtiesAria')}
-      signalLabel={t('hero.bento.locationLabel')}
-      signalValue={t('hero.bento.locationValue')}
-      signalBody={t('hero.bento.locationBody')}
       profileLabel={t('hero.bento.centralCardTitle')}
       availabilityLabel={t('hero.bento.availabilityLabel')}
       availabilityValue={t('hero.bento.availabilityValue')}
-      spotlightTitle={t('hero.spotlight.title')}
-      spotlightBody={t('hero.spotlight.body')}
-      metricsLabel={t('hero.bento.metricsLabel')}
-      terminalLines={[
-        t('hero.bento.terminal.0'),
-        t('hero.bento.terminal.1'),
-        t('hero.bento.terminal.2'),
-        t('hero.bento.terminal.3'),
-      ]}
-      specialties={specialties}
+      locationValue={t('hero.bento.locationValue')}
+      currentJob={currentJob}
+      githubUrl="https://github.com/NicolasDuranGarces"
+      githubLabel="github.com/NicolasDuranGarces"
       stats={stats}
-      tagline={t('hero.bento.centralCardBody')}
-      ctaProjects={t('hero.ctaProjects')}
-      ctaContact={t('hero.ctaContact')}
+      backendItems={backendItems}
+      frontendItems={frontendItems}
+      aiItems={aiItems}
+      labelBackend={lang === 'es' ? 'Python · Node · Arquitectura · Serverless' : 'Python · Node · Architecture · Serverless'}
+      labelFrontend={lang === 'es' ? 'Educación' : 'Education'}
+      labelAI={lang === 'es' ? 'Certificaciones' : 'Certifications'}
+      labelCurrentJob={lang === 'es' ? 'Trabajo actual' : 'Current role'}
+      ctaGithub={t('hero.ctaGithub')}
+      ctaLinkedIn={t('hero.ctaLinkedIn')}
       ctaCV={t('hero.ctaCV')}
       downloadCV={t('hero.downloadCV')}
       ctaAriaLabel={lang === 'es' ? 'Acciones principales' : 'Primary actions'}
-      scrollLabel={lang === 'es' ? 'Seguir bajando' : 'Keep scrolling'}
-      scrollAriaLabel={lang === 'es' ? 'Ir a la seccion de experiencia' : 'Jump to the experience section'}
     />
   )
 }
