@@ -33,7 +33,7 @@ export const es = {
     },
     stats: {
       years: { value: '5+', label: 'años construyendo backend y plataformas en producción' },
-      projects: { value: '15+', label: 'proyectos en producción para producto y negocio' },
+      projects: { value: '15+', label: 'proyectos personales productivos' },
       repos: { value: '20', label: 'proyectos open source publicados' },
       openSource: { value: '20', label: 'proyectos open source publicados' },
       coffee: { value: 'Bilingüe', label: 'comunicación técnica en español e inglés' },
@@ -56,7 +56,7 @@ export const es = {
       availabilityLabel: 'Disponibilidad',
       availabilityValue: 'Remoto, consultoría y roles senior backend',
       centralCardTitle: 'Resultados reales',
-      centralCardBody: '5+ años de experiencia, 15+ proyectos en producción y 20 proyectos open source con foco en backend y plataforma.',
+      centralCardBody: '5+ años de experiencia, 15+ proyectos personales productivos y 20 proyectos open source con foco en backend y plataforma.',
       metricsLabel: 'Indicadores',
       terminal: ['> stack.actual', 'Python / FastAPI / Node.js', '> infra.modo', 'Docker / AWS / observabilidad'],
     },

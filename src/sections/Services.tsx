@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { FiArrowUpRight, FiCompass, FiLayers, FiShield } from 'react-icons/fi'
+import { FiArrowUpRight, FiLayers } from 'react-icons/fi'
 import { Section } from '../components/Section'
 import { useLanguage } from '../components/LanguageProvider'
 import { getServiceCards, getServiceOverview } from '../content/services'
@@ -10,20 +10,11 @@ export function Services() {
   const { t, lang } = useLanguage()
   const overview = getServiceOverview(lang)
   const cards = getServiceCards(lang)
-  const supportPoints = lang === 'es'
-    ? [
-        { icon: <FiCompass aria-hidden="true" />, label: 'Entrada flexible', value: 'Discovery, ejecucion o soporte puntual segun la etapa del producto.' },
-        { icon: <FiShield aria-hidden="true" />, label: 'Menos friccion', value: 'Decisiones tecnicas con foco en bajar riesgo y no inflar procesos.' },
-      ]
-    : [
-        { icon: <FiCompass aria-hidden="true" />, label: 'Flexible entry point', value: 'Discovery, direct execution, or focused support depending on product stage.' },
-        { icon: <FiShield aria-hidden="true" />, label: 'Lower friction', value: 'Technical decisions aimed at reducing risk without bloating process.' },
-      ]
 
   return (
     <Section id="services" title={t('services.title')} lead={t('services.lead')}>
       <div style={{ display: 'grid', gap: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '1.5rem' }}>
           <motion.article
             variants={item}
             initial="hidden"
@@ -90,24 +81,6 @@ export function Services() {
               <FiArrowUpRight aria-hidden="true" style={{ flexShrink: 0, fontSize: '1.35rem', color: 'var(--primary)' }} />
             </div>
           </motion.article>
-
-          <div style={{ display: 'grid', gap: '1.5rem' }}>
-            {supportPoints.map((point) => (
-              <motion.article
-                key={point.label}
-                variants={item}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-                className="card fancy"
-                style={{ padding: '1.6rem', display: 'grid', gap: '0.9rem', alignContent: 'start' }}
-              >
-                <span style={{ fontSize: '1.3rem', color: 'var(--primary)' }}>{point.icon}</span>
-                <strong style={{ fontSize: '1.05rem' }}>{point.label}</strong>
-                <p style={{ margin: 0, color: 'var(--muted)', lineHeight: 1.7 }}>{point.value}</p>
-              </motion.article>
-            ))}
-          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>

@@ -40,7 +40,7 @@ export function Hero() {
     },
     {
       value: '15+',
-      label: lang === 'es' ? 'proyectos en producción' : 'projects in production',
+      label: lang === 'es' ? 'proyectos personales productivos' : 'productive personal projects',
     },
     {
       value: '20',

@@ -1,7 +1,6 @@
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { SEO as cfg } from '../seo.config'
 import { useLanguage } from './LanguageProvider'
-import { getFaqEntries } from '../content/faq'
 import { getAbsoluteUrl, getAlternateUrls, getCanonicalPath } from '../lib/site'
 
 export function SEOProvider({ children, context }: { children: React.ReactNode; context?: Record<string, unknown> }) {
@@ -19,7 +18,6 @@ export function SEOHead() {
   const robots = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
   const keywords = [...cfg.keywords.shared, ...cfg.keywords[lang]].join(', ')
   const alternates = getAlternateUrls()
-  const faqEntries = getFaqEntries(lang)
   const sameAs = cfg.sameAs
 
   const schemaGraph = {
@@ -84,17 +82,6 @@ export function SEOHead() {
         about: {
           '@id': `${getAbsoluteUrl('/')}#person`,
         },
-      },
-      {
-        '@type': 'FAQPage',
-        mainEntity: faqEntries.map((entry) => ({
-          '@type': 'Question',
-          name: entry.question,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: entry.answer,
-          },
-        })),
       },
     ],
   }

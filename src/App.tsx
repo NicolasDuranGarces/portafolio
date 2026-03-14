@@ -10,10 +10,8 @@ import { CornerControls } from './components/CornerControls'
 import { About } from './sections/About'
 import { Skills } from './sections/Skills'
 import { Projects } from './sections/Projects'
-import { Contact } from './sections/Contact'
 import { Experience } from './sections/Experience'
 import { Services } from './sections/Services'
-import { FAQ } from './sections/FAQ'
 import type { Lang } from './components/LanguageProvider'
 
 type Props = {
@@ -84,8 +82,6 @@ export function App({ initialLang }: Props) {
             <Skills />
             <Services />
             <Projects />
-            <FAQ />
-            <Contact />
           </main>
           <Footer />
         </div>
