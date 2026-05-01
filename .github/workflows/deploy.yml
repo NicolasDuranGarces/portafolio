@@ -16,8 +16,10 @@ env:
   NODE_VERSION: '20'
   IMAGE_NAME: portfolio
   CONTAINER_NAME: portfolio
-  APP_PORT: 80
+  APP_PORT: '80'
   HOST_PORT: ${{ vars.PROD_HOST_PORT || '2320' }}
+  PROD_APP_DIR: ${{ vars.PROD_APP_DIR || 'portfolio' }}
+  DOCKER_PLATFORM: ${{ vars.DOCKER_PLATFORM || '' }}
 
 jobs:
   validate:
@@ -47,7 +49,7 @@ jobs:
         run: npm run build
 
   deploy:
-    name: Deploy to Production
+    name: Build image and deploy
     runs-on: self-hosted
     needs: validate
     environment: production
@@ -55,11 +57,66 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify Docker access
+      - name: Verify production SSH access
+        shell: bash
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST || vars.PROD_HOST || '191.89.129.146' }}
+          PROD_USER: ${{ secrets.PROD_USER || vars.PROD_USER || 'garcesduran' }}
+          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || vars.PROD_SSH_PORT || '2221' }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${PROD_HOST:-}" ] || [ -z "${PROD_USER:-}" ]; then
+            echo "PROD_HOST and PROD_USER are required."
+            exit 1
+          fi
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -p "$PROD_SSH_PORT" "$PROD_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          {
+            echo "PROD_SSH_TARGET=$PROD_USER@$PROD_HOST"
+            echo "PROD_SSH_PORT_ARG=-p $PROD_SSH_PORT"
+            echo "PROD_SCP_PORT_ARG=-P $PROD_SSH_PORT"
+          } >> "$GITHUB_ENV"
+
+          ssh -p "$PROD_SSH_PORT" -o BatchMode=yes "$PROD_USER@$PROD_HOST" "echo Production SSH access verified."
+
+      - name: Resolve production Docker platform
         shell: bash
         run: |
           set -euo pipefail
-          docker version
+
+          if [ -n "${DOCKER_PLATFORM:-}" ]; then
+            echo "Using configured Docker platform: $DOCKER_PLATFORM"
+            exit 0
+          fi
+
+          remote_arch="$(ssh $PROD_SSH_PORT_ARG "$PROD_SSH_TARGET" "uname -m")"
+
+          case "$remote_arch" in
+            x86_64|amd64)
+              resolved_platform="linux/amd64"
+              ;;
+            aarch64|arm64)
+              resolved_platform="linux/arm64"
+              ;;
+            armv7l|armhf)
+              resolved_platform="linux/arm/v7"
+              ;;
+            *)
+              echo "Unsupported production architecture: $remote_arch"
+              exit 1
+              ;;
+          esac
+
+          echo "DOCKER_PLATFORM=$resolved_platform" >> "$GITHUB_ENV"
+          echo "Using production Docker platform: $resolved_platform"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -71,17 +128,80 @@ jobs:
 
           docker buildx build \
             --pull \
+            --platform "$DOCKER_PLATFORM" \
             --tag "$IMAGE_NAME:${GITHUB_SHA}" \
             --tag "$IMAGE_NAME:latest" \
             --load \
             .
 
-      - name: Deploy container
+      - name: Export Docker image
         shell: bash
         run: |
           set -euo pipefail
 
-          docker rm -f "$CONTAINER_NAME" portfolio_web 2>/dev/null || true
+          docker save "$IMAGE_NAME:${GITHUB_SHA}" \
+            | gzip > "$RUNNER_TEMP/$IMAGE_NAME-${GITHUB_SHA}.tar.gz"
+
+      - name: Resolve production release directory
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          configured_dir="${PROD_APP_DIR:-portfolio}"
+          fallback_dir="portfolio"
+
+          resolved_dir="$(
+            ssh $PROD_SSH_PORT_ARG "$PROD_SSH_TARGET" \
+              "bash -s -- '$configured_dir' '$fallback_dir'" <<'REMOTE_SCRIPT'
+          set -euo pipefail
+
+          configured_dir="$1"
+          fallback_dir="$2"
+
+          if mkdir -p "$configured_dir/releases" 2>/dev/null; then
+            printf "%s\n" "$configured_dir"
+            exit 0
+          fi
+
+          mkdir -p "$fallback_dir/releases"
+          printf "%s\n" "$fallback_dir"
+          REMOTE_SCRIPT
+          )"
+
+          echo "PROD_APP_DIR=$resolved_dir" >> "$GITHUB_ENV"
+          echo "Using production app directory: $resolved_dir"
+
+      - name: Upload image to production server
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ssh $PROD_SSH_PORT_ARG "$PROD_SSH_TARGET" \
+            "mkdir -p '$PROD_APP_DIR/releases'"
+
+          scp $PROD_SCP_PORT_ARG \
+            "$RUNNER_TEMP/$IMAGE_NAME-${GITHUB_SHA}.tar.gz" \
+            "$PROD_SSH_TARGET:$PROD_APP_DIR/releases/$IMAGE_NAME-${GITHUB_SHA}.tar.gz"
+
+      - name: Deploy container on production server
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ssh $PROD_SSH_PORT_ARG "$PROD_SSH_TARGET" \
+            "APP_DIR='$PROD_APP_DIR' \
+             IMAGE_NAME='$IMAGE_NAME' \
+             IMAGE_TAG='$GITHUB_SHA' \
+             CONTAINER_NAME='$CONTAINER_NAME' \
+             HOST_PORT='$HOST_PORT' \
+             APP_PORT='$APP_PORT' \
+             bash -s" <<'REMOTE_SCRIPT'
+          set -euo pipefail
+
+          image_archive="$APP_DIR/releases/$IMAGE_NAME-$IMAGE_TAG.tar.gz"
+
+          docker load -i "$image_archive"
+          docker rm -f "$CONTAINER_NAME" portfolio_web >/dev/null 2>&1 || true
 
           docker run -d \
             --name "$CONTAINER_NAME" \
@@ -97,34 +217,23 @@ jobs:
             --memory 256m \
             --cpus 0.5 \
             -p "$HOST_PORT:$APP_PORT" \
-            "$IMAGE_NAME:${GITHUB_SHA}"
+            "$IMAGE_NAME:$IMAGE_TAG"
+
+          rm -f "$image_archive"
+          docker image prune -f --filter "until=168h"
+          REMOTE_SCRIPT
 
       - name: Verify deployment health
         shell: bash
         run: |
           set -euo pipefail
 
-          echo "Waiting for container health check..."
-          for i in $(seq 1 12); do
-            STATUS=$(docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_NAME" 2>/dev/null || echo 'missing')
-            echo "Attempt $i/12 - status: $STATUS"
-            if [ "$STATUS" = "healthy" ]; then
-              echo "Deployment healthy on port $HOST_PORT"
-              exit 0
-            fi
-            if [ "$STATUS" = "unhealthy" ]; then
-              echo "Container unhealthy. Last logs:"
-              docker logs --tail 50 "$CONTAINER_NAME"
-              exit 1
-            fi
-            sleep 10
-          done
-
-          echo "Health check timed out"
-          docker logs --tail 50 "$CONTAINER_NAME" || true
-          exit 1
-
-      - name: Prune old Docker images
-        if: success()
-        shell: bash
-        run: docker image prune -f --filter "until=168h"
+          ssh $PROD_SSH_PORT_ARG "$PROD_SSH_TARGET" \
+            "for attempt in {1..12}; do \
+               status=\$(docker inspect --format='{{.State.Health.Status}}' '$CONTAINER_NAME' 2>/dev/null || true); \
+               if [ \"\$status\" = healthy ]; then exit 0; fi; \
+               if [ \"\$status\" = unhealthy ]; then docker logs --tail=100 '$CONTAINER_NAME'; exit 1; fi; \
+               sleep 10; \
+             done; \
+             docker logs --tail=100 '$CONTAINER_NAME'; \
+             exit 1"
