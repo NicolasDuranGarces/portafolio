@@ -11,6 +11,11 @@ coverage/
 playwright-report/
 test-results/
 playwright/.cache/
+.playwright-mcp/
+
+# Local agent settings and visual check artifacts
+.claude/
+/*.png
 
 # Lighthouse
 .lighthouseci/

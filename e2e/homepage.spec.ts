@@ -8,9 +8,9 @@ const seo = {
       'Portafolio de Nicolas Duran Garces, ingeniero de software backend en Armenia, Quindio. Especialista en Python, FastAPI, APIs escalables, Docker, AWS y arquitectura de software para equipos remotos.',
     canonical: 'https://niduga.dev/',
     ogLocale: 'es_CO',
-    heading: 'Ingeniero de software backend en Colombia que construye APIs escalables y plataformas confiables',
-    role: 'Ingeniero de software FullStack',
-    spotlight: 'Delivery con contexto de producto',
+    heading: 'APIs escalables, código limpio y arquitectura backend lista para producción',
+    role: 'Ingeniero de software backend',
+    profileLabel: 'Resultados reales',
   },
   en: {
     lang: 'en',
@@ -19,9 +19,9 @@ const seo = {
       'Portfolio of Nicolas Duran Garces, backend software engineer based in Armenia, Quindio, Colombia. Focused on Python, FastAPI, scalable APIs, Docker, AWS, and software architecture for remote teams.',
     canonical: 'https://niduga.dev/en/',
     ogLocale: 'en_US',
-    heading: 'Backend software engineer in Colombia building scalable APIs and reliable platform systems',
-    role: 'FullStack software engineer',
-    spotlight: 'Delivery with product context',
+    heading: 'Scalable APIs, clean code, and backend architecture built for production',
+    role: 'Backend software engineer',
+    profileLabel: 'Real outcomes',
   },
 } as const
 
@@ -33,59 +33,55 @@ test.describe('Homepage', () => {
 
   test('renders the bento opening with hero copy, CTA entry points, and central card', async ({ page }) => {
     const hero = page.locator('#top')
-    const introPanel = page.locator('.hero-bento__panel--intro')
-    const heroCard = page.locator('.hero-bento__panel--profile')
-    const metricsPanel = page.locator('.hero-bento__panel--metrics')
+    const profilePanel = page.getByLabel(seo.es.profileLabel)
 
     await expect(page.locator('html')).toHaveAttribute('lang', seo.es.lang)
     await expect(hero).toBeVisible()
     await expect(page.locator('#hero-title')).toHaveText(seo.es.heading)
-    await expect(page.locator('.hero-bento__eyebrow')).toHaveText('NIDUGA · Software engineer · Backend specialist')
-    await expect(page.locator('.hero-bento__kicker')).toHaveText('Arquitectura, entrega y claridad operativa.')
-    await expect(page.locator('.hero-bento__title')).toHaveText(
-      'Backend con Python, FastAPI, Node.js y arquitectura lista para produccion',
+    await expect(hero).toContainText('NIDUGA · SOFTWARE ENGINEER · BACKEND SPECIALIST')
+    await expect(hero).toContainText(
+      'Backend Engineer especializado en Python, Node.js, Java, AWS y arquitectura de producto',
     )
-    await expect(page.locator('.hero-bento__description')).toContainText(
-      'Ayudo a equipos de producto a diseñar APIs',
+    await expect(hero).toContainText(
+      'Aporto claridad técnica, decisiones de arquitectura y ejecución backend',
     )
 
     const heroChips = page.locator('.hero-bento__chip')
     await expect(heroChips).toHaveCount(4)
     await expect(heroChips).toContainText([
+      'Código limpio',
       'Python y FastAPI',
-      'Arquitectura backend',
       'Docker y AWS',
-      'APIs observables',
+      'Arquitectura backend',
     ])
 
-    await expect(page.getByRole('link', { name: 'Ver proyectos' })).toHaveAttribute('href', '#projects')
-    await expect(page.getByRole('link', { name: 'Trabaja conmigo' })).toHaveAttribute('href', '#contact')
+    await expect(page.getByRole('link', { name: 'github.com/NicolasDuranGarces' })).toHaveAttribute(
+      'href',
+      'https://github.com/NicolasDuranGarces',
+    )
+    await expect(page.getByRole('link', { name: 'LinkedIn Nicolas Duran Garces' })).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/garcesnicolas/',
+    )
     await expect(page.getByRole('link', { name: 'Descargar mi hoja de vida en formato PDF' })).toHaveAttribute(
       'href',
       '/CV_NICOLAS_DURAN.pdf',
     )
 
-    await expect(introPanel).toBeVisible()
-    await expect(heroCard).toBeVisible()
-    await expect(heroCard.getByRole('img', { name: 'Retrato de Nicolas Duran Garces sonriendo' })).toBeVisible()
-    await expect(heroCard.locator('.hero-bento__label')).toHaveText('Resultados reales')
-    await expect(heroCard.locator('.hero-bento__status')).toHaveAttribute(
+    await expect(profilePanel).toBeVisible()
+    await expect(profilePanel).toContainText('NIDUGA')
+    await expect(profilePanel).toContainText(seo.es.role)
+    await expect(profilePanel.locator('.hero-bento__status')).toHaveAttribute(
       'title',
       'Remoto, consultoría y roles senior backend',
     )
-    await expect(heroCard.locator('.hero-bento__name')).toHaveText('Nicolas Duran Garces')
-    await expect(heroCard.locator('.hero-bento__role')).toHaveText(seo.es.role)
-    await expect(heroCard.locator('.hero-bento__tagline')).toContainText(
-      '5+ años de experiencia, 15+ proyectos entregados y 20 proyectos open source',
-    )
 
-    await expect(page.locator('.hero-bento__panel--signal')).toContainText('Armenia, Quindío, Colombia')
-    await expect(page.locator('.hero-bento__panel--spotlight')).toContainText(seo.es.spotlight)
-    await expect(metricsPanel.locator('.hero-bento__stat')).toHaveCount(3)
-    await expect(metricsPanel).toContainText('5+')
-    await expect(metricsPanel).toContainText('15+')
-    await expect(metricsPanel).toContainText('20')
-    await expect(page.locator('.hero-bento__panel--terminal')).toContainText('Python / FastAPI / Node.js')
+    await expect(hero).toContainText('BetterWay Devs')
+    await expect(hero).toContainText('Python')
+    await expect(hero).toContainText('FastAPI')
+    await expect(hero).toContainText('5+')
+    await expect(hero).toContainText('15+')
+    await expect(hero).toContainText('Stack')
   })
 
   test('ships aligned Spanish SEO metadata on the default opening', async ({ page }) => {
@@ -157,10 +153,13 @@ test.describe('Homepage', () => {
       inLanguage: seo.es.ogLocale,
     })
 
-    const faqPage = data['@graph'].find((item: Record<string, unknown>) => item['@type'] === 'FAQPage')
-    expect(faqPage).toBeDefined()
-    expect(Array.isArray(faqPage.mainEntity)).toBe(true)
-    expect(faqPage.mainEntity.length).toBeGreaterThan(0)
+    const collectionPage = data['@graph'].find((item: Record<string, unknown>) => item['@type'] === 'CollectionPage')
+    expect(collectionPage).toMatchObject({
+      '@type': 'CollectionPage',
+      name: 'Portafolio backend y proyectos destacados',
+      url: seo.es.canonical,
+      inLanguage: seo.es.ogLocale,
+    })
   })
 
   test('keeps English opening copy and metadata aligned on the dedicated route', async ({ page }) => {
@@ -170,11 +169,10 @@ test.describe('Homepage', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', seo.en.lang)
     await expect(page).toHaveTitle(seo.en.title)
     await expect(page.locator('#hero-title')).toHaveText(seo.en.heading)
-    await expect(page.locator('.hero-bento__title')).toHaveText(
-      'Backend delivery with Python, FastAPI, Node.js, and production-ready architecture',
+    await expect(page.getByLabel(seo.en.profileLabel)).toContainText(seo.en.role)
+    await expect(page.locator('#top')).toContainText(
+      'Backend engineer specialized in Python, Node.js, Java, AWS, and product architecture',
     )
-    await expect(page.locator('.hero-bento__panel--profile .hero-bento__role')).toHaveText(seo.en.role)
-    await expect(page.locator('.hero-bento__panel--spotlight .hero-bento__label')).toHaveText(seo.en.spotlight)
 
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', seo.en.description)
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', seo.en.canonical)
@@ -190,8 +188,8 @@ test.describe('Homepage', () => {
     await page.waitForLoadState('domcontentloaded')
 
     await expect(page.locator('#hero-title')).toHaveText(seo.es.heading)
-    await expect(page.locator('.hero-bento__panel--profile')).toBeVisible()
+    await expect(page.getByLabel(seo.es.profileLabel)).toBeVisible()
     await expect(page.locator('.corner-controls')).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Ver proyectos' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'github.com/NicolasDuranGarces' })).toBeVisible()
   })
 })

@@ -1,11 +1,11 @@
 version: '3.8'
 services:
   web:
-    image: portfolio_web:latest
+    image: portfolio:latest
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: portfolio_web
+    container_name: portfolio
     ports:
       - "2320:80"
     restart: unless-stopped

@@ -40,7 +40,7 @@ test.describe('Theme and Language Toggle', () => {
   test('switches from Spanish to English and updates route, content, and SEO metadata', async ({ page }) => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'es')
     await expect(page.locator('#hero-title')).toHaveText(
-      'Ingeniero de software backend en Colombia que construye APIs escalables y plataformas confiables',
+      'APIs escalables, código limpio y arquitectura backend lista para producción',
     )
 
     await clickByAriaLabel(page, 'Cambiar idioma a EN')
@@ -48,7 +48,7 @@ test.describe('Theme and Language Toggle', () => {
     await expect(page).toHaveURL(/\/en\/$/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
     await expect(page.locator('#hero-title')).toHaveText(
-      'Backend software engineer in Colombia building scalable APIs and reliable platform systems',
+      'Scalable APIs, clean code, and backend architecture built for production',
     )
     await expect(page).toHaveTitle(
       'Nicolas Duran Garces (NIDUGA) | Backend software engineer in Armenia, Quindio',
@@ -93,7 +93,7 @@ test.describe('Theme and Language Toggle', () => {
 
     await expect(page).toHaveURL(/\/en\/$/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-    await expect(page.locator('.hero-bento__panel--profile .hero-bento__role')).toHaveText('FullStack software engineer')
+    await expect(page.getByLabel('Real outcomes')).toContainText('Backend software engineer')
     await expect
       .poll(async () => page.evaluate(() => window.localStorage.getItem('lang')))
       .toBe('en')

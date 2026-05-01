@@ -3,7 +3,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useCallback, useRef } from 'react'
 import type { ResolvedProject } from '../data/projects'
-import { useLanguage } from './LanguageProvider'
 import { FiExternalLink } from 'react-icons/fi'
 
 type Props = {
@@ -12,7 +11,6 @@ type Props = {
 }
 
 export function ProjectCard({ project, onOpen }: Props) {
-  const { t } = useLanguage()
   const { title, description, tags } = project
   const handleOpen = useCallback(() => onOpen(project), [onOpen, project])
   

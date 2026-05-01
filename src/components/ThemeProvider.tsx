@@ -4,7 +4,17 @@ type Theme = 'light' | 'dark'
 type Ctx = { theme: Theme; toggle: () => void; set: (t: Theme) => void }
 const ThemeCtx = createContext<Ctx | null>(null)
 
-const getInitialTheme = (): Theme => 'light'
+const isTheme = (value: string | null): value is Theme =>
+  value === 'light' || value === 'dark'
+
+const getInitialTheme = (): Theme => {
+  if (typeof window === 'undefined') return 'light'
+
+  const storedTheme = window.localStorage.getItem('theme')
+  if (isTheme(storedTheme)) return storedTheme
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(getInitialTheme)

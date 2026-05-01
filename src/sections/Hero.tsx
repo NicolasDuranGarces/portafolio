@@ -1,37 +1,85 @@
 import { useLanguage } from '../components/LanguageProvider'
 import { HeroBentoScene } from '../components/HeroBentoScene'
 
-const backendItems = [
-  { name: 'Python',     icon: 'python' },
-  { name: 'Node.js',    icon: 'node.js' },
-  { name: 'Serverless', icon: 'serverless' },
-  { name: 'AWS',        icon: 'aws' },
-  { name: 'FastAPI',    icon: 'fastapi' },
-  { name: 'Docker',     icon: 'docker' },
-  { name: 'PostgreSQL', icon: 'postgresql' },
-  { name: 'Java',       icon: 'java' },
-]
-
 export function Hero() {
   const { lang, t } = useLanguage()
+
+  const techCategories = [
+    {
+      // Lenguajes base — qué sabes escribir
+      label: lang === 'es' ? 'Lenguajes' : 'Languages',
+      items: [
+        { name: 'Java',       icon: 'java' },
+        { name: 'Python',     icon: 'python' },
+        { name: 'TypeScript', icon: 'typescript' },
+        { name: 'C#',         icon: 'c#' },
+      ],
+    },
+    {
+      // Frameworks y runtimes backend — con qué construyes APIs
+      label: 'Backend',
+      items: [
+        { name: 'Spring Boot', icon: 'spring boot' },
+        { name: 'Node.js',     icon: 'node.js' },
+        { name: 'Express',     icon: 'express' },
+        { name: 'NestJS',      icon: 'nestjs' },
+        { name: 'FastAPI',     icon: 'fastapi' },
+        { name: 'Serverless',  icon: 'serverless' },
+      ],
+    },
+    {
+      // UI — lo que tocas en frontend
+      label: 'Frontend',
+      items: [
+        { name: 'React',    icon: 'react' },
+        { name: 'Next.js',  icon: 'next.js' },
+        { name: 'Vue',      icon: 'vue' },
+        { name: 'Angular',  icon: 'angular' },
+        { name: 'Tailwind', icon: 'tailwind' },
+      ],
+    },
+    {
+      // Dónde vive el código en producción
+      label: lang === 'es' ? 'Cloud & DevOps' : 'Cloud & DevOps',
+      items: [
+        { name: 'AWS',            icon: 'aws' },
+        { name: 'AWS Lambda',     icon: 'aws lambda' },
+        { name: 'Docker',         icon: 'docker' },
+        { name: 'Kubernetes',     icon: 'kubernetes' },
+        { name: 'GitHub Actions', icon: 'github actions' },
+      ],
+    },
+    {
+      // Persistencia — SQL, NoSQL, caché
+      label: lang === 'es' ? 'Bases de datos' : 'Databases',
+      items: [
+        { name: 'PostgreSQL', icon: 'postgresql' },
+        { name: 'MySQL',      icon: 'mysql' },
+        { name: 'MongoDB',    icon: 'mongodb' },
+        { name: 'Redis',      icon: 'redis' },
+        { name: 'DynamoDB',   icon: 'dynamodb' },
+      ],
+    },
+    {
+      // IA aplicada + herramientas de desarrollo
+      label: 'AI & Dev Tools',
+      items: [
+        { name: 'Claude Code',  icon: 'claude code' },
+        { name: 'Codex',        icon: 'codex' },
+        { name: 'LangChain',    icon: 'langchain' },
+        { name: 'Hugging Face', icon: 'hugging face' },
+        { name: 'Cursor',       icon: 'cursor' },
+        { name: 'GitHub',       icon: 'github' },
+        { name: 'GitLab',       icon: 'gitlab' },
+        { name: 'SourceTree',   icon: 'sourcetree' },
+      ],
+    },
+  ]
 
   const chips = t('hero.specialties')
     .split('|')
     .map((s) => s.trim())
     .filter(Boolean)
-
-  const frontendItems = t('hero.bento.educationItems')
-    .split('|')
-    .map((name) => ({ name: name.trim(), icon: 'education' }))
-    .filter((item) => item.name)
-
-  const aiItems = t('hero.bento.certificationItems')
-    .split('|')
-    .map((name, index) => ({
-      name: name.trim(),
-      icon: index === 0 ? 'aws' : 'certificate',
-    }))
-    .filter((item) => item.name)
 
   const stats = [
     {
@@ -68,7 +116,6 @@ export function Hero() {
       chips={chips}
       greeting={t('hero.greeting')}
       role={t('hero.role')}
-      avatarAlt={t('hero.avatarAlt')}
       profileLabel={t('hero.bento.centralCardTitle')}
       availabilityLabel={t('hero.bento.availabilityLabel')}
       availabilityValue={t('hero.bento.availabilityValue')}
@@ -77,12 +124,7 @@ export function Hero() {
       githubUrl="https://github.com/NicolasDuranGarces"
       githubLabel="github.com/NicolasDuranGarces"
       stats={stats}
-      backendItems={backendItems}
-      frontendItems={frontendItems}
-      aiItems={aiItems}
-      labelBackend={lang === 'es' ? 'Python · Node · Arquitectura · Serverless' : 'Python · Node · Architecture · Serverless'}
-      labelFrontend={lang === 'es' ? 'Educación' : 'Education'}
-      labelAI={lang === 'es' ? 'Certificaciones' : 'Certifications'}
+      techCategories={techCategories}
       labelCurrentJob={lang === 'es' ? 'Trabajo actual' : 'Current role'}
       ctaGithub={t('hero.ctaGithub')}
       ctaLinkedIn={t('hero.ctaLinkedIn')}

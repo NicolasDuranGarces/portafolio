@@ -1,0 +1,232 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+  IMAGE_NAME: portfolio
+  CONTAINER_NAME: portfolio
+  APP_PORT: 80
+  HOST_PORT: ${{ vars.PROD_HOST_PORT || '2320' }}
+  PROD_APP_DIR: ${{ vars.PROD_APP_DIR || 'portfolio' }}
+  DOCKER_PLATFORM: ${{ vars.DOCKER_PLATFORM || '' }}
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint & type check
+        run: |
+          npx tsc --noEmit
+          npx eslint src --ext .ts,.tsx
+
+      - name: Unit tests
+        run: npm run test:coverage
+
+      - name: Build
+        run: npm run build
+
+  deploy:
+    name: Deploy to Production
+    runs-on: self-hosted
+    needs: validate
+    environment: production
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify SSH access to production
+        shell: bash
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$PROD_HOST" ] || [ -z "$PROD_USER" ]; then
+            echo "PROD_HOST and PROD_USER secrets are required"
+            exit 1
+          fi
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -p "$PROD_SSH_PORT" -H "$PROD_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh -p "$PROD_SSH_PORT" -o BatchMode=yes "$PROD_USER@$PROD_HOST" "echo Production SSH access verified."
+
+      - name: Resolve Docker platform
+        shell: bash
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$DOCKER_PLATFORM" ]; then
+            echo "RESOLVED_PLATFORM=$DOCKER_PLATFORM" >> $GITHUB_ENV
+          else
+            ARCH=$(ssh -p "$PROD_SSH_PORT" "$PROD_USER@$PROD_HOST" "uname -m")
+            case "$ARCH" in
+              x86_64|amd64) PLATFORM="linux/amd64" ;;
+              aarch64|arm64) PLATFORM="linux/arm64" ;;
+              armv7l) PLATFORM="linux/arm/v7" ;;
+              *)
+                echo "Unsupported production architecture: $ARCH"
+                exit 1
+                ;;
+            esac
+            echo "Detected platform: $PLATFORM (arch: $ARCH)"
+            echo "RESOLVED_PLATFORM=$PLATFORM" >> $GITHUB_ENV
+          fi
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          docker buildx build \
+            --pull \
+            --platform "${{ env.RESOLVED_PLATFORM }}" \
+            --tag "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            --tag "${{ env.IMAGE_NAME }}:latest" \
+            --load \
+            .
+
+      - name: Export Docker image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          docker save "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            | gzip > "$RUNNER_TEMP/${{ env.IMAGE_NAME }}-${{ github.sha }}.tar.gz"
+
+      - name: Resolve production directory
+        shell: bash
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          ssh -p "$PROD_SSH_PORT" "$PROD_USER@$PROD_HOST" \
+            "mkdir -p '${{ env.PROD_APP_DIR }}/releases'"
+          echo "RELEASE_DIR=${{ env.PROD_APP_DIR }}/releases" >> "$GITHUB_ENV"
+
+      - name: Upload image to production
+        shell: bash
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          scp -P "$PROD_SSH_PORT" \
+            "$RUNNER_TEMP/${{ env.IMAGE_NAME }}-${{ github.sha }}.tar.gz" \
+            "$PROD_USER@$PROD_HOST:${{ env.RELEASE_DIR }}/${{ env.IMAGE_NAME }}-${{ github.sha }}.tar.gz"
+
+      - name: Deploy container on production
+        shell: bash
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          ssh -p "$PROD_SSH_PORT" "$PROD_USER@$PROD_HOST" \
+            "IMAGE_NAME='${{ env.IMAGE_NAME }}' \
+             CONTAINER_NAME='${{ env.CONTAINER_NAME }}' \
+             HOST_PORT='${{ env.HOST_PORT }}' \
+             APP_PORT='${{ env.APP_PORT }}' \
+             SHA='${{ github.sha }}' \
+             RELEASE_DIR='${{ env.RELEASE_DIR }}' \
+             bash -s" <<'REMOTE'
+            set -euo pipefail
+
+            docker load -i "$RELEASE_DIR/$IMAGE_NAME-$SHA.tar.gz"
+            docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
+
+            docker run -d \
+              --name "$CONTAINER_NAME" \
+              --restart unless-stopped \
+              --user "101:101" \
+              --read-only \
+              --tmpfs /var/cache/nginx:mode=1777,size=64M \
+              --tmpfs /var/run:mode=1777,size=8M \
+              --tmpfs /tmp:mode=1777,size=32M \
+              --security-opt no-new-privileges:true \
+              --cap-drop ALL \
+              --cap-add NET_BIND_SERVICE \
+              --memory 256m \
+              --cpus 0.5 \
+              -p "$HOST_PORT:$APP_PORT" \
+              --health-cmd "wget --no-verbose --tries=1 --spider http://localhost/ || exit 1" \
+              --health-interval 30s \
+              --health-timeout 10s \
+              --health-retries 3 \
+              --health-start-period 20s \
+              "$IMAGE_NAME:$SHA"
+
+            rm -f "$RELEASE_DIR/$IMAGE_NAME-$SHA.tar.gz"
+            docker image prune -f --filter "until=168h"
+          REMOTE
+
+      - name: Verify deployment health
+        shell: bash
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
+        run: |
+          set -euo pipefail
+
+          echo "Waiting for container health check..."
+          for i in $(seq 1 12); do
+            STATUS=$(ssh -p "$PROD_SSH_PORT" "$PROD_USER@$PROD_HOST" \
+              "docker inspect --format='{{.State.Health.Status}}' ${{ env.CONTAINER_NAME }} 2>/dev/null || echo 'missing'")
+            echo "Attempt $i/12 - status: $STATUS"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Deployment healthy"
+              exit 0
+            fi
+            if [ "$STATUS" = "unhealthy" ]; then
+              echo "Container unhealthy. Last logs:"
+              ssh -p "$PROD_SSH_PORT" "$PROD_USER@$PROD_HOST" \
+                "docker logs --tail 50 ${{ env.CONTAINER_NAME }}"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "Health check timed out"
+          exit 1

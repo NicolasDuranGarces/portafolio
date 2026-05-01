@@ -2,50 +2,51 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
 
 jobs:
-  lint-and-type-check:
-    name: Lint and Type Check
+  lint:
+    name: Lint & Type Check
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run TypeScript type check
+      - name: TypeScript type check
         run: npx tsc --noEmit
 
-      - name: Run ESLint
+      - name: ESLint
         run: npx eslint src --ext .ts,.tsx
 
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests with coverage
+      - name: Run tests with coverage
         run: npm run test:coverage
 
       - name: Upload coverage to Codecov
@@ -56,54 +57,18 @@ jobs:
           fail_ci_if_error: false
         continue-on-error: true
 
-  e2e-tests:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: true
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run Playwright tests
-        run: npm run test:e2e
-        env:
-          CI: true
-        continue-on-error: true
-
-      - name: Upload Playwright Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
-
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint-and-type-check, unit-tests]
-
+    needs: [lint, unit-tests]
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -111,38 +76,77 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
-      - name: Upload build artifacts
+      - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-${{ github.sha }}
           path: dist/
-          retention-days: 7
+          retention-days: 1
 
-  lighthouse:
-    name: Lighthouse CI
+  e2e-tests:
+    name: E2E Tests
     runs-on: ubuntu-latest
-    needs: build
-    continue-on-error: true
-
+    needs: [lint]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Install Playwright (Chromium only)
+        run: npx playwright install --with-deps chromium
 
-      - name: Run Lighthouse CI
-        run: |
-          npm install -g @lhci/cli
-          lhci autorun || echo "Lighthouse failed, continuing..."
+      - name: Run E2E tests
+        run: npm run test:e2e -- --project=chromium
         env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          CI: true
         continue-on-error: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  docker:
+    name: Docker Build (verify)
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (no push)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: portfolio:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  all-checks-passed:
+    name: All checks passed
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [lint, unit-tests, build]
+    steps:
+      - name: Fail if required checks failed
+        if: |
+          needs.lint.result == 'failure' ||
+          needs.unit-tests.result == 'failure' ||
+          needs.build.result == 'failure'
+        run: exit 1
+      - run: echo "All required checks passed"
