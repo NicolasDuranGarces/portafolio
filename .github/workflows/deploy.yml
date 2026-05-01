@@ -61,8 +61,8 @@ jobs:
         shell: bash
         env:
           PROD_HOST: ${{ secrets.PROD_HOST || vars.PROD_HOST || '191.89.129.146' }}
-          PROD_USER: ${{ secrets.PROD_USER || vars.PROD_USER || 'garcesduran' }}
-          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || vars.PROD_SSH_PORT || '2221' }}
+          PROD_USER: ${{ secrets.PROD_USER || vars.PROD_USER || 'ndgserver' }}
+          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || vars.PROD_SSH_PORT || '22' }}
         run: |
           set -euo pipefail
 
