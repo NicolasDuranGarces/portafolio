@@ -97,11 +97,6 @@ jobs:
             --memory 256m \
             --cpus 0.5 \
             -p "$HOST_PORT:$APP_PORT" \
-            --health-cmd "wget --no-verbose --tries=1 --spider http://localhost/ || exit 1" \
-            --health-interval 30s \
-            --health-timeout 10s \
-            --health-retries 3 \
-            --health-start-period 20s \
             "$IMAGE_NAME:${GITHUB_SHA}"
 
       - name: Verify deployment health
