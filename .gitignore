@@ -19,3 +19,4 @@ playwright/.cache/
 
 # Lighthouse
 .lighthouseci/
+infra/.secrets/
