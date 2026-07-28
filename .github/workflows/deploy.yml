@@ -90,42 +90,25 @@ jobs:
 
   deploy:
     name: Deploy to production
-    runs-on: ubuntu-latest
+    # Runner self-hosted que corre EN el server de produccion: docker pull + run local, sin SSH.
+    runs-on: [self-hosted, portfolio-prod]
     needs: build-push
     environment: production
     timeout-minutes: 15
     steps:
-      - name: Set up SSH
-        env:
-          PROD_SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
-          PROD_HOST: ${{ secrets.PROD_HOST }}
-          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
-        run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          printf '%s\n' "$PROD_SSH_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p "$PROD_SSH_PORT" "$PROD_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+      - name: Log in to GHCR
+        run: echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin
 
       - name: Pull image and run container
         env:
-          PROD_HOST: ${{ secrets.PROD_HOST }}
-          PROD_USER: ${{ secrets.PROD_USER }}
-          PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
           IMAGE_REF: ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+          CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
+          HOST_BIND: ${{ env.HOST_BIND }}
+          HOST_PORT: ${{ env.HOST_PORT }}
+          APP_PORT: ${{ env.APP_PORT }}
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/deploy_key -p "$PROD_SSH_PORT" -o BatchMode=yes \
-            "$PROD_USER@$PROD_HOST" \
-            "IMAGE_REF='$IMAGE_REF' \
-             CONTAINER_NAME='${{ env.CONTAINER_NAME }}' \
-             HOST_BIND='${{ env.HOST_BIND }}' \
-             HOST_PORT='${{ env.HOST_PORT }}' \
-             APP_PORT='${{ env.APP_PORT }}' \
-             bash -s" <<'REMOTE'
-          set -euo pipefail
 
-          # Imagen publica en GHCR: pull sin login. (Si se vuelve privada, agregar docker login.)
           docker pull "$IMAGE_REF"
 
           # Guarda la imagen del contenedor actual para rollback.
@@ -177,4 +160,3 @@ jobs:
           fi
 
           docker image prune -f --filter "until=336h" >/dev/null 2>&1 || true
-          REMOTE
