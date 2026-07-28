@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Modern portfolio website built with React + TypeScript + Vite. Features bilingual support (ES/EN), dark/light theme, smooth animations with Framer Motion, and production deployment via Docker + Nginx.
+Modern portfolio website built with React + TypeScript + Vite. Features bilingual support (ES/EN), dark/light theme, smooth animations with Framer Motion, static prerendering (SSG) of localized routes, and production deployment via Docker + Nginx.
 
 ## Development Commands
 
@@ -12,9 +12,17 @@ Modern portfolio website built with React + TypeScript + Vite. Features bilingua
 ```bash
 npm install          # Install dependencies
 npm run dev          # Start dev server on http://localhost:5173
-npm run build        # Type-check and build for production
+npm run build        # Full pipeline: tsc -noEmit → client build → SSR bundle → prerender
 npm run preview      # Preview production build on http://localhost:5173
 ```
+
+There is **no** `npm run lint` script — lint with `npx eslint src --ext .ts,.tsx` (the exact command CI runs; config: `.eslintrc.cjs`).
+
+The `build` script is a 4-step pipeline (all must pass):
+1. `tsc -noEmit` — strict type-check
+2. `vite build` — client bundle into `dist/`
+3. `vite build --ssr src/entry-server.tsx --outDir dist/server` — SSR bundle
+4. `node scripts/prerender.mjs` — renders routes to static HTML and emits `robots.txt` + `sitemap.xml`
 
 ### Testing
 ```bash
@@ -63,13 +71,23 @@ The app uses React Context for two global concerns:
    - Exposes `useLanguage()` hook with `{ lang, toggle, set, t }`
    - `t(key)` function resolves dot-notation keys (e.g., `t('hero.title')`)
    - Query param `?lang=en|es` overrides stored preference
+   - Accepts an `initialLang` prop so SSR/prerender can hydrate the correct language (see below)
 
-Both providers wrap the entire app in src/App.tsx.
+Both providers wrap the entire app in src/App.tsx. `App` accepts `initialLang?: Lang`, passed through from the SSR entry.
+
+### SSR & Static Prerendering (SSG)
+
+The site ships as prerendered static HTML — there is no live SSR server at runtime, only Nginx serving static files.
+
+- `src/entry-server.tsx` — `renderPage(pathname)` runs `renderToString` with the correct locale, using `getLocaleFromPathname` from `src/lib/site.ts`. `react-helmet-async` is `ssr.noExternal` in `vite.config.ts` so it bundles for SSR.
+- `scripts/prerender.mjs` — imports the built SSR bundle and writes static HTML for each route: `/` (ES → `dist/index.html`) and `/en/` (EN → `dist/en/index.html`). It also generates `robots.txt` and `sitemap.xml` with hreflang alternates. Canonical site URL (`https://niduga.dev`) is hardcoded here.
+- To add a prerendered route: add it to the `routes` array in `scripts/prerender.mjs` and update the sitemap block in the same file.
 
 ### Data Layer
 
 **Internationalized Data Pattern:**
 - Projects (src/data/projects.ts) and Experience (src/data/experience.ts) use `LocalizedText = Record<Lang, string>`
+- Additional structured content lives in `src/content/` (`services.ts`, `faq.ts`) following the same bilingual/resolve pattern; site-wide config and locale helpers in `src/lib/site.ts`
 - Each project/experience has bilingual fields resolved via `lang` parameter
 - Type-safe with `Project` → `ResolvedProject` pattern
 - Export `getProjects(lang)` and `getExperience(lang)` functions for runtime resolution
@@ -98,14 +116,20 @@ src/
                  # CornerControls (theme/lang toggles), SideRails, ScrollProgress,
                  # ParallaxOrbs, ProjectModal, TechIcon, SkillsMarquee, etc.
 
-  sections/      # Page sections: Hero, About, Skills, Projects, Contact, Experience
-                 # Each section imports components and uses language/theme hooks
+  sections/      # Page sections: Hero, About, Skills, Projects, Services, FAQ,
+                 # Experience, Contact. Each uses language/theme hooks
 
   data/          # Typed data sources: projects.ts, experience.ts
 
+  content/       # Structured bilingual content: services.ts, faq.ts
+
+  lib/           # site.ts — site config + getLocaleFromPathname (used by SSR)
+
   i18n/          # Localization dictionaries: es.ts, en.ts
 
-  styles/        # global.css with CSS variables for themes and layout utilities
+  styles/        # global.css (CSS variables/theming) + horizontal_timeline.css
+
+  entry-server.tsx  # SSR render entry consumed by scripts/prerender.mjs
 ```
 
 ### Styling Strategy
@@ -176,7 +200,7 @@ src/
 2. Variables are scoped by `[data-theme="light"]` and `[data-theme="dark"]`
 
 ### Type Checking
-Always run `npm run build` before committing to catch TypeScript errors. The build script runs `tsc -noEmit` followed by Vite build.
+Always run `npm run build` before committing to catch TypeScript errors. The build runs `tsc -noEmit` first, then the client build, SSR bundle, and prerender step — a type error fails the whole pipeline.
 
 ## Deployment Notes
 
@@ -218,11 +242,10 @@ This project has comprehensive test coverage with three layers:
 - All tests use `page.waitForLoadState('networkidle')` for stability
 
 ### 3. CI/CD Pipeline (GitHub Actions)
-- Workflow: `.github/workflows/ci.yml`
-- Jobs: lint, type-check, unit tests, E2E tests, build, Lighthouse
-- Lighthouse config: `lighthouserc.json` (enforces SEO score > 0.95)
-- Coverage uploaded to Codecov
-- Playwright reports saved as artifacts
+- **CI** — `.github/workflows/ci.yml`: lint, type-check, unit tests, E2E tests, build, Lighthouse
+  - Lighthouse config: `lighthouserc.json` (enforces SEO score > 0.95)
+  - Coverage uploaded to Codecov; Playwright reports saved as artifacts
+- **Deploy** — `.github/workflows/deploy.yml`: on push to `main`, builds the Docker image and deploys the container to the production host over SSH (concurrency group `deploy-production`). Config via repo `vars` (`PROD_HOST_PORT`, `PROD_APP_DIR`, `DOCKER_PLATFORM`).
 
 ## SEO Implementation
 
