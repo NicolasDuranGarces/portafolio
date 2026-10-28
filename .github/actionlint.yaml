@@ -1,0 +1,5 @@
+# Labels of the self hosted runners this repo uses. Without this, actionlint rejects them as unknown.
+self-hosted-runner:
+  labels:
+    - arc-portafolio
+    - portfolio-prod

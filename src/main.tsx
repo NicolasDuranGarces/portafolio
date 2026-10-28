@@ -1,31 +1,19 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { hydrateRoot } from 'react-dom/client'
+import { StrictMode } from 'react'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import { App } from './App'
-import { SEOProvider } from './components/SEO'
-import { getLocaleFromPathname, normalizeLegacyLanguageUrl } from './lib/site'
+import { resolveRoute } from './lib/routes'
 import './styles/global.css'
 
-if (typeof window !== 'undefined') {
-  const legacyPath = normalizeLegacyLanguageUrl(new URL(window.location.href))
-  if (legacyPath) {
-    window.history.replaceState({}, '', legacyPath)
-  }
-}
-
-const rootElement = document.getElementById('root')!
-const initialLang = getLocaleFromPathname(window.location.pathname)
-
+const root = document.getElementById('root')!
 const app = (
-  <React.StrictMode>
-    <SEOProvider>
-      <App initialLang={initialLang} />
-    </SEOProvider>
-  </React.StrictMode>
+  <StrictMode>
+    <App route={resolveRoute(window.location.pathname)} />
+  </StrictMode>
 )
 
-if (rootElement.hasChildNodes()) {
-  hydrateRoot(rootElement, app)
+// Prerendered pages hydrate. The dev server serves a root with only the placeholder comment, so it renders from scratch.
+if (root.firstElementChild) {
+  hydrateRoot(root, app)
 } else {
-  ReactDOM.createRoot(rootElement).render(app)
+  createRoot(root).render(app)
 }

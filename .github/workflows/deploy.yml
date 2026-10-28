@@ -11,10 +11,9 @@ concurrency:
 
 permissions:
   contents: read
-  packages: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/nicolasdurangarces/portafolio
   CONTAINER_NAME: portfolio
@@ -27,7 +26,8 @@ env:
 jobs:
   validate:
     name: Validate
-    runs-on: ubuntu-latest
+    runs-on: arc-portafolio
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -40,10 +40,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint & type check
-        run: |
-          npx tsc --noEmit
-          npx eslint src --ext .ts,.tsx
+      - name: TypeScript
+        run: npx tsc --noEmit
+
+      - name: ESLint
+        run: npx eslint src --ext .ts,.tsx
 
       - name: Unit tests
         run: npm run test:coverage
@@ -51,10 +52,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
   build-push:
     name: Build & push image to GHCR
-    runs-on: ubuntu-latest
+    runs-on: arc-portafolio
     needs: validate
+    # Only main reaches the registry and production, also when the workflow is started by hand from another branch.
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
@@ -85,19 +95,25 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=portafolio
+          cache-to: type=gha,mode=max,scope=portafolio
 
   deploy:
     name: Deploy to production
     # Runner self-hosted que corre EN el server de produccion: docker pull + run local, sin SSH.
     runs-on: [self-hosted, portfolio-prod]
     needs: build-push
+    if: github.ref == 'refs/heads/main'
     environment: production
     timeout-minutes: 15
+    permissions:
+      packages: read
     steps:
       - name: Log in to GHCR
-        run: echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 
       - name: Pull image and run container
         env:

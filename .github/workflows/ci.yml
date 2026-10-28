@@ -1,18 +1,29 @@
 name: CI
 
+# main is validated by deploy.yml; running it here too would queue twice on a single runner.
 on:
-  push:
-    branches: [main, develop]
   pull_request:
-    branches: [main, develop]
+  push:
+    branches: [develop]
+
+# The runner pool has one slot, so a newer push cancels the run it supersedes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 jobs:
-  lint:
-    name: Lint & Type Check
-    runs-on: ubuntu-latest
+  checks:
+    name: Checks
+    # Self hosted runners must never execute code from forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: arc-portafolio
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -25,69 +36,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: TypeScript type check
+      - name: TypeScript
         run: npx tsc --noEmit
 
       - name: ESLint
         run: npx eslint src --ext .ts,.tsx
 
-  unit-tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: Unit tests
+        run: npm run test:run
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests with coverage
-        run: npm run test:coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        if: always()
-        with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
-        continue-on-error: true
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [lint, unit-tests]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build production bundle
+      - name: Build
         run: npm run build
 
-      - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-${{ github.sha }}
-          path: dist/
-          retention-days: 1
+      - name: Dependency audit
+        run: npm audit --audit-level=high
 
-  e2e-tests:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    needs: [lint]
-    timeout-minutes: 10
+  e2e:
+    name: E2E (Chromium)
+    needs: checks
+    # Same guard as `checks`, so a fork PR never runs on the self hosted runner even if `needs` changes.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: arc-portafolio
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -103,50 +73,14 @@ jobs:
       - name: Install Playwright (Chromium only)
         run: npx playwright install --with-deps chromium
 
+      # The Playwright web server builds the site and serves dist/ with the nginx headers.
       - name: Run E2E tests
         run: npm run test:e2e -- --project=chromium
-        env:
-          CI: true
-        continue-on-error: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
-
-  docker:
-    name: Docker Build (verify)
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image (no push)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          tags: portfolio:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  all-checks-passed:
-    name: All checks passed
-    runs-on: ubuntu-latest
-    if: always()
-    needs: [lint, unit-tests, build]
-    steps:
-      - name: Fail if required checks failed
-        if: |
-          needs.lint.result == 'failure' ||
-          needs.unit-tests.result == 'failure' ||
-          needs.build.result == 'failure'
-        run: exit 1
-      - run: echo "All required checks passed"

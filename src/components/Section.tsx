@@ -1,29 +1,25 @@
-import { motion, type Variants } from 'framer-motion'
-
-const variants: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
-}
+import type { ReactNode } from 'react'
 
 type Props = {
   id: string
   title: string
   lead?: string
-  children: React.ReactNode
+  children: ReactNode
 }
 
+/** Home page section: anchor target, labelled heading and a reveal wrapper around the intro. */
 export function Section({ id, title, lead, children }: Props) {
-  const headingId = `${id}-title`
-
   return (
-    <section id={id} className="section container" aria-labelledby={headingId}>
-      <motion.header initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={variants}>
-        <h2 id={headingId}>{title}</h2>
-        {lead && <p className="lead">{lead}</p>}
-      </motion.header>
-      <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }} variants={variants}>
-        {children}
-      </motion.div>
+    <section id={id} aria-labelledby={`${id}-title`} className="py-20 md:py-24">
+      <div className="wrap">
+        <header data-reveal className="max-w-[680px]">
+          <h2 id={`${id}-title`} className="text-3xl font-semibold tracking-tight md:text-4xl">
+            {title}
+          </h2>
+          {lead ? <p className="mt-4 text-lg text-ink-muted">{lead}</p> : null}
+        </header>
+        <div className="mt-12">{children}</div>
+      </div>
     </section>
   )
 }

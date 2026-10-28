@@ -1,136 +1,58 @@
-import { useLanguage } from '../components/LanguageProvider'
-import { HeroBentoScene } from '../components/HeroBentoScene'
+import avatar from '../assets/avatar.webp'
+import { ArrowRightIcon, DownloadSimpleIcon } from '../components/icons'
+import { homeCopy } from '../content/home'
+import type { Lang } from '../lib/lang'
+import { site } from '../lib/site'
 
-export function Hero() {
-  const { lang, t } = useLanguage()
-
-  const techCategories = [
-    {
-      // Lenguajes base — qué sabes escribir
-      label: lang === 'es' ? 'Lenguajes' : 'Languages',
-      items: [
-        { name: 'Java',       icon: 'java' },
-        { name: 'Python',     icon: 'python' },
-        { name: 'TypeScript', icon: 'typescript' },
-        { name: 'C#',         icon: 'c#' },
-      ],
-    },
-    {
-      // Frameworks y runtimes backend — con qué construyes APIs
-      label: 'Backend',
-      items: [
-        { name: 'Spring Boot', icon: 'spring boot' },
-        { name: 'Node.js',     icon: 'node.js' },
-        { name: 'Express',     icon: 'express' },
-        { name: 'NestJS',      icon: 'nestjs' },
-        { name: 'FastAPI',     icon: 'fastapi' },
-        { name: 'Serverless',  icon: 'serverless' },
-      ],
-    },
-    {
-      // UI — lo que tocas en frontend
-      label: 'Frontend',
-      items: [
-        { name: 'React',    icon: 'react' },
-        { name: 'Next.js',  icon: 'next.js' },
-        { name: 'Vue',      icon: 'vue' },
-        { name: 'Angular',  icon: 'angular' },
-        { name: 'Tailwind', icon: 'tailwind' },
-      ],
-    },
-    {
-      // Dónde vive el código en producción
-      label: lang === 'es' ? 'Cloud & DevOps' : 'Cloud & DevOps',
-      items: [
-        { name: 'AWS',            icon: 'aws' },
-        { name: 'AWS Lambda',     icon: 'aws lambda' },
-        { name: 'Docker',         icon: 'docker' },
-        { name: 'Kubernetes',     icon: 'kubernetes' },
-        { name: 'GitHub Actions', icon: 'github actions' },
-      ],
-    },
-    {
-      // Persistencia — SQL, NoSQL, caché
-      label: lang === 'es' ? 'Bases de datos' : 'Databases',
-      items: [
-        { name: 'PostgreSQL', icon: 'postgresql' },
-        { name: 'MySQL',      icon: 'mysql' },
-        { name: 'MongoDB',    icon: 'mongodb' },
-        { name: 'Redis',      icon: 'redis' },
-        { name: 'DynamoDB',   icon: 'dynamodb' },
-      ],
-    },
-    {
-      // IA aplicada + herramientas de desarrollo
-      label: 'AI & Dev Tools',
-      items: [
-        { name: 'Claude Code',  icon: 'claude code' },
-        { name: 'Codex',        icon: 'codex' },
-        { name: 'LangChain',    icon: 'langchain' },
-        { name: 'Hugging Face', icon: 'hugging face' },
-        { name: 'Cursor',       icon: 'cursor' },
-        { name: 'GitHub',       icon: 'github' },
-        { name: 'GitLab',       icon: 'gitlab' },
-        { name: 'SourceTree',   icon: 'sourcetree' },
-      ],
-    },
-  ]
-
-  const chips = t('hero.specialties')
-    .split('|')
-    .map((s) => s.trim())
-    .filter(Boolean)
-
-  const stats = [
-    {
-      value: '5+',
-      label: lang === 'es' ? 'años de experiencia' : 'years of experience',
-    },
-    {
-      value: '15+',
-      label: lang === 'es' ? 'proyectos personales productivos' : 'productive personal projects',
-    },
-    {
-      value: '20',
-      label: lang === 'es' ? 'repos open source' : 'open source repos',
-    },
-    {
-      value: lang === 'es' ? 'Bilingüe' : 'Bilingual',
-      label: lang === 'es' ? 'español e inglés' : 'Spanish & English',
-    },
-  ]
-
-  const currentJob = {
-    company: 'BetterWay Devs',
-    role: lang === 'es' ? 'Software Engineer' : 'Software Engineer',
-    period: lang === 'es' ? 'may. 2024 — Actualidad' : 'May 2024 — Present',
-    stack: ['Python', 'Node.js', 'AWS Lambda', 'Docker', 'OCR/IA'],
-  }
+export function Hero({ lang }: { lang: Lang }) {
+  const copy = homeCopy[lang].hero
 
   return (
-    <HeroBentoScene
-      overline={t('hero.overline')}
-      headline={t('hero.headline')}
-      title={t('hero.title')}
-      description={t('hero.sub')}
-      chips={chips}
-      greeting={t('hero.greeting')}
-      role={t('hero.role')}
-      profileLabel={t('hero.bento.centralCardTitle')}
-      availabilityLabel={t('hero.bento.availabilityLabel')}
-      availabilityValue={t('hero.bento.availabilityValue')}
-      locationValue={t('hero.bento.locationValue')}
-      currentJob={currentJob}
-      githubUrl="https://github.com/NicolasDuranGarces"
-      githubLabel="github.com/NicolasDuranGarces"
-      stats={stats}
-      techCategories={techCategories}
-      labelCurrentJob={lang === 'es' ? 'Trabajo actual' : 'Current role'}
-      ctaGithub={t('hero.ctaGithub')}
-      ctaLinkedIn={t('hero.ctaLinkedIn')}
-      ctaCV={t('hero.ctaCV')}
-      downloadCV={t('hero.downloadCV')}
-      ctaAriaLabel={lang === 'es' ? 'Acciones principales' : 'Primary actions'}
-    />
+    <section id="hero" aria-labelledby="hero-title" className="pt-24 pb-20 md:pb-24">
+      <div className="wrap mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,680px)_1fr] lg:gap-12">
+        <div className="order-2 lg:order-1">
+          <h1
+            id="hero-title"
+            className="hero-rise max-w-[680px] bg-linear-to-r from-hero-from to-hero-to bg-clip-text text-transparent"
+          >
+            <span className="block text-5xl font-semibold tracking-tight md:text-6xl">{copy.name}</span>{' '}
+            <span className="mt-4 block text-2xl font-medium md:text-3xl">
+              {copy.role}
+              <br />
+              {copy.statement}
+            </span>
+          </h1>
+          <p className="hero-rise mt-6 max-w-[680px] text-lg text-ink-muted" data-delay="1">
+            {copy.sub}
+          </p>
+          <div className="hero-rise mt-8 flex flex-wrap items-center gap-4" data-delay="2">
+            <a className="control control-lg control-primary" href={site.cv[lang]} download>
+              <DownloadSimpleIcon size={20} aria-hidden="true" />
+              {copy.downloadCv}
+            </a>
+            <a className="control control-lg control-text" href={`mailto:${site.email}`}>
+              {copy.emailMe}
+              <ArrowRightIcon size={20} aria-hidden="true" />
+            </a>
+          </div>
+          <p className="hero-rise mt-6 text-sm text-ink-muted" data-delay="3">
+            {copy.proof}
+          </p>
+        </div>
+
+        <div className="order-1 lg:order-2 lg:justify-self-end">
+          <img
+            src={avatar}
+            width={576}
+            height={720}
+            alt={copy.photoAlt}
+            decoding="async"
+            // React 18 only knows the lowercase attribute; this is the hero LCP candidate, so never lazy.
+            {...{ fetchpriority: 'high' }}
+            className="hero-rise size-24 rounded-full border border-line object-cover object-top lg:h-80 lg:w-64 lg:rounded-3xl"
+          />
+        </div>
+      </div>
+    </section>
   )
 }

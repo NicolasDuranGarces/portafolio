@@ -15,8 +15,11 @@ test-results
 playwright/.cache
 e2e
 
-# CI/CD
+# CI/CD and host provisioning
 .github
+infra
+.agents
+skills-lock.json
 
 # Documentation
 CLAUDE.md

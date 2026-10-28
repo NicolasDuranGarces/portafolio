@@ -1,0 +1,10 @@
+// Single place that lists the Phosphor icons in use. Deep imports keep the bundle (and dev server) small.
+export { ArrowLeftIcon } from '@phosphor-icons/react/dist/csr/ArrowLeft'
+export { ArrowRightIcon } from '@phosphor-icons/react/dist/csr/ArrowRight'
+export { ArrowUpRightIcon } from '@phosphor-icons/react/dist/csr/ArrowUpRight'
+export { DownloadSimpleIcon } from '@phosphor-icons/react/dist/csr/DownloadSimple'
+export { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/csr/EnvelopeSimple'
+export { GithubLogoIcon } from '@phosphor-icons/react/dist/csr/GithubLogo'
+export { LinkedinLogoIcon } from '@phosphor-icons/react/dist/csr/LinkedinLogo'
+export { MoonIcon } from '@phosphor-icons/react/dist/csr/Moon'
+export { SunIcon } from '@phosphor-icons/react/dist/csr/Sun'

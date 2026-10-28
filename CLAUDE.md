@@ -2,291 +2,71 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Project overview
 
-Modern portfolio website built with React + TypeScript + Vite. Features bilingual support (ES/EN), dark/light theme, smooth animations with Framer Motion, static prerendering (SSG) of localized routes, and production deployment via Docker + Nginx.
+Portfolio of Nicolás Durán Garcés (niduga.dev): a static bilingual site (ES at `/`, EN at `/en/`) aimed at recruiters and contract roles. React 18 + TypeScript + Vite 7 + Tailwind v4, prerendered to one HTML file per page, served by nginx in a Docker image. Home page plus four case study pages, a privacy page and a bilingual 404. See `README.md` for the full picture; this file lists what to keep in mind while changing code.
 
-## Development Commands
+## Commands
 
-### Local Development
 ```bash
-npm install          # Install dependencies
-npm run dev          # Start dev server on http://localhost:5173
-npm run build        # Full pipeline: tsc -noEmit → client build → SSR bundle → prerender
-npm run preview      # Preview production build on http://localhost:5173
+npm run dev                      # Vite dev server on :5173 (client render only, no <head> SEO tags)
+npm run build                    # tsc -noEmit -> vite build -> vite build --ssr -> node scripts/prerender.mjs
+npm run preview                  # vite preview of dist/ on :4173
+
+npx tsc --noEmit                 # type check
+npx eslint src --ext .ts,.tsx    # lint; there is NO npm lint script, this is the exact CI command
+npm run test:run                 # unit tests (Vitest, jsdom)
+npm run test:coverage
+npm run test:e2e -- --project=chromium   # Playwright; webServer = npm run build && node e2e/serve-dist.mjs
+npm audit --audit-level=high
+npm run og                       # regenerate public/og-image.png
 ```
 
-There is **no** `npm run lint` script — lint with `npx eslint src --ext .ts,.tsx` (the exact command CI runs; config: `.eslintrc.cjs`).
-
-The `build` script is a 4-step pipeline (all must pass):
-1. `tsc -noEmit` — strict type-check
-2. `vite build` — client bundle into `dist/`
-3. `vite build --ssr src/entry-server.tsx --outDir dist/server` — SSR bundle
-4. `node scripts/prerender.mjs` — renders routes to static HTML and emits `robots.txt` + `sitemap.xml`
-
-### Testing
-```bash
-npm run test         # Run unit tests in watch mode
-npm run test:run     # Run unit tests once
-npm run test:ui      # Open Vitest UI
-npm run test:coverage # Generate coverage report
-npm run test:e2e     # Run E2E tests with Playwright
-npm run test:e2e:ui  # Run E2E tests with Playwright UI
-npm run test:all     # Run all tests (unit + E2E)
-```
-
-### Docker Deployment
-```bash
-# Using Docker directly
-docker build -t portfolio .
-docker run -p 8080:80 portfolio
-
-# Using docker-compose
-docker-compose up --build
-
-# Using Makefile (recommended)
-make help            # Show all available targets
-make build           # Build Docker image
-make up              # Stop, remove, and run container
-make logs            # Tail container logs
-make shell           # Open shell in running container
-make rebuild         # Clean rebuild: stop, rm, build, run
-```
-
-Default ports: Dev server (5173), Docker container (3000→80 mapped via Makefile).
+Everything above must pass before a change is done. Node 22 is the target (Dockerfile and CI); local Node can be newer.
 
 ## Architecture
 
-### Core Provider Pattern
-The app uses React Context for two global concerns:
+### Routing without a router
 
-1. **ThemeProvider** (src/components/ThemeProvider.tsx)
-   - Manages light/dark theme with localStorage persistence
-   - Reads system preference (`prefers-color-scheme`) as default
-   - Exposes `useTheme()` hook with `{ theme, toggle, set }`
-   - Sets `data-theme` attribute on `<html>` for CSS variable switching
+- `src/lib/routes.ts` is the only place that knows URLs. `resolveRoute(pathname)` returns `{ page: 'home' | 'case' | 'privacy', lang, slug? }` or `{ page: 'notFound' }`; `pathOf`, `fileOf`, `alternates`, `pageRoutes` derive paths, output files and hreflang sets from the same data.
+- Every page is a separate prerendered HTML file and navigation is a normal `<a href>` (full page load). The language switch is an `<a>` to `pathOf(withLang(route, otherLang))`. There is no client router and no language context.
+- The 404 is a single bilingual page (`notFound` has no `lang`) because nginx serves one `404.html` for any missing URL; hydration therefore never mismatches.
+- The client resolves the route from `location.pathname` (`src/main.tsx`) and hydrates; `src/entry-server.tsx` exports `listPages()` and `renderRoute(route)` for `scripts/prerender.mjs`.
 
-2. **LanguageProvider** (src/components/LanguageProvider.tsx)
-   - Handles ES/EN localization with localStorage + URL query params
-   - Exposes `useLanguage()` hook with `{ lang, toggle, set, t }`
-   - `t(key)` function resolves dot-notation keys (e.g., `t('hero.title')`)
-   - Query param `?lang=en|es` overrides stored preference
-   - Accepts an `initialLang` prop so SSR/prerender can hydrate the correct language (see below)
+### Head, SEO and prerender
 
-Both providers wrap the entire app in src/App.tsx. `App` accepts `initialLang?: Lang`, passed through from the SSR entry.
+- `src/lib/seo.ts`: `getPageMeta(route)` (title, description, canonical, alternates, robots, Open Graph, JSON-LD) and `renderHead(meta)` (escaped head tags). No react-helmet: the head is static per page and never changes at runtime.
+- `scripts/prerender.mjs` injects the head at `<!--app-head-->`, the app HTML at `<!--app-html-->`, a font preload tag, and writes `sitemap.xml` (`src/lib/sitemap.ts`) and `robots.txt`. It sets `NODE_ENV=production` so React renders without dev warnings, and removes `dist/server` at the end.
+- To add a prerendered route: extend `Route` and `pageRoutes()` in `src/lib/routes.ts`, handle it in `getPageMeta`; the sitemap, files and tests follow from there.
 
-### SSR & Static Prerendering (SSG)
+### Content model (`src/content/`)
 
-The site ships as prerendered static HTML — there is no live SSR server at runtime, only Nginx serving static files.
+Typed data per language (`Localized<T> = { es: T; en: T }` from `src/lib/lang.ts`). `cases.ts`, `experience.ts`, `projects.ts`, `stack.ts`, `home.ts`, `ui.ts`. `ui.ts` derives the English type from the Spanish object, so a missing key is a compile error. Components receive `lang` as a prop and read `content[lang]`; there are no string key lookups.
 
-- `src/entry-server.tsx` — `renderPage(pathname)` runs `renderToString` with the correct locale, using `getLocaleFromPathname` from `src/lib/site.ts`. `react-helmet-async` is `ssr.noExternal` in `vite.config.ts` so it bundles for SSR.
-- `scripts/prerender.mjs` — imports the built SSR bundle and writes static HTML for each route: `/` (ES → `dist/index.html`) and `/en/` (EN → `dist/en/index.html`). It also generates `robots.txt` and `sitemap.xml` with hreflang alternates. Canonical site URL (`https://niduga.dev`) is hardcoded here.
-- To add a prerendered route: add it to the `routes` array in `scripts/prerender.mjs` and update the sitemap block in the same file.
+Content rules (checked by `src/content/content.test.ts`): facts only from the CV `.tex` sources; anonymous clients stay anonymous (see README); no hyphens or dashes inside copy; no clichés; each case has role, 2 or 3 decisions with reasons, and a result. Change copy in both languages in the same edit.
 
-### Data Layer
+### Styling and motion
 
-**Internationalized Data Pattern:**
-- Projects (src/data/projects.ts) and Experience (src/data/experience.ts) use `LocalizedText = Record<Lang, string>`
-- Additional structured content lives in `src/content/` (`services.ts`, `faq.ts`) following the same bilingual/resolve pattern; site-wide config and locale helpers in `src/lib/site.ts`
-- Each project/experience has bilingual fields resolved via `lang` parameter
-- Type-safe with `Project` → `ResolvedProject` pattern
-- Export `getProjects(lang)` and `getExperience(lang)` functions for runtime resolution
+- `src/styles/global.css`: Tailwind v4 CSS first config. Colors are tokens built with `light-dark()` (`--color-canvas`, `surface`, `raised`, `line`, `ink`, `ink-muted`, `accent`, hero gradient pair). `--color-*: initial` removes the default palette, so only tokens exist. Theme = system by default, `<html data-theme>` overrides (written by `useTheme` and by `public/init.js` before first paint).
+- Shared component classes (`.control`, `.card`, `.chip`, `.timeline`, `.burger`, `.menu-overlay`, `.prose-link`) are defined with `@apply` in `@layer components`. One height token for controls: `--control-h`. Interactive elements transition through the `transition-ui` utility (colors, opacity, individual transform properties, 700 ms, fluid curve) and never `transition-all`, so the focus ring is not animated and shows instantly.
+- Motion is CSS + `IntersectionObserver` (`useReveal`, `useActiveSection`, `useWordReveal`). Never add a scroll listener or an animation library. Reveal wrappers (`data-reveal`) must not carry their own hover transitions: wrap a card, do not annotate it. Content is hidden only under `html.js`, and all motion sits inside `@media (prefers-reduced-motion: no-preference)`.
+- `src/styles/design-rules.test.ts` enforces the visual contract (type scale, spacing steps, flat backgrounds, one gradient, no one sided borders, no raw colors, fluid easing). If it fails, fix the code, not the test.
+- CSP forbids inline styles and scripts: do not use the React `style` prop (SSR would emit a `style=` attribute). CSSOM writes (`element.style.x = ...`) are fine. JSON-LD is a `type="application/ld+json"` data block.
 
-**Project Structure:**
-```typescript
-type Project = {
-  slug: string
-  title: LocalizedText       // { es: '...', en: '...' }
-  description: LocalizedText
-  category: ProjectCategory  // 'backend' | 'frontend' | 'devops' | 'data' | 'mobile'
-  tags: string[]
-  links?: { href: string; label: LocalizedText }[]
-  image?: string
-  highlights?: LocalizedText[]
-}
-```
+### Testing
 
-All text content lives in src/i18n/{es,en}.ts dictionaries.
+- Unit (Vitest + Testing Library, `src/**/*.test.ts(x)`): routes, SEO, sitemap, content rules, hooks, Nav, tagline, case pages, prerender HTML (`src/entry-server.test.tsx`), design rules. `src/test/setup.ts` provides `matchMedia`, an in memory `localStorage` (Node 25+ ships a global that breaks jsdom's) and a controllable `IntersectionObserver` double (`src/test/intersection.ts`).
+- E2E (`e2e/`): runs against the real build served by `e2e/serve-dist.mjs`, which copies the `add_header` lines from `nginx.conf` (including the CSP) and mimics nginx 404 and trailing slash behavior. Specs: static HTML with JS off, navigation, theme and language, runtime health (no console errors or CSP violations), layout and focus, build output.
 
-### Component Organization
+### Delivery
 
-```
-src/
-  components/    # Reusable UI: ThemeProvider, LanguageProvider, ProjectCard,
-                 # CornerControls (theme/lang toggles), SideRails, ScrollProgress,
-                 # ParallaxOrbs, ProjectModal, TechIcon, SkillsMarquee, etc.
+- `nginx.conf`: strict CSP, `server_tokens off`, cache policy through a `map` (hashed `/assets/` immutable, everything else `no-cache`), all headers declared once at server level (nginx does not inherit `add_header` into blocks that define their own), `error_page 404 /404.html`. It must keep working as uid 101 with `--read-only` and tmpfs on `/var/cache/nginx`, `/var/run`, `/tmp`.
+- `Dockerfile`: `node:22-alpine` builder, `nginx:1.27-alpine` runtime, healthcheck on `127.0.0.1`.
+- Workflows: `ci.yml` (PR and `develop`: `checks`, `e2e`) and `deploy.yml` (`main`: `validate`, `build-push` on `arc-portafolio`; `deploy` on `[self-hosted, portfolio-prod]`). Declared in `.github/actionlint.yaml`. Never `ubuntu-latest`.
 
-  sections/      # Page sections: Hero, About, Skills, Projects, Services, FAQ,
-                 # Experience, Contact. Each uses language/theme hooks
+## Conventions
 
-  data/          # Typed data sources: projects.ts, experience.ts
-
-  content/       # Structured bilingual content: services.ts, faq.ts
-
-  lib/           # site.ts — site config + getLocaleFromPathname (used by SSR)
-
-  i18n/          # Localization dictionaries: es.ts, en.ts
-
-  styles/        # global.css (CSS variables/theming) + horizontal_timeline.css
-
-  entry-server.tsx  # SSR render entry consumed by scripts/prerender.mjs
-```
-
-### Styling Strategy
-- CSS variables defined in `src/styles/global.css` switch based on `[data-theme]`
-- Component-scoped styles via inline styles or CSS modules (if added)
-- Framer Motion for declarative animations
-- Responsive design with mobile-first CSS
-
-### SEO & Meta
-- src/components/SEO.tsx uses `react-helmet-async` to inject `<title>`, `<meta>`, Open Graph, and Twitter Card tags
-- Localized SEO content from `i18n/{lang}.seo.*`
-- SEO config in src/seo.config.ts
-
-## TypeScript Configuration
-
-- **Strict mode enabled:** All type errors must be resolved before build
-- **Target:** ES2020 with DOM libs
-- **Module resolution:** Bundler (Vite-specific)
-- **JSX:** react-jsx (automatic runtime, no import React needed in components)
-- Use `type` imports where possible (enforced by ESLint rule `@typescript-eslint/consistent-type-imports`)
-
-## ESLint Rules
-
-- Enforces TypeScript best practices
-- `react-refresh/only-export-components` warns on non-component exports from component files
-- Unused vars allowed with `_` prefix
-- Use `import type` for type-only imports
-
-## Key Patterns & Conventions
-
-1. **Localization:**
-   - Always use `useLanguage().t(key)` for user-facing strings
-   - For data structures, use `LocalizedText` and resolve at runtime via `lang` parameter
-   - Never hardcode English or Spanish strings in components
-
-2. **Theme:**
-   - Use CSS variables for colors and spacing
-   - Test both light and dark themes when styling
-
-3. **Animation:**
-   - Use Framer Motion for all animations
-   - Keep animations subtle and accessible
-
-4. **Component Props:**
-   - Always type component props with TypeScript interfaces or types
-   - Prefer named exports for components (except App.tsx which uses default)
-
-5. **Data Flow:**
-   - Static data (projects, experience) lives in src/data/
-   - Runtime resolution via `get*` functions that accept `lang`
-   - Context providers for theme and language state
-
-## Common Development Tasks
-
-### Adding a New Project
-1. Edit `src/data/projects.ts`
-2. Add new project object with bilingual `title`, `description`, `highlights`
-3. Ensure `slug` is unique
-4. Add required tags from `allTags` array
-
-### Adding New Translations
-1. Add key to both `src/i18n/es.ts` and `src/i18n/en.ts`
-2. Use dot notation for nested keys (e.g., `hero.title`)
-3. Access via `useLanguage().t('hero.title')`
-
-### Modifying Theme Colors
-1. Edit CSS variables in `src/styles/global.css`
-2. Variables are scoped by `[data-theme="light"]` and `[data-theme="dark"]`
-
-### Type Checking
-Always run `npm run build` before committing to catch TypeScript errors. The build runs `tsc -noEmit` first, then the client build, SSR bundle, and prerender step — a type error fails the whole pipeline.
-
-## Deployment Notes
-
-- Docker multi-stage build: Node builder → Nginx runtime
-- Static assets served from `/dist` by Nginx on port 80
-- Configure nginx.conf for custom routing or headers if needed
-- Makefile provides production-ready workflows (rebuild, logs, shell access)
-
-## Testing Architecture
-
-This project has comprehensive test coverage with three layers:
-
-### 1. Unit Tests (Vitest + React Testing Library)
-- Located in `*.test.tsx` files next to components
-- Tests providers (ThemeProvider, LanguageProvider)
-- Tests UI components (Section, ProjectCard)
-- Tests data layer (projects.ts)
-- Configuration: `vitest.config.ts`
-- Test utilities: `src/test/test-utils.tsx` (custom render with providers)
-- Setup: `src/test/setup.ts` (global mocks for matchMedia, IntersectionObserver)
-
-**Key patterns:**
-- Use `renderWithProviders` from test-utils for components that need context
-- All error boundary tests suppress console.error to avoid noise
-- localStorage and window.matchMedia are mocked globally
-
-### 2. E2E Tests (Playwright)
-- Located in `e2e/` directory
-- Tests complete user flows and SEO implementation
-- `homepage.spec.ts`: Tests meta tags, structured data (JSON-LD), hreflang tags
-- `theme-language.spec.ts`: Tests theme/language toggle persistence
-- `navigation.spec.ts`: Tests section navigation and external links
-- Configuration: `playwright.config.ts`
-- Runs against dev server automatically (webServer config)
-
-**Important:**
-- E2E tests verify SEO keywords including "NIDUGA" alias
-- Tests run on multiple browsers: Chrome, Firefox, Safari, Mobile Chrome/Safari
-- All tests use `page.waitForLoadState('networkidle')` for stability
-
-### 3. CI/CD Pipeline (GitHub Actions)
-- **CI** — `.github/workflows/ci.yml`: lint, type-check, unit tests, E2E tests, build, Lighthouse
-  - Lighthouse config: `lighthouserc.json` (enforces SEO score > 0.95)
-  - Coverage uploaded to Codecov; Playwright reports saved as artifacts
-- **Deploy** — `.github/workflows/deploy.yml`: on push to `main`, builds the Docker image and deploys the container to the production host over SSH (concurrency group `deploy-production`). Config via repo `vars` (`PROD_HOST_PORT`, `PROD_APP_DIR`, `DOCKER_PLATFORM`).
-
-## SEO Implementation
-
-**Keywords Strategy:**
-- Primary: "Nicolas Duran Garces", "NIDUGA", "niduga"
-- Secondary: Backend Python, FastAPI, DevOps, Clean Architecture
-- All keywords in `src/seo.config.ts`
-
-**SEO Features:**
-- Dynamic meta tags via react-helmet-async (src/components/SEO.tsx)
-- JSON-LD structured data: Person, WebSite, BreadcrumbList schemas
-- Canonical URLs with tracking param cleanup
-- Hreflang tags for ES/EN localization
-- Open Graph and Twitter Card meta tags
-- Sitemap.xml with bilingual support (public/sitemap.xml)
-- Robots.txt configured (public/robots.txt)
-- PWA manifest (public/site.webmanifest)
-
-**Testing SEO:**
-- E2E tests verify presence of NIDUGA keyword in title and meta tags
-- E2E tests validate JSON-LD structure and Person schema
-- Lighthouse CI enforces SEO score > 95%
-
-## Performance Optimizations
-
-1. **Lazy Loading & Code Splitting:**
-   - Heavy sections lazy-loaded via React.lazy() in App.tsx
-   - Suspense fallbacks with min-height to prevent layout shift
-   - Automatic chunk splitting by Vite
-
-2. **Bundle Analysis:**
-   - Main bundle ~300KB (includes React, Framer Motion)
-   - Section chunks: 1-11KB each (lazy loaded)
-   - TechIcon chunk largest due to react-icons (consider optimization)
-
-## Files to Customize for Personal Use
-
-Per README.md, quick customization points:
-- Brand name: `src/components/Navbar.tsx` (if exists; check CornerControls for branding)
-- Hero text: `src/sections/Hero.tsx` or via `src/i18n/es.ts` → `hero.*`
-- Social links: `src/sections/Contact.tsx` or via `i18n`
-- Projects: `src/data/projects.ts`
-- Colors/theme: `src/styles/global.css`
-- SEO keywords: `src/seo.config.ts` (update with your aliases and keywords)
+- TypeScript strict, `import type` for types (ESLint `consistent-type-imports`), named exports for components.
+- Phosphor icons only, imported through `src/components/icons.ts` (deep imports).
+- Copy: sentence case, no hyphens inside phrases, `text-balance` headings and `text-pretty` body (set globally).
+- Do not add personal or client details that the README marks as anonymous.

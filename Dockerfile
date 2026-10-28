@@ -1,25 +1,26 @@
-# Multi-stage build para servir el bundle estático detrás de Nginx.
+# Multi stage build: Node builds and prerenders the static site, nginx serves it.
 
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Instala dependencias usando el lockfile para builds reproducibles.
-COPY package*.json ./
+# Install from the lockfile for reproducible builds.
+COPY package.json package-lock.json ./
 RUN npm ci --audit=false --fund=false
 
-# Copia el resto del código y genera el build optimizado.
+# Copy the source and produce dist/ (type check, client bundle, SSR bundle, prerender).
 COPY . .
 RUN npm run build
 
-# Imagen final mínima con Nginx manejando el tráfico HTTP.
+# Final image: nginx with only the prerendered files.
+# Production runs it as uid 101 on a read only filesystem with tmpfs on /var/cache/nginx, /var/run and /tmp,
+# listening on :80 through CAP_NET_BIND_SERVICE, so nginx.conf must never write anywhere else.
 FROM nginx:1.27-alpine
 
-# Usa un archivo de configuración alineado con SPA + caching agresivo para assets.
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-# Verifica que Nginx siga respondiendo para que el orquestador pueda monitorear el contenedor.
+# Lets the orchestrator watch nginx. 127.0.0.1 on purpose: "localhost" can resolve to ::1, where nginx does not listen.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget -q -O /dev/null http://127.0.0.1/ || exit 1
