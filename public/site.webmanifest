@@ -1,28 +1,15 @@
 {
-  "name": "Nicolas Duran Garces · Software Engineer",
-  "short_name": "Nicolas Duran",
-  "description": "Portafolio de Nicolas Duran Garces (NIDUGA): backend engineering, Python/FastAPI, Docker y arquitectura de software.",
+  "name": "Nicolás Durán Garcés",
+  "short_name": "Nicolás Durán",
+  "description": "Ingeniero backend e IA. Python, Java y TypeScript sobre AWS.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "lang": "es-CO",
   "dir": "ltr",
-  "display": "standalone",
-  "background_color": "#0b0c10",
-  "theme_color": "#0b0c10",
-  "categories": ["business", "productivity", "portfolio"],
-  "shortcuts": [
-    {
-      "name": "Proyectos destacados",
-      "url": "/#projects",
-      "description": "Explora proyectos backend y DevOps."
-    },
-    {
-      "name": "Contacto",
-      "url": "/#contact",
-      "description": "Reserva una reunión con Nicolas."
-    }
-  ],
+  "display": "browser",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
   ]

@@ -1,45 +1,48 @@
-import { motion } from 'framer-motion'
+import { ArrowRightIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, GithubLogoIcon, LinkedinLogoIcon } from '../components/icons'
 import { Section } from '../components/Section'
-import { SocialLinks } from '../components/SocialLinks'
-import { useLanguage } from '../components/LanguageProvider'
+import { homeCopy } from '../content/home'
+import { ui } from '../content/ui'
+import type { Lang } from '../lib/lang'
+import { site } from '../lib/site'
 
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
-
-export function Contact() {
-  const { t, lang } = useLanguage()
+export function Contact({ lang }: { lang: Lang }) {
+  const copy = homeCopy[lang]
 
   return (
-    <Section id="contact" title={t('contact.title')} lead={t('contact.lead')}>
-      <motion.div
-        variants={item}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        className="card fancy"
-        style={{
-          padding: '3rem 2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1.5rem',
-          textAlign: 'center',
-          maxWidth: '500px',
-          margin: '0 auto'
-        }}
-      >
-        <h3 style={{ margin: 0 }}>{t('contact.socialTitle')}</h3>
-        <p style={{ color: 'var(--muted)', margin: 0 }}>{t('contact.socialLead')}</p>
-        <p style={{ color: 'var(--muted)', margin: 0, maxWidth: '36rem', lineHeight: 1.7 }}>
-          {lang === 'es'
-            ? 'Si estas buscando un backend developer, un ingeniero de software en Armenia Quindio o alguien que te ayude a estructurar APIs y despliegues con criterio, aqui es donde me encuentras.'
-            : 'If you are looking for a backend developer, a software engineer based in Armenia Quindio, or someone to help structure APIs and deployments with discipline, this is where you can reach me.'}
-        </p>
-        <SocialLinks
-          github="https://github.com/NicolasDuranGarces"
-          linkedin="https://www.linkedin.com/in/garcesnicolas/"
-          email="niduga@outlook.es"
-        />
-      </motion.div>
+    <Section id="contact" title={ui[lang].sections.contact.title}>
+      <div data-reveal className="card p-8 md:p-12">
+        <p className="max-w-[680px] text-2xl font-semibold md:text-3xl">{copy.contact.text}</p>
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <a className="control control-lg control-primary" href={site.cv[lang]} download>
+            <DownloadSimpleIcon size={20} aria-hidden="true" />
+            {copy.hero.downloadCv}
+          </a>
+          <a className="control control-lg control-text" href={`mailto:${site.email}`}>
+            {copy.hero.emailMe}
+            <ArrowRightIcon size={20} aria-hidden="true" />
+          </a>
+        </div>
+        <ul role="list" className="mt-12 flex flex-wrap gap-4">
+          <li>
+            <a className="control control-secondary" href={`mailto:${site.email}`}>
+              <EnvelopeSimpleIcon size={20} aria-hidden="true" />
+              {site.email}
+            </a>
+          </li>
+          <li>
+            <a className="control control-secondary" href={site.linkedin} target="_blank" rel="noopener noreferrer">
+              <LinkedinLogoIcon size={20} aria-hidden="true" />
+              LinkedIn
+            </a>
+          </li>
+          <li>
+            <a className="control control-secondary" href={site.github} target="_blank" rel="noopener noreferrer">
+              <GithubLogoIcon size={20} aria-hidden="true" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
     </Section>
   )
 }

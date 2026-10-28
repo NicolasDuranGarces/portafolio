@@ -1,16 +1,19 @@
 import { renderToString } from 'react-dom/server'
 import { App } from './App'
-import { SEOProvider } from './components/SEO'
-import { getLocaleFromPathname } from './lib/site'
+import type { Lang } from './lib/lang'
+import { fileOf, pageRoutes, type Route } from './lib/routes'
+import { getPageMeta, renderHead } from './lib/seo'
 
-export function renderPage(pathname: string) {
-  const helmetContext: Record<string, unknown> = {}
-  const locale = getLocaleFromPathname(pathname)
-  const appHtml = renderToString(
-    <SEOProvider context={helmetContext}>
-      <App initialLang={locale} />
-    </SEOProvider>
-  )
+export { buildRobots, buildSitemap } from './lib/sitemap'
 
-  return { appHtml, helmetContext, locale }
+const notFound: Route = { page: 'notFound' }
+
+/** Every file the build must emit: all pages in both languages plus the bilingual 404. */
+export function listPages(): { route: Route; file: string }[] {
+  return [...pageRoutes(), notFound].map((route) => ({ route, file: fileOf(route) }))
+}
+
+export function renderRoute(route: Route): { lang: Lang; head: string; html: string } {
+  const meta = getPageMeta(route)
+  return { lang: meta.lang, head: renderHead(meta), html: renderToString(<App route={route} />) }
 }

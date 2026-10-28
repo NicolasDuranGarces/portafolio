@@ -3,7 +3,7 @@
 Pipeline: **push a `main` → GitHub Actions → build & push a GHCR → server hace `docker pull` + `docker run`**.
 El server nunca clona el repo; solo consume la imagen `ghcr.io/nicolasdurangarces/portafolio`.
 
-Los jobs `validate` y `build-push` corren en runners cloud de GitHub (`ubuntu-latest`).
+Los jobs `validate` y `build-push` corren en el scale set de runners propios (`arc-portafolio`, ARC sobre k3s).
 El job `deploy` corre en un **runner self-hosted registrado a nivel repo** (`portfolio-prod`)
 que vive en el propio server → hace `docker login ghcr.io` + `pull` + `run` localmente,
 sin SSH entrante (el firewall del host bloquea SSH desde los runners cloud).

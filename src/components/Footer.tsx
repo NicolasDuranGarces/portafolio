@@ -1,13 +1,22 @@
-import { useLanguage } from './LanguageProvider'
+import { ui } from '../content/ui'
+import type { Lang } from '../lib/lang'
+import { pathOf } from '../lib/routes'
+import { site } from '../lib/site'
 
-export function Footer() {
-  const { t } = useLanguage()
+export function Footer({ lang }: { lang: Lang }) {
+  const copy = ui[lang].footer
+  // The static HTML carries the build year; a later year on the client must not raise a hydration error.
   const year = new Date().getFullYear()
+
   return (
-    <footer>
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-        <small>© {year} {t('footer.owner')}. {t('footer.rights')}</small>
-        <small>{t('footer.madeWith')}</small>
+    <footer className="py-12">
+      <div className="wrap flex flex-wrap items-center justify-between gap-4 text-sm text-ink-muted">
+        <p>
+          © <span suppressHydrationWarning>{year}</span> {site.name}. {copy.rights}
+        </p>
+        <a href={pathOf({ page: 'privacy', lang })} className="prose-link">
+          {copy.privacy}
+        </a>
       </div>
     </footer>
   )

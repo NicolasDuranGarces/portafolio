@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /node_modules/
-Disallow: /dist/
-
-Sitemap: https://niduga.dev/sitemap.xml
-Host: niduga.dev

@@ -1,480 +1,104 @@
-# Portfolio - Modern React + TypeScript + Vite
+# niduga.dev
 
-A modern, fully-featured portfolio website built with React, TypeScript, and Vite. Features bilingual support (Spanish/English), dark/light theme, smooth animations with Framer Motion, comprehensive testing, and production-ready Docker deployment.
+Portfolio of Nicolás Durán Garcés, backend and AI engineer. A static, bilingual site (Spanish at `/`, English at `/en/`) built for recruiters and contract roles: a home page with four case studies, a dated experience timeline, the stack by area, public repositories, and a short about section.
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.3-61dafb)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.4-646cff)](https://vitejs.dev/)
-[![License](https://img.shields.io/badge/license-Personal%2FEducational-green)](LICENSE)
+## Stack
 
-## Table of Contents
+- React 18 + TypeScript (strict) + Vite 7, prerendered to static HTML (SSG). nginx serves the result from a Docker image.
+- Tailwind CSS v4 (CSS first config in `src/styles/global.css`), Geist (self hosted, `@fontsource-variable/geist`), Phosphor icons.
+- No animation library: motion is CSS plus `IntersectionObserver`, and it switches off with `prefers-reduced-motion`.
+- Vitest + Testing Library for unit tests, Playwright for end to end tests.
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Quick Start](#quick-start)
-- [Development](#development)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Project Structure](#project-structure)
-- [Architecture](#architecture)
-- [Customization](#customization)
-- [Performance](#performance)
-- [SEO](#seo)
-- [License](#license)
+## Pages
 
-## Features
+| Page | Spanish | English |
+| --- | --- | --- |
+| Home | `/` | `/en/` |
+| Case study | `/casos/<slug>/` | `/en/cases/<slug>/` |
+| Privacy | `/privacidad/` | `/en/privacy/` |
+| 404 | `/404.html` (one bilingual page, served by nginx with a real 404 status) | |
 
-### Core Functionality
-- **Bilingual Support**: Full internationalization (Spanish/English) with dedicated routes (`/` and `/en/`) plus localStorage preference
-- **Theme Switching**: Light/dark theme with system preference detection and persistence
-- **Smooth Animations**: Powered by Framer Motion with accessibility considerations
-- **Responsive Design**: Mobile-first approach with optimized layouts for all screen sizes
-- **SEO Optimized**: Prerendered HTML, meta tags, JSON-LD structured data, sitemap, canonical, and hreflang tags
-- **PWA Ready**: Manifest file and service worker support
+Case slugs: `bheex`, `price-match-automation`, `quindio-inteligente-iot`, `warehouse-conveyor-backend`.
 
-### Sections
-- **Hero**: Eye-catching introduction with animated background orbs
-- **About**: Professional summary with personal story
-- **Skills**: Tech stack showcase with animated marquee
-- **Experience**: Professional timeline with detailed positions
-- **Projects**: Filterable project gallery with categories, tags, and detailed modal views
-- **Contact**: Social links and contact information
+Navigation between pages is plain `<a href>`: every page is its own prerendered HTML file, so there is no client router. The language switch links to the same page in the other language.
 
-### User Experience
-- **Project Filtering**: Category-based filters, tag selection, and search functionality
-- **Project Modals**: Detailed project views with highlights, tech stack, and links
-- **Corner Controls**: Fixed theme and language toggles for easy access
-- **Side Rails**: Social links and scroll-to-top navigation
-- **Scroll Progress**: Visual indicator of page scroll progress
-- **Parallax Effects**: Smooth parallax orbs on hero section
-
-## Tech Stack
-
-### Core
-- **React 18.3**: Modern React with hooks and concurrent features
-- **TypeScript 5.5**: Strict type checking for reliability
-- **Vite 5.4**: Lightning-fast build tool and dev server
-
-### UI & Styling
-- **Framer Motion**: Declarative animations and gestures
-- **React Icons**: Comprehensive icon library
-- **CSS Variables**: Theme-aware styling with custom properties
-
-### SEO & Meta
-- **React Helmet Async**: SEO meta tags and structured data
-- **JSON-LD**: Structured data for Person, WebSite, WebPage, CollectionPage, and FAQPage
-- **Prerendering**: Static HTML generation for `/` and `/en/`
-- **Sitemap**: Bilingual sitemap for search engines
-
-### Testing
-- **Vitest**: Fast unit test runner with coverage
-- **React Testing Library**: Component testing utilities
-- **Playwright**: End-to-end testing across browsers
-- **Lighthouse CI**: Automated performance and SEO audits
-
-### DevOps
-- **Docker**: Multi-stage builds with Nginx
-- **GitHub Actions**: CI/CD pipeline with automated testing
-- **ESLint**: Code quality and consistency
-- **Makefile**: Production-ready deployment workflows
-
-## Quick Start
-
-### Prerequisites
-- Node.js 18+ and npm (for development)
-- Docker and Docker Compose (for production deployment)
-
-### Local Development
+## Commands
 
 ```bash
-# Install dependencies
 npm install
+npm run dev            # Vite dev server (renders on the client; no <head> tags, see below)
+npm run build          # tsc, client build, SSR build, prerender to dist/
+npm run preview        # vite preview of dist/ (SPA style 404s; use the e2e server for exact nginx behavior)
 
-# Start dev server (http://localhost:5173)
-npm run dev
+npx tsc --noEmit                 # type check
+npx eslint src --ext .ts,.tsx    # lint (there is no npm lint script)
+npm run test:run                 # unit tests
+npm run test:coverage            # unit tests with coverage
+npm run test:e2e -- --project=chromium   # builds, serves dist/ like nginx, runs Playwright
+npm audit --audit-level=high
 
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+npm run og             # regenerate public/og-image.png (needs Playwright Chromium)
 ```
 
-### Docker Deployment
+`npm run build` runs four steps: `tsc -noEmit`, `vite build`, `vite build --ssr src/entry-server.tsx --outDir dist/server`, and `node scripts/prerender.mjs`. The prerender step writes one HTML file per page, `sitemap.xml`, `robots.txt`, and then deletes `dist/server`.
+
+## How a page is produced
+
+1. `src/lib/routes.ts` maps a pathname to a `Route` (`home`, `case`, `privacy`, `notFound`) and back. It is the single source for URLs, file names and hreflang alternates.
+2. `src/entry-server.tsx` exports `listPages()` and `renderRoute(route)`. `scripts/prerender.mjs` renders each route with `renderToString`.
+3. `src/lib/seo.ts` builds the page metadata (`title`, description, canonical, hreflang, Open Graph, JSON-LD) and serializes it as head tags. The prerender script injects them into the Vite built `index.html` at `<!--app-head-->`, the rendered app at `<!--app-html-->`, and sets `<html lang>`.
+4. In the browser, `src/main.tsx` resolves the route from `location.pathname` and hydrates. `<head>` is never touched at runtime; `npm run dev` therefore shows the app without SEO tags (the build is the reference).
+
+JSON-LD: `Person` and `WebSite` on the home page, `Article` (author `Person`) on each case, `WebPage` on privacy and 404. Static HTML carries `h1`, content, `title`, canonical, hreflang and JSON-LD without running any script (`e2e/static-html.spec.ts` checks it with JavaScript off).
+
+## Content
+
+All copy lives in `src/content/` as typed data, one object per language, resolved by `lang`:
+
+- `cases.ts`: the case studies (context, problem, role, 2 or 3 decisions with their reason, difficulty, result, stack, confidentiality note).
+- `experience.ts`, `projects.ts`, `stack.ts`, `home.ts` (hero, tagline, about, contact), `ui.ts` (labels, privacy page, 404).
+
+Rules for editing content (enforced by `src/content/content.test.ts`):
+
+- Facts come only from the CV sources (`ai-job-search/cv/*.tex`). Do not invent metrics, clients or dates; when there is no number, write a concrete qualitative result.
+- Anonymous on purpose: the software company and the lottery and payments platforms behind it, clients of BetterWay Devs and Atlanticsoft, and any Bheex customer. No IPs, hostnames, keys or phone number.
+- No hyphens or dashes inside copy (rewrite the phrase), sentence case, no marketing clichés.
+- Case pages should read between 300 and 600 words.
+
+To add a case: add the slug to `caseSlugs`, add its entry to `cases` (both languages) and, if it matches a job, set `caseSlug` on that entry in `experience.ts`. Routes, sitemap and prerender pick it up.
+
+## Design system
+
+`src/styles/global.css` holds the tokens; components use Tailwind utilities that resolve to them. `src/styles/design-rules.test.ts` enforces the rules: Tailwind type scale only, spacing 0/2/4/8/12/16/24/32/40/48/64/80/96 px, no gradients except the hero heading text, no single sided borders, no raw colors, one fluid easing `cubic-bezier(0.32, 0.72, 0, 1)`, no scroll listeners.
+
+- Colors are CSS variables built with `light-dark()`. The system theme applies by default; `<html data-theme="light|dark">` is an explicit choice saved in `localStorage` and applied by `public/init.js` before first paint.
+- `--control-h` (40 px) is the one height for buttons, the language switch and the theme toggle.
+- Scroll reveals use `[data-reveal]` + `data-in-view`; the tagline uses one observer per word. Both hide content only when `<html class="js">` is set (by `init.js`), so no JavaScript means everything is visible. The hero animates with CSS only.
+
+## Docker and nginx
 
 ```bash
-# Using Docker directly
 docker build -t portfolio .
-docker run -p 8080:80 portfolio
-
-# Using docker-compose
-docker-compose up --build
-
-# Using Makefile (recommended)
-make help     # Show all available commands
-make build    # Build Docker image
-make up       # Run container
-make logs     # View container logs
-make rebuild  # Clean rebuild
+docker run -d --rm --name portfolio --user 101:101 --read-only \
+  --tmpfs /var/cache/nginx:mode=1777 --tmpfs /var/run:mode=1777 --tmpfs /tmp:mode=1777 \
+  --cap-drop ALL --cap-add NET_BIND_SERVICE -p 127.0.0.1:8080:80 portfolio
 ```
 
-Access at http://localhost:8080 (Docker) or http://localhost:5173 (dev server).
+`nginx.conf` sets a strict CSP (`script-src 'self'`, no `unsafe-inline` anywhere; JSON-LD is a data block), `server_tokens off`, `X-Frame-Options: DENY`, `Cache-Control: public, max-age=31536000, immutable` for `/assets/` (hashed), `no-cache` for everything else, gzip, and `error_page 404 /404.html`. HSTS is set at the edge (Cloudflare), not here. `e2e/serve-dist.mjs` reads the same `add_header` lines, so e2e runs under the real CSP.
 
-## Development
+## CI/CD
 
-### Available Scripts
+- `.github/workflows/ci.yml`: pull requests and pushes to `develop`. Job `checks` (tsc, eslint, unit tests, build, `npm audit --audit-level=high`) then job `e2e` (Playwright, Chromium). Runner label `arc-portafolio`; jobs from forks are skipped.
+- `.github/workflows/deploy.yml`: push to `main`. `validate` and `build-push` on `arc-portafolio` (image to GHCR, cache `scope=portafolio`), then `deploy` on the fixed runner `[self-hosted, portfolio-prod]`, which pulls the image and runs it with the hardened flags above.
+- `.github/actionlint.yaml` declares both runner labels. Node 22 everywhere.
+- Host and TLS provisioning notes: `infra/README.md`.
 
-```bash
-# Development
-npm run dev              # Start Vite dev server
-npm run build            # Type-check and build for production
-npm run preview          # Preview production build
+## Assets
 
-# Testing
-npm run test             # Run unit tests in watch mode
-npm run test:run         # Run unit tests once
-npm run test:ui          # Open Vitest UI
-npm run test:coverage    # Generate coverage report
-npm run test:e2e         # Run E2E tests with Playwright
-npm run test:e2e:ui      # Run E2E tests with Playwright UI
-npm run test:all         # Run all tests (unit + E2E)
-```
+- `public/cv/`: the two CV PDFs linked from the hero and contact sections (Spanish and English).
+- `public/og-image.png` (1200x630) is generated by `scripts/og-image.mjs`; `public/favicon.svg` is the favicon source.
+- `src/assets/avatar.webp`: 576x720 portrait, imported through Vite so it gets a content hash.
 
-### TypeScript Configuration
-- **Strict mode enabled**: All type errors must be resolved before build
-- **Target**: ES2020 with DOM libraries
-- **Module resolution**: Bundler (Vite-specific)
-- **JSX**: react-jsx (automatic runtime, no need to import React)
+## Privacy
 
-### ESLint Rules
-- Enforces TypeScript best practices
-- `react-refresh/only-export-components` warns on non-component exports
-- Unused variables allowed with `_` prefix
-- Use `import type` for type-only imports
-
-## Testing
-
-### Unit Tests (Vitest + React Testing Library)
-Located in `*.test.tsx` files next to components:
-- **Providers**: ThemeProvider, LanguageProvider
-- **Components**: Section, ProjectCard, and more
-- **Data Layer**: projects.ts validation
-
-```bash
-npm run test           # Watch mode
-npm run test:coverage  # Generate coverage report
-```
-
-**Key patterns:**
-- Use `renderWithProviders` from `src/test/test-utils.tsx` for components needing context
-- Global mocks for `matchMedia` and `IntersectionObserver` in `src/test/setup.ts`
-
-### E2E Tests (Playwright)
-Located in `e2e/` directory:
-- **homepage.spec.ts**: Meta tags, structured data, hreflang validation
-- **theme-language.spec.ts**: Theme and language persistence
-- **navigation.spec.ts**: Section navigation and external links
-
-```bash
-npm run test:e2e        # Headless mode
-npm run test:e2e:ui     # Playwright UI
-npm run test:e2e:headed # Headed browser mode
-```
-
-Tests run on: Chrome, Firefox, Safari, Mobile Chrome/Safari
-
-### CI/CD Pipeline
-GitHub Actions workflow (`.github/workflows/ci.yml`) includes:
-- ESLint linting
-- TypeScript type checking
-- Unit tests with coverage (uploaded to Codecov)
-- E2E tests with artifact uploads
-- Build verification
-- Lighthouse CI (SEO score > 95% enforced)
-
-## Deployment
-
-### Docker Multi-Stage Build
-```dockerfile
-# Stage 1: Node builder
-FROM node:20-alpine AS builder
-# Install dependencies and build
-
-# Stage 2: Nginx runtime
-FROM nginx:alpine
-# Copy build artifacts and serve
-```
-
-### Makefile Commands
-```bash
-make help      # Show all available targets
-make build     # Build Docker image
-make up        # Stop, remove, and run container
-make logs      # Tail container logs
-make shell     # Open shell in running container
-make rebuild   # Clean rebuild: stop, rm, build, run
-```
-
-### Production Configuration
-- Static assets served from `/dist` by Nginx on port 80
-- Container port mapped to 3000 by default (configurable in Makefile)
-- Nginx configuration in `nginx.conf` for routing and headers
-
-## Project Structure
-
-```
-├── .github/
-│   └── workflows/
-│       └── ci.yml              # GitHub Actions CI/CD pipeline
-├── e2e/                        # Playwright E2E tests
-│   ├── homepage.spec.ts        # SEO and meta tag tests
-│   ├── theme-language.spec.ts  # Theme/language persistence
-│   └── navigation.spec.ts      # Navigation and routing
-├── public/                     # Static assets
-│   ├── sitemap.xml            # SEO sitemap
-│   ├── robots.txt             # Search engine instructions
-│   └── site.webmanifest       # PWA manifest
-├── src/
-│   ├── components/            # Reusable UI components
-│   │   ├── ThemeProvider.tsx  # Dark/light theme context
-│   │   ├── LanguageProvider.tsx # i18n context
-│   │   ├── SEO.tsx            # Dynamic meta tags
-│   │   ├── ProjectCard.tsx    # Project card component
-│   │   ├── ProjectModal.tsx   # Project detail modal
-│   │   ├── CornerControls.tsx # Theme/language toggles
-│   │   ├── SideRails.tsx      # Social links sidebar
-│   │   ├── ScrollProgress.tsx # Scroll indicator
-│   │   ├── ParallaxOrbs.tsx   # Animated background
-│   │   ├── TechIcon.tsx       # Technology icons
-│   │   └── SkillsMarquee.tsx  # Animated skills showcase
-│   ├── sections/              # Page sections
-│   │   ├── Hero.tsx           # Landing section
-│   │   ├── About.tsx          # About me section
-│   │   ├── Skills.tsx         # Tech stack section
-│   │   ├── Experience.tsx     # Work experience timeline
-│   │   ├── Projects.tsx       # Projects gallery
-│   │   └── Contact.tsx        # Contact information
-│   ├── data/                  # Typed data sources
-│   │   ├── projects.ts        # Project data with LocalizedText
-│   │   └── experience.ts      # Experience data
-│   ├── i18n/                  # Internationalization
-│   │   ├── es.ts              # Spanish translations
-│   │   └── en.ts              # English translations
-│   ├── styles/
-│   │   └── global.css         # CSS variables and utilities
-│   ├── test/                  # Test utilities
-│   │   ├── setup.ts           # Global test setup
-│   │   └── test-utils.tsx     # Custom render helpers
-│   ├── seo.config.ts          # SEO configuration
-│   ├── App.tsx                # Main app component
-│   └── main.tsx               # React entry point
-├── Dockerfile                 # Multi-stage Docker build
-├── docker-compose.yml         # Docker Compose configuration
-├── Makefile                   # Production deployment commands
-├── nginx.conf                 # Nginx server configuration
-├── vitest.config.ts          # Vitest configuration
-├── playwright.config.ts      # Playwright configuration
-├── lighthouserc.json         # Lighthouse CI configuration
-├── tsconfig.json             # TypeScript configuration
-├── vite.config.ts            # Vite configuration
-├── CLAUDE.md                 # AI assistant instructions
-└── README.md                 # This file
-```
-
-## Architecture
-
-### Core Provider Pattern
-
-#### ThemeProvider (`src/components/ThemeProvider.tsx`)
-Manages light/dark theme with:
-- System preference detection via `prefers-color-scheme`
-- localStorage persistence
-- `useTheme()` hook exposing `{ theme, toggle, set }`
-- Sets `data-theme` attribute on `<html>` for CSS variable switching
-
-#### LanguageProvider (`src/components/LanguageProvider.tsx`)
-Handles internationalization with:
-- ES/EN localization with route-based locales plus localStorage preference
-- `useLanguage()` hook exposing `{ lang, toggle, set, t }`
-- `t(key)` function for dot-notation translation keys (e.g., `t('hero.title')`)
-- `/` serves Spanish and `/en/` serves English
-
-Both providers wrap the entire app in `src/App.tsx`.
-
-### Data Layer
-
-**Internationalized Data Pattern:**
-```typescript
-type LocalizedText = Record<Lang, string>
-
-type Project = {
-  slug: string
-  title: LocalizedText       // { es: '...', en: '...' }
-  description: LocalizedText
-  category: ProjectCategory  // 'backend' | 'frontend' | 'devops' | 'data' | 'mobile'
-  tags: string[]
-  links?: { href: string; label: LocalizedText }[]
-  image?: string
-  highlights?: LocalizedText[]
-}
-
-// Runtime resolution
-function getProjects(lang: Lang): ResolvedProject[]
-```
-
-All text content lives in `src/i18n/{es,en}.ts` dictionaries.
-
-### Styling Strategy
-- **CSS Variables**: Defined in `src/styles/global.css`, switch based on `[data-theme]`
-- **Component Scoping**: Inline styles or scoped CSS
-- **Animations**: Framer Motion for declarative, accessible animations
-- **Responsive**: Mobile-first CSS with breakpoints
-
-### SEO & Meta
-- `src/components/SEO.tsx` uses `react-helmet-async` to inject:
-  - `<title>` and `<meta>` tags
-  - Open Graph and Twitter Card tags
-  - JSON-LD structured data (Person, WebSite, WebPage, CollectionPage, FAQPage)
-  - Canonical and hreflang tags for bilingual support
-- Localized SEO content from `i18n/{lang}.seo.*`
-- Configuration in `src/seo.config.ts`
-
-## Customization
-
-### Quick Customization Points
-
-1. **Personal Information**
-   - Brand name: Update in `src/i18n/es.ts` and `src/i18n/en.ts`
-   - Hero text: Modify `hero.*` keys in i18n files
-   - Social links: Edit `src/sections/Contact.tsx`
-
-2. **Projects**
-   - Edit `src/data/projects.ts`
-   - Add projects with bilingual `title`, `description`, `highlights`
-   - Ensure unique `slug` for each project
-   - Use tags from `allTags` array
-
-3. **Experience**
-   - Edit `src/data/experience.ts`
-   - Add work experiences with bilingual content
-
-4. **Translations**
-   - Add keys to both `src/i18n/es.ts` and `src/i18n/en.ts`
-   - Use dot notation for nested keys (e.g., `hero.title`)
-   - Access via `useLanguage().t('hero.title')`
-
-5. **Theme Colors**
-   - Edit CSS variables in `src/styles/global.css`
-   - Variables scoped by `[data-theme="light"]` and `[data-theme="dark"]`
-
-6. **SEO Keywords**
-   - Update `src/seo.config.ts` with your name and aliases
-   - Modify keywords for your expertise
-
-### Adding New Translations
-```typescript
-// src/i18n/en.ts
-export const en = {
-  hero: {
-    title: 'Welcome',
-    subtitle: 'Your subtitle here'
-  }
-}
-
-// Usage in components
-const { t } = useLanguage()
-<h1>{t('hero.title')}</h1>
-```
-
-### Modifying Theme
-```css
-/* src/styles/global.css */
-[data-theme="dark"] {
-  --bg-primary: #0a0a0a;
-  --text-primary: #e8e8e8;
-  /* ... */
-}
-```
-
-## Performance
-
-### Optimizations Implemented
-
-1. **Prerendered Delivery**
-   - Static HTML generated for `/` and `/en/`
-   - Metadata and main content available before client hydration
-   - Automatic chunk splitting by Vite for the client bundle
-
-2. **Bundle Analysis**
-   - Run `npm run build` to see chunk sizes
-   - Consider optimizing TechIcon chunk (react-icons) if needed
-
-3. **Image Optimization**
-   - Use WebP format for images
-   - Lazy load images below the fold
-   - Proper sizing and aspect ratios
-
-4. **Caching Strategy**
-   - Docker/Nginx serves static assets with cache headers
-   - Service worker ready for offline support
-
-## SEO
-
-### Keywords Strategy
-**Primary**: Nicolas Duran Garces, NIDUGA, niduga.dev
-**Secondary**: Ingeniero de software Armenia Quindio, backend developer, Python FastAPI, software architecture
-
-Configure in `src/seo.config.ts`.
-
-### SEO Features
-- **Meta Tags**: Localized via react-helmet-async
-- **Structured Data**: JSON-LD schemas (Person, WebSite, WebPage, CollectionPage, FAQPage)
-- **Canonical URLs**: `https://niduga.dev/` and `https://niduga.dev/en/`
-- **Hreflang Tags**: ES/EN route localization
-- **Social Media**: Open Graph and Twitter Card meta tags
-- **Prerendered HTML**: Static HTML output for crawlers and social scrapers
-- **Sitemap**: `public/sitemap.xml` with `/` and `/en/`
-- **Robots**: `public/robots.txt` configured
-- **PWA**: `public/site.webmanifest`
-
-### SEO Testing
-- E2E tests verify NIDUGA keyword in title and meta tags
-- E2E tests validate JSON-LD structure
-- Lighthouse CI enforces SEO score > 95%
-
-### Lighthouse Scores
-Target scores (enforced by CI):
-- Performance: > 90%
-- Accessibility: > 90%
-- Best Practices: > 90%
-- SEO: > 95%
-
-## Contributing
-
-This is a personal portfolio project, but feel free to:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-Please ensure:
-- All tests pass (`npm run test:all`)
-- No TypeScript errors (`npm run build`)
-- ESLint passes
-- New features have tests
-
-## License
-
-This project is for personal and educational use. Feel free to use it as a template for your own portfolio. Please customize the content with your own information and projects.
-
-## Author
-
-**Nicolas Duran Garces (NIDUGA)**
-
-- Portfolio: [Your deployed URL]
-- GitHub: [@nicolasdurangarces](https://github.com/nicolasdurangarces)
-- LinkedIn: [Your LinkedIn]
-
----
-
-Built with ❤️ using React, TypeScript, and Vite
+The site uses no cookies, analytics or forms. It stores one value in `localStorage` (the theme) and nginx keeps technical access logs. `/privacidad/` and `/en/privacy/` say so.
