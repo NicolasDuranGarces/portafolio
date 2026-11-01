@@ -317,6 +317,80 @@ a:focus-visible {
   display: block;
 }
 
+/* Technologies: monochrome marks on a strict grid, one accent color stays for state only. */
+.sc-core {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.sc-core > li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sc-core-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  flex: none;
+}
+
+.sc-core-more {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.875rem;
+}
+
+.sc-tech {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(9.5rem, 100%), 1fr));
+  gap: 14px var(--sc-gutter);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sc-tech-item {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  column-gap: 10px;
+  align-items: center;
+}
+
+.sc-tech-mark {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.sc-tech-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.sc-tech-name {
+  font-weight: 700;
+}
+
+.sc-tech-detail {
+  grid-column: 2;
+}
+
+.sc-tech-item:has(.sc-tech-detail) {
+  grid-column: 1 / -1;
+}
+
+.sc-tech + .sc-small {
+  margin-top: 14px;
+}
+
 .sc-plain > li > .sc-small {
   display: block;
 }

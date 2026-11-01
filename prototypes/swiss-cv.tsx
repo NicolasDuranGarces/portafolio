@@ -6,7 +6,7 @@ import { cases } from '../src/content/cases'
 import { experience } from '../src/content/experience'
 import { homeCopy } from '../src/content/home'
 import { openProjects } from '../src/content/projects'
-import { stackGroups } from '../src/content/stack'
+import { coreTech, techGroups, TechIcon } from './tech'
 import { ui } from '../src/content/ui'
 import { useReveal } from '../src/hooks/useReveal'
 import { pathOf } from '../src/lib/routes'
@@ -43,13 +43,6 @@ const companies = [
       .filter((name) => name !== 'Independiente' && !name.includes('Empresa de software')),
   ),
 ]
-
-/** Main technologies: the first items of the first stack groups. */
-const mainTech = [
-  ...stackGroups[0].items.slice(0, 3),
-  ...stackGroups[1].items.slice(0, 1),
-  ...stackGroups[2].items.slice(0, 3),
-].map((item) => item.name.es)
 
 type Experience = (typeof experience)[number]
 
@@ -141,8 +134,20 @@ function Side({ current, live, active }: SideProps) {
               <dd>{companies.join(', ')}</dd>
             </div>
             <div>
-              <dt>Tecnologías</dt>
-              <dd>{mainTech.join(', ')}</dd>
+              <dt>Tecnologías principales</dt>
+              <dd>
+                <ul className="sc-core" role="list">
+                  {coreTech.map((t) => (
+                    <li key={t.name} title={t.name}>
+                      {t.icon ? <TechIcon icon={t.icon} className="sc-core-icon" /> : null}
+                      <span>{t.name}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a className="sc-link sc-core-more" href="#stack">
+                  Ver todo el stack <span aria-hidden="true">↓</span>
+                </a>
+              </dd>
             </div>
           </dl>
           <p className="sc-small">{copy.hero.proof}</p>
@@ -366,16 +371,18 @@ function Cases() {
 function Stack() {
   return (
     <div className="sc-rows">
-      {stackGroups.map((g) => (
-        <Row key={g.id} label={<h3 className="sc-h3">{g.title.es}</h3>}>
-          <ul className="sc-stack" role="list">
-            {g.items.map((item) => (
-              <li key={item.name.es}>
-                <span className="sc-strong">{item.name.es}</span>
-                {item.detail ? <span className="sc-small">{item.detail.es}</span> : null}
+      {techGroups.map((g) => (
+        <Row key={g.id} label={<h3 className="sc-h3">{g.title}</h3>}>
+          <ul className="sc-tech" role="list">
+            {g.items.map((t) => (
+              <li key={t.name} className="sc-tech-item">
+                <span className="sc-tech-mark">{t.icon ? <TechIcon icon={t.icon} className="sc-tech-icon" /> : null}</span>
+                <span className="sc-tech-name">{t.name}</span>
+                {t.detail ? <span className="sc-small sc-tech-detail">{t.detail}</span> : null}
               </li>
             ))}
           </ul>
+          {g.practices ? <p className="sc-small">{g.practices.join(' · ')}</p> : null}
         </Row>
       ))}
     </div>
