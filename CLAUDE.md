@@ -70,3 +70,5 @@ Content rules (checked by `src/content/content.test.ts`): facts only from the CV
 - Phosphor icons only, imported through `src/components/icons.ts` (deep imports).
 - Copy: sentence case, no hyphens inside phrases, `text-balance` headings and `text-pretty` body (set globally).
 - Do not add personal or client details that the README marks as anonymous.
+
+@AGENTS.md
