@@ -68,7 +68,8 @@ export const homeCopy: Localized<HomeCopy> = {
       ],
       certificationsTitle: 'Certificaciones',
       certifications: [
-        'IBM AI Developer Specialization (IBM)',
+        'IBM AI Developer, especialización de 10 cursos (IBM en Coursera, jul 2024). Incluye Building Generative AI Powered Applications with Python, Build & Deploy AI Applications with Python & Flask y Python for Data Science & AI',
+        'Building AI Powered Chatbots Without Programming (IBM en Coursera, ene 2024)',
         'AWS Academy Graduate, Cloud Foundations (AWS)',
       ],
       platziLabel: 'Cursos en Platzi',
@@ -131,7 +132,8 @@ export const homeCopy: Localized<HomeCopy> = {
       ],
       certificationsTitle: 'Certifications',
       certifications: [
-        'IBM AI Developer Specialization (IBM)',
+        'IBM AI Developer, 10 course specialization (IBM on Coursera, Jul 2024). Includes Building Generative AI Powered Applications with Python, Build & Deploy AI Applications with Python & Flask and Python for Data Science & AI',
+        'Building AI Powered Chatbots Without Programming (IBM on Coursera, Jan 2024)',
         'AWS Academy Graduate, Cloud Foundations (AWS)',
       ],
       platziLabel: 'Platzi courses',
