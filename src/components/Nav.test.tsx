@@ -12,6 +12,7 @@ function renderNav(route: PageRoute = home) {
     <>
       <Nav route={route} />
       <main>
+        <section id="featured" />
         <section id="cases" />
         <section id="experience" />
         <section id="stack" />
@@ -61,9 +62,10 @@ describe('Nav theme toggle', () => {
 })
 
 describe('Nav active item', () => {
-  it('marks the section being read, and the stack as part of experience', () => {
+  it('marks the section being read, and folds featured into cases and the stack into experience', () => {
     renderNav()
-    expect(desktopLinks().filter((link) => link.hasAttribute('aria-current'))).toHaveLength(0)
+    // At scroll 0 no section crosses the band yet, so the first one is the current one.
+    expect(desktopLinks().filter((link) => link.hasAttribute('aria-current')).map((link) => link.textContent)).toEqual(['Sobre mí'])
 
     const observer = MockIntersectionObserver.instances.find((candidate) =>
       candidate.observed.has(document.getElementById('cases')!),
@@ -71,8 +73,11 @@ describe('Nav active item', () => {
     act(() => observer.report(document.getElementById('cases')!, { isIntersecting: true }))
     expect(screen.getAllByRole('link', { name: 'Casos' })[0]).toHaveAttribute('aria-current', 'location')
 
+    act(() => observer.report(document.getElementById('featured')!, { isIntersecting: true }))
+    expect(screen.getAllByRole('link', { name: 'Casos' })[0]).toHaveAttribute('aria-current', 'location')
+
     act(() => observer.report(document.getElementById('stack')!, { isIntersecting: true }))
-    expect(screen.getAllByRole('link', { name: 'Experiencia' })[0]).toHaveAttribute('aria-current', 'location')
+    expect(screen.getAllByRole('link', { name: 'Trayectoria' })[0]).toHaveAttribute('aria-current', 'location')
     expect(screen.getAllByRole('link', { name: 'Casos' })[0]).not.toHaveAttribute('aria-current')
   })
 

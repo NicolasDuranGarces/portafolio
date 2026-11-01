@@ -1,43 +1,46 @@
-import { ArrowUpRightIcon } from '../components/icons'
 import { Section } from '../components/Section'
 import { cases } from '../content/cases'
+import { featuredSlug } from '../content/sections'
 import { ui } from '../content/ui'
 import type { Lang } from '../lib/lang'
 import { pathOf } from '../lib/routes'
+import { firstSentence } from '../lib/text'
 
-const TAGS_ON_CARD = 4
-
+/** The cases that are not featured, as compact rows. The whole row is one link to the case page. */
 export function Cases({ lang }: { lang: Lang }) {
-  const copy = ui[lang].sections.cases
+  const copy = ui[lang]
+  const others = cases.filter((entry) => entry.slug !== featuredSlug)
 
   return (
-    <Section id="cases" title={copy.title} lead={copy.lead}>
-      <ul role="list" className="grid gap-6 md:grid-cols-2">
-        {cases.map((entry) => {
+    <Section id="cases" title={copy.sections.cases.title}>
+      <ol role="list">
+        {others.map((entry, index) => {
           const text = entry.copy[lang]
           return (
-            <li key={entry.slug} data-reveal>
-              <article className="card card-link flex h-full flex-col gap-4 p-8">
-                <p className="pr-8 text-sm text-ink-muted">
-                  {text.period} · {text.role}
-                </p>
-                <h3 className="text-2xl font-semibold">
+            <li
+              key={entry.slug}
+              className="row-link grid grid-cols-[2.5rem_minmax(0,1fr)] border-t border-line py-6 last:border-b"
+            >
+              <p className="pt-0.5 text-sm text-ink-muted tabular-nums" aria-hidden="true">{String(index + 1).padStart(2, '0')}</p>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold tracking-tight">
                   <a href={pathOf({ page: 'case', lang, slug: entry.slug })}>{text.title}</a>
                 </h3>
-                <p className="text-base text-ink-muted">{text.summary}</p>
-                <ul role="list" className="mt-auto flex flex-wrap gap-2 pt-4">
-                  {entry.stack.slice(0, TAGS_ON_CARD).map((tag) => (
-                    <li key={tag} className="chip">
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
-                <ArrowUpRightIcon size={24} aria-hidden="true" className="absolute top-8 right-8 text-ink-muted" />
-              </article>
+                <p className="text-sm text-ink-muted">
+                  {text.role}, {text.period}
+                </p>
+                <p className="max-w-prose">{text.summary}</p>
+                <p className="max-w-prose">
+                  <span className="font-bold">{copy.cases.sections.result}.</span> {firstSentence(text.result[0])}
+                </p>
+                <p className="row-more font-bold" aria-hidden="true">
+                  {copy.cases.viewCase} →
+                </p>
+              </div>
             </li>
           )
         })}
-      </ul>
+      </ol>
     </Section>
   )
 }

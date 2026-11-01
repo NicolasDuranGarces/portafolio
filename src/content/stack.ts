@@ -1,60 +1,64 @@
 import type { Localized } from '../lib/lang'
 import { both } from '../lib/lang'
+import * as marks from './tech-icons'
 
-type StackItem = {
+export type Tech = {
   name: Localized<string>
+  /** SVG path of the brand mark (24x24 viewBox, see tech-icons.ts). AWS, Azure, OpenAI, Twilio, BullMQ and Playwright have none (brand restrictions): name only. */
+  icon?: string
   /** Technologies used inside the item, shown muted. */
   detail?: Localized<string>
 }
 
-type StackGroup = {
+export type TechGroup = {
   id: string
   title: Localized<string>
-  items: readonly StackItem[]
+  items: readonly Tech[]
+  practices?: Localized<readonly string[]>
 }
 
-/** Groups mirror "Competencias clave" in the CV. No levels or percentages on purpose. */
-export const stackGroups: readonly StackGroup[] = [
+/**
+ * Every technology named in "Competencias clave" and the roles of the CV, grouped the same way, plus the automation tools
+ * added directly (Playwright, Puppeteer, Appium). No levels or percentages on purpose.
+ */
+export const techGroups: readonly TechGroup[] = [
   {
     id: 'backend',
-    title: both('Backend'),
+    title: { es: 'Lenguajes y backend', en: 'Languages and backend' },
     items: [
-      { name: both('Python'), detail: both('FastAPI, Django, Flask') },
-      {
-        name: both('Java'),
-        detail: {
-          es: 'Spring Boot 3, microservicios, arquitectura hexagonal',
-          en: 'Spring Boot 3, microservices, hexagonal architecture',
-        },
-      },
-      { name: both('TypeScript/Node.js'), detail: both('NestJS, Express') },
-      { name: { es: 'APIs REST', en: 'REST APIs' } },
+      { name: both('Python'), icon: marks.python },
+      { name: both('FastAPI'), icon: marks.fastapi },
+      { name: both('Django'), icon: marks.django },
+      { name: both('Flask'), icon: marks.flask },
+      { name: both('Java'), icon: marks.openjdk },
+      { name: both('Spring Boot 3'), icon: marks.springboot },
+      { name: both('TypeScript'), icon: marks.typescript },
+      { name: both('Node.js'), icon: marks.nodedotjs },
+      { name: both('NestJS'), icon: marks.nestjs },
+      { name: both('Express'), icon: marks.express },
     ],
+    practices: {
+      es: ['APIs REST', 'Microservicios', 'Arquitectura hexagonal'],
+      en: ['REST APIs', 'Microservices', 'Hexagonal architecture'],
+    },
   },
   {
     id: 'ai',
     title: { es: 'IA y LLMs', en: 'AI and LLMs' },
     items: [
-      {
-        name: { es: 'Integración de LLMs', en: 'LLM integration' },
-        detail: { es: 'API de OpenAI, Gemini', en: 'OpenAI API, Gemini' },
-      },
-      { name: { es: 'Agentes con tool/function calling', en: 'Agents with tool/function calling' } },
-      {
-        name: both('RAG'),
-        detail: { es: 'embeddings, Qdrant', en: 'embeddings, Qdrant' },
-      },
-      {
-        name: { es: 'IA de voz', en: 'Voice AI' },
-        detail: {
-          es: 'Twilio, texto a voz con ElevenLabs, voz a texto',
-          en: 'Twilio, ElevenLabs text to speech, speech to text',
-        },
-      },
-      { name: both('Model Context Protocol (MCP)') },
-      { name: both('Claude Code') },
-      { name: both('N8N') },
+      { name: { es: 'API de OpenAI', en: 'OpenAI API' } },
+      { name: both('Gemini'), icon: marks.googlegemini },
+      { name: both('Claude Code'), icon: marks.claude },
+      { name: both('MCP'), icon: marks.modelcontextprotocol },
+      { name: both('Qdrant'), icon: marks.qdrant },
+      { name: both('ElevenLabs'), icon: marks.elevenlabs },
+      { name: both('Twilio') },
+      { name: both('n8n'), icon: marks.n8n },
     ],
+    practices: {
+      es: ['Agentes con tool calling', 'RAG con embeddings', 'Voz a texto y texto a voz'],
+      en: ['Agents with tool calling', 'RAG with embeddings', 'Speech to text and text to speech'],
+    },
   },
   {
     id: 'cloud',
@@ -62,55 +66,63 @@ export const stackGroups: readonly StackGroup[] = [
     items: [
       {
         name: both('AWS'),
-        detail: both('Lambda, EC2, ECS Fargate, IoT Core, Amplify, CloudFormation, CloudFront'),
+        detail: both('Lambda, EC2, ECS Fargate, IoT Core, Amplify, CloudFormation, CloudFront, MSK'),
       },
       { name: both('Azure') },
-      { name: both('Docker') },
-      { name: both('Terraform') },
-      { name: both('Nginx') },
-      { name: both('CI/CD') },
-      { name: both('Serverless Framework') },
+      { name: both('Docker'), icon: marks.docker },
+      { name: both('Terraform'), icon: marks.terraform },
+      { name: both('Nginx'), icon: marks.nginx },
+      { name: both('Serverless'), icon: marks.serverless },
+      { name: both('GitLab CI'), icon: marks.gitlab },
     ],
+    practices: both(['CI/CD']),
   },
   {
     id: 'data',
     title: { es: 'Datos y mensajería', en: 'Data and messaging' },
     items: [
-      { name: both('PostgreSQL') },
-      { name: both('MySQL') },
-      { name: both('Redis') },
-      { name: both('Prisma') },
-      { name: both('Kafka'), detail: both('AWS MSK') },
-      { name: both('RabbitMQ') },
+      { name: both('PostgreSQL'), icon: marks.postgresql },
+      { name: both('MySQL'), icon: marks.mysql },
+      { name: both('Redis'), icon: marks.redis },
+      { name: both('Prisma'), icon: marks.prisma },
+      { name: both('Kafka'), icon: marks.apachekafka },
+      { name: both('RabbitMQ'), icon: marks.rabbitmq },
       { name: both('BullMQ') },
-      { name: both('MQTT'), detail: both('Mosquitto') },
+      { name: both('MQTT'), icon: marks.mqtt },
+      { name: both('Mosquitto'), icon: marks.eclipsemosquitto },
     ],
   },
   {
     id: 'automation',
     title: { es: 'Automatización', en: 'Automation' },
     items: [
-      { name: { es: 'Selenium Grid sobre Docker', en: 'Selenium Grid on Docker' } },
-      { name: both('Web scraping') },
-      {
-        name: {
-          es: 'Automatización robótica de procesos (RPA)',
-          en: 'Robotic process automation (RPA)',
-        },
-      },
-      { name: { es: 'Extensiones de Chrome', en: 'Chrome extensions' } },
+      { name: both('Selenium Grid'), icon: marks.selenium },
+      { name: both('Playwright') },
+      { name: both('Puppeteer'), icon: marks.puppeteer },
+      { name: both('Appium'), icon: marks.appium },
+      { name: { es: 'Extensiones de Chrome', en: 'Chrome extensions' }, icon: marks.googlechrome },
     ],
+    practices: both(['Web scraping', 'RPA']),
   },
   {
     id: 'frontend',
-    title: both('Frontend'),
+    title: { es: 'Frontend y móvil', en: 'Frontend and mobile' },
     items: [
-      { name: both('React') },
-      { name: both('Next.js') },
-      { name: both('Vite') },
-      { name: both('Tailwind') },
-      { name: both('React Native') },
-      { name: both('Flutter Web') },
+      { name: both('React'), icon: marks.react },
+      { name: both('Next.js'), icon: marks.nextdotjs },
+      { name: both('Vite'), icon: marks.vite },
+      { name: both('Tailwind'), icon: marks.tailwindcss },
+      { name: both('React Native'), icon: marks.react },
+      { name: both('Flutter Web'), icon: marks.flutter },
     ],
   },
 ]
+
+/** The short list for the side column: what the CV headline and most roles lean on. Entries of the catalog, not copies. */
+const coreNames = ['Python', 'Java', 'TypeScript', 'FastAPI', 'Spring Boot 3', 'NestJS', 'Docker', 'AWS']
+
+export const coreTech: readonly Tech[] = coreNames.map((name) => {
+  const tech = techGroups.flatMap((group) => group.items).find((item) => item.name.es === name)
+  if (!tech) throw new Error(`coreTech: "${name}" is not in the catalog`)
+  return tech
+})

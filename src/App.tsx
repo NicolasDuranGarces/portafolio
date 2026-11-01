@@ -23,11 +23,14 @@ export function App({ route }: { route: Route }) {
         {ui[lang].skipToContent}
       </a>
       <Nav route={route} />
-      <main id="main" tabIndex={-1}>
-        {route.page === 'home' && <HomePage lang={lang} />}
-        {route.page === 'case' && <CasePage lang={lang} slug={route.slug} />}
-        {route.page === 'privacy' && <PrivacyPage lang={lang} />}
-      </main>
+      {route.page === 'home' ? (
+        <HomePage lang={lang} />
+      ) : (
+        <main id="main" tabIndex={-1}>
+          {route.page === 'case' && <CasePage lang={lang} slug={route.slug} />}
+          {route.page === 'privacy' && <PrivacyPage lang={lang} />}
+        </main>
+      )}
       <Footer lang={lang} />
     </>
   )

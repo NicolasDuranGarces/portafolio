@@ -10,7 +10,8 @@ test.describe('Language', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
     await expect(page).toHaveTitle('Nicolás Durán Garcés | Backend and AI engineer')
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://niduga.dev/en/')
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Backend and AI engineer.')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Nicolás Durán Garcés')
+    await expect(page.getByText('Backend and AI engineer.', { exact: true })).toBeVisible()
 
     await page.getByRole('link', { name: 'Español' }).click()
     await expect(page).toHaveURL('/')
@@ -44,7 +45,7 @@ test.describe('Theme', () => {
     expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(255, 255, 255)')
 
     await page.emulateMedia({ colorScheme: 'dark' })
-    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(0, 0, 0)')
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(17, 17, 17)')
   })
 
   test('toggles, persists across reload and carries over to other pages without a flash', async ({ page }) => {
@@ -53,7 +54,7 @@ test.describe('Theme', () => {
 
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
     expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark')
-    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(0, 0, 0)')
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(17, 17, 17)')
 
     await page.reload()
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')

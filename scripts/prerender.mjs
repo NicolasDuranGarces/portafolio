@@ -18,17 +18,11 @@ for (const marker of ['<!--app-head-->', '<!--app-html-->']) {
   if (!template.includes(marker)) throw new Error(`dist/index.html lost its ${marker} placeholder`)
 }
 
-// The font file name carries a content hash, so the preload tag is built from what the client build emitted.
-const assets = await fs.readdir(path.join(distDir, 'assets'))
-const preloads = assets
-  .filter((name) => /^geist-latin-wght-normal-.+\.woff2$/.test(name))
-  .map((name) => `<link rel="preload" href="/assets/${name}" as="font" type="font/woff2" crossorigin>`)
-
 for (const { route, file } of listPages()) {
   const page = renderRoute(route)
   const html = template
     .replace(/<html lang="[^"]*"/, `<html lang="${page.lang}"`)
-    .replace('<!--app-head-->', () => [...preloads, page.head].join('\n    '))
+    .replace('<!--app-head-->', () => page.head)
     .replace('<!--app-html-->', () => page.html)
 
   const target = path.join(distDir, file)

@@ -36,10 +36,16 @@ test('does not ship the retired CV file or retired assets', () => {
   expect(readFileSync(path.join(dist, 'index.html'), 'utf8')).not.toContain('CV_NICOLAS_DURAN')
 })
 
+test('ships no web font files: the typeface is the one on the visitor system', () => {
+  const files = readdirSync(dist, { recursive: true }) as string[]
+  expect(files.filter((file) => /\.(woff2?|ttf|otf)$/.test(file))).toEqual([])
+})
+
 test('keeps the JS and CSS bundles lean', () => {
   const assets = readdirSync(path.join(dist, 'assets'))
   const js = assets.filter((file) => file.endsWith('.js'))
   expect(js).toHaveLength(1)
   const bytes = readFileSync(path.join(dist, 'assets', js[0])).length
-  expect(bytes).toBeLessThan(260 * 1024)
+  // 260 KB before the technology marks; the 38 icon paths in tech-icons.ts add about 50 KB (the bundle is about 273 KiB).
+  expect(bytes).toBeLessThan(280 * 1024)
 })

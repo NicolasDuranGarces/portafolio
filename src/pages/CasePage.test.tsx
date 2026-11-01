@@ -33,14 +33,18 @@ describe('CasePage', () => {
 
   it('offers a way back to the cases and an email to hire, in the page language', () => {
     const { rerender } = render(<CasePage lang="es" slug="bheex" />)
+    // The featured case sits in its own section; every other one is a row under "cases".
     expect(screen.getAllByRole('link', { name: 'Volver a casos' }).map((link) => link.getAttribute('href'))).toEqual([
-      '/#cases',
-      '/#cases',
+      '/#featured',
+      '/#featured',
     ])
     expect(screen.getByText('¿Buscas a alguien para algo así?')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Escríbeme' })).toHaveAttribute('href', 'mailto:niduga@outlook.es')
 
     rerender(<CasePage lang="en" slug="bheex" />)
+    expect(screen.getAllByRole('link', { name: 'Back to cases' })[0]).toHaveAttribute('href', '/en/#featured')
+
+    rerender(<CasePage lang="en" slug="price-match-automation" />)
     expect(screen.getAllByRole('link', { name: 'Back to cases' })[0]).toHaveAttribute('href', '/en/#cases')
   })
 
