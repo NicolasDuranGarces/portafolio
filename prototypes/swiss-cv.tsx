@@ -442,13 +442,23 @@ function Education() {
       </Row>
       <Row label={<h3 className="sc-h3">{a.certificationsTitle}</h3>}>
         <ul className="sc-plain" role="list">
-          {a.certifications.map((item) => (
-            <li key={item}>{item}</li>
+          {a.certifications.map((c) => (
+            <li key={c.name}>
+              <span className="sc-strong">{c.name}</span>
+              <span className="sc-small">{c.detail}</span>
+            </li>
           ))}
         </ul>
       </Row>
       <Row label={<h3 className="sc-h3">{a.platziLabel}</h3>}>
-        <p className="sc-text">{a.platzi.join(', ')}</p>
+        <ul className="sc-plain" role="list">
+          {a.platzi.map((name) => (
+            <li key={name}>
+              <span className="sc-strong">{name}</span>
+              <span className="sc-small">Platzi</span>
+            </li>
+          ))}
+        </ul>
       </Row>
       <Row label={<h3 className="sc-h3">{a.languagesTitle}</h3>}>
         <ul className="sc-plain" role="list">

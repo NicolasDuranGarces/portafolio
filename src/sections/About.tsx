@@ -32,15 +32,23 @@ export function About({ lang }: { lang: Lang }) {
 
           <div>
             <h3 className="text-lg font-semibold">{copy.certificationsTitle}</h3>
-            <ul role="list" className="mt-4 space-y-2 text-base">
+            <ul role="list" className="mt-4 space-y-4">
               {copy.certifications.map((item) => (
+                <li key={item.name}>
+                  <p className="text-base font-medium">{item.name}</p>
+                  <p className="text-sm text-ink-muted">{item.detail}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold">{copy.platziLabel}</h3>
+            <ul role="list" className="mt-4 space-y-2 text-base">
+              {copy.platzi.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <p className="mt-4 text-base">
-              <span className="font-medium">{copy.platziLabel}: </span>
-              <span className="text-ink-muted">{copy.platzi.join(', ')}</span>
-            </p>
           </div>
 
           <div>

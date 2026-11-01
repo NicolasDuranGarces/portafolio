@@ -19,7 +19,7 @@ type HomeCopy = {
     educationTitle: string
     education: { name: string; place: string; period: string }[]
     certificationsTitle: string
-    certifications: string[]
+    certifications: { name: string; detail: string }[]
     platziLabel: string
     platzi: string[]
     languagesTitle: string
@@ -68,9 +68,21 @@ export const homeCopy: Localized<HomeCopy> = {
       ],
       certificationsTitle: 'Certificaciones',
       certifications: [
-        'IBM AI Developer, especialización de 10 cursos (IBM en Coursera, jul 2024). Incluye Building Generative AI Powered Applications with Python, Build & Deploy AI Applications with Python & Flask y Python for Data Science & AI',
-        'Building AI Powered Chatbots Without Programming (IBM en Coursera, ene 2024)',
-        'AWS Academy Graduate, Cloud Foundations (AWS)',
+        { name: 'IBM AI Developer', detail: 'Especialización profesional de 10 cursos, IBM en Coursera, jul 2024' },
+        {
+          name: 'Building Generative AI Powered Applications with Python',
+          detail: 'Curso de IBM AI Developer, IBM en Coursera, jul 2024',
+        },
+        {
+          name: 'Build & Deploy AI Applications with Python & Flask',
+          detail: 'Curso de IBM AI Developer, IBM en Coursera, ene 2024',
+        },
+        {
+          name: 'Python for Data Science & AI: Hands On Development',
+          detail: 'Curso de IBM AI Developer, IBM en Coursera, ene 2024',
+        },
+        { name: 'Building AI Powered Chatbots Without Programming', detail: 'IBM en Coursera, ene 2024' },
+        { name: 'AWS Academy Graduate, Cloud Foundations', detail: 'AWS Academy' },
       ],
       platziLabel: 'Cursos en Platzi',
       platzi: [
@@ -132,9 +144,21 @@ export const homeCopy: Localized<HomeCopy> = {
       ],
       certificationsTitle: 'Certifications',
       certifications: [
-        'IBM AI Developer, 10 course specialization (IBM on Coursera, Jul 2024). Includes Building Generative AI Powered Applications with Python, Build & Deploy AI Applications with Python & Flask and Python for Data Science & AI',
-        'Building AI Powered Chatbots Without Programming (IBM on Coursera, Jan 2024)',
-        'AWS Academy Graduate, Cloud Foundations (AWS)',
+        { name: 'IBM AI Developer', detail: '10 course professional specialization, IBM on Coursera, Jul 2024' },
+        {
+          name: 'Building Generative AI Powered Applications with Python',
+          detail: 'IBM AI Developer course, IBM on Coursera, Jul 2024',
+        },
+        {
+          name: 'Build & Deploy AI Applications with Python & Flask',
+          detail: 'IBM AI Developer course, IBM on Coursera, Jan 2024',
+        },
+        {
+          name: 'Python for Data Science & AI: Hands On Development',
+          detail: 'IBM AI Developer course, IBM on Coursera, Jan 2024',
+        },
+        { name: 'Building AI Powered Chatbots Without Programming', detail: 'IBM on Coursera, Jan 2024' },
+        { name: 'AWS Academy Graduate, Cloud Foundations', detail: 'AWS Academy' },
       ],
       platziLabel: 'Platzi courses',
       platzi: [
