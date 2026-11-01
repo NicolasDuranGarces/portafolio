@@ -14,6 +14,6 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "prototypes"]
+  "include": ["src"]
 }
 
