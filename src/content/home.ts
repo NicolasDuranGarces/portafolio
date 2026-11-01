@@ -52,8 +52,9 @@ export const homeCopy: Localized<HomeCopy> = {
     },
     about: {
       paragraphs: [
-        'Soy ingeniero de software de Armenia, Quindío. Estudié Ingeniería de Software en la EAM y después fui profesor allí, de Ago 2023 a Jun 2025: dicté aplicaciones empresariales con Java Spring Boot y Docker, una electiva de microservicios con FastAPI y AWS Serverless, lógica de programación y diseño de software, y acompañé a mis estudiantes en arquitectura limpia y despliegue en la nube.',
-        'Hoy construyo sistemas de IA y backend en producción. Fundé y opero Bheex, mi SaaS de atención al cliente con IA, trabajo como ingeniero de software en BetterWay Devs y tomo proyectos freelance de backend y full stack. Busco un rol senior con responsabilidad sobre la arquitectura.',
+        'Soy ingeniero backend y de IA con más de 5 años poniendo sistemas en producción donde una falla se nota: el backend de una banda transportadora de bodega que responde en menos de un segundo para mantener sincronizados los paquetes físicos, la ingesta IoT por MQTT del proyecto Quindío Inteligente y la automatización de retail a gran escala sobre AWS.',
+        'Hoy dirijo Bheex, el SaaS de atención al cliente con IA que fundé: agentes LLM con tool calling, RAG sobre los documentos de cada cliente, WhatsApp y llamadas de voz con traspaso a una persona. Lo diseñé, lo construí y lo opero en producción, incluido el aislamiento entre clientes. En paralelo trabajo en BetterWay Devs y construyo como freelance el backend de una plataforma de lotería con unos 17 microservicios en Spring Boot.',
+        'Antes fui profesor de Ingeniería de Software en la EAM, la universidad donde me formé. Enseñar arquitectura limpia, microservicios y despliegue en la nube me obligó a explicar el porqué de cada decisión técnica. Busco un rol senior de backend o de IA con responsabilidad sobre la arquitectura.',
       ],
       educationTitle: 'Educación',
       education: [
@@ -114,8 +115,9 @@ export const homeCopy: Localized<HomeCopy> = {
     },
     about: {
       paragraphs: [
-        'I am a software engineer from Armenia, Quindío. I studied Software Engineering at EAM and then taught there, from Aug 2023 to Jun 2025: enterprise applications with Java Spring Boot and Docker, a microservices elective with FastAPI and AWS Serverless, programming logic and software design, mentoring students on clean architecture and cloud deployment.',
-        'Today I build AI and backend systems in production. I founded and run Bheex, my AI customer service SaaS, work as a software engineer at BetterWay Devs and take freelance backend and full stack projects. I am looking for a senior role with ownership of architecture.',
+        'I am a backend and AI engineer with more than 5 years shipping systems to production where a failure shows: a warehouse conveyor backend that answers in under one second to keep physical parcels in sync, high volume IoT ingestion over MQTT for the Quindío Inteligente project, and retail automation at scale on AWS.',
+        'Today I run Bheex, the AI customer service SaaS I founded: LLM agents with tool calling, RAG over each client’s documents, WhatsApp and voice calls with handoff to a person. I designed it, built it and operate it in production, tenant isolation included. In parallel I work at BetterWay Devs and, as a freelancer, build the backend of a lottery platform with about 17 Spring Boot microservices.',
+        'Before that I taught Software Engineering at EAM, the university where I studied. Teaching clean architecture, microservices and cloud deployment made me explain the reason behind every technical decision. I am looking for a senior backend or AI role with ownership of the architecture.',
       ],
       educationTitle: 'Education',
       education: [
