@@ -458,14 +458,21 @@ function Education() {
         </ul>
       </Row>
       <Row label={<h3 className="sc-h3">{a.platziLabel}</h3>}>
-        <ul className="sc-plain" role="list">
-          {a.platzi.map((name) => (
-            <li key={name}>
-              <span className="sc-strong">{name}</span>
-              <span className="sc-small">Platzi</span>
-            </li>
+        <div className="sc-topics">
+          {a.platzi.map((group) => (
+            <div key={group.topic}>
+              <h4 className="sc-group-title">{group.topic}</h4>
+              <ul className="sc-plain" role="list">
+                {group.courses.map((course) => (
+                  <li key={course.name}>
+                    <span className="sc-strong">{course.name}</span>
+                    {course.date ? <span className="sc-small">{course.date}</span> : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       </Row>
       <Row label={<h3 className="sc-h3">{a.languagesTitle}</h3>}>
         <ul className="sc-plain" role="list">

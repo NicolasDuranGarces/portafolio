@@ -1,6 +1,8 @@
 /* eslint-disable react-refresh/only-export-components -- data and its icon component live together in this prototype */
 import {
   siApachekafka,
+  siAppium,
+  siPuppeteer,
   siClaude,
   siDjango,
   siDocker,
@@ -40,8 +42,9 @@ import {
 } from 'simple-icons'
 
 /**
- * Every technology named in "Competencias clave" and the roles of the CV, grouped the same way.
- * AWS, Azure, OpenAI, Twilio and BullMQ have no mark in Simple Icons (brand restrictions), so they show the name only.
+ * Every technology named in "Competencias clave" and the roles of the CV, grouped the same way, plus the automation tools
+ * the owner added directly (Playwright, Puppeteer, Appium). AWS, Azure, OpenAI, Twilio, BullMQ and Playwright have no mark
+ * in Simple Icons (brand restrictions), so they show the name only.
  */
 export type Tech = { name: string; icon?: SimpleIcon; detail?: string }
 export type TechGroup = { id: string; title: string; items: Tech[]; practices?: string[] }
@@ -113,6 +116,9 @@ export const techGroups: TechGroup[] = [
     title: 'Automatización',
     items: [
       { name: 'Selenium Grid', icon: siSelenium },
+      { name: 'Playwright' },
+      { name: 'Puppeteer', icon: siPuppeteer },
+      { name: 'Appium', icon: siAppium },
       { name: 'Extensiones de Chrome', icon: siGooglechrome },
     ],
     practices: ['Web scraping', 'RPA'],

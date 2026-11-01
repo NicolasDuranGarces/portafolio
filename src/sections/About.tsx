@@ -44,11 +44,21 @@ export function About({ lang }: { lang: Lang }) {
 
           <div>
             <h3 className="text-lg font-semibold">{copy.platziLabel}</h3>
-            <ul role="list" className="mt-4 space-y-2 text-base">
-              {copy.platzi.map((item) => (
-                <li key={item}>{item}</li>
+            <div className="mt-4 space-y-6">
+              {copy.platzi.map((group) => (
+                <div key={group.topic}>
+                  <h4 className="text-sm text-ink-muted">{group.topic}</h4>
+                  <ul role="list" className="mt-2 space-y-2 text-base">
+                    {group.courses.map((course) => (
+                      <li key={course.name}>
+                        {course.name}
+                        {course.date ? <span className="text-ink-muted"> · {course.date}</span> : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
 
           <div>

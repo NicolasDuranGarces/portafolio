@@ -21,7 +21,8 @@ type HomeCopy = {
     certificationsTitle: string
     certifications: { name: string; detail: string }[]
     platziLabel: string
-    platzi: string[]
+    /** Grouped by topic so each group reads as one skill; course names keep Platzi's official titles. */
+    platzi: { topic: string; courses: { name: string; date?: string }[] }[]
     languagesTitle: string
     languages: { name: string; level: string }[]
   }
@@ -86,14 +87,29 @@ export const homeCopy: Localized<HomeCopy> = {
       ],
       platziLabel: 'Cursos en Platzi',
       platzi: [
-        'Cloud Digital Leader',
-        'Serverless Framework en AWS',
-        'FastAPI',
-        'Docker',
-        'Arquitectura de Alta Concurrencia',
-        'Arquitectura de Software',
-        'Web Scraping con Python',
-        'N8N',
+        {
+          topic: 'Python y FastAPI',
+          courses: [
+            { name: 'FastAPI: Fundamentos, Path Operations y Validaciones', date: 'ene 2023' },
+            { name: 'FastAPI: Modularización, Datos y Errores', date: 'ene 2023' },
+            { name: 'Introducción a FastAPI: Path Operations, Validaciones y Autenticación', date: 'mar 2023' },
+            { name: 'Python: Comprehensions, Funciones y Manejo de Errores', date: 'mar 2023' },
+            { name: 'Complejidad Algorítmica con Python', date: 'oct 2024' },
+            { name: 'Web Scraping con Python' },
+          ],
+        },
+        {
+          topic: 'Cloud y arquitectura',
+          courses: [
+            { name: 'Cloud Digital Leader' },
+            { name: 'Serverless Framework en AWS' },
+            { name: 'Docker' },
+            { name: 'Arquitectura de Software' },
+            { name: 'Arquitectura de Alta Concurrencia' },
+          ],
+        },
+        { topic: 'Automatización', courses: [{ name: 'N8N' }] },
+        { topic: 'Metodologías ágiles', courses: [{ name: 'Curso Profesional de Scrum', date: 'abr 2022' }] },
       ],
       languagesTitle: 'Idiomas',
       languages: [
@@ -162,14 +178,29 @@ export const homeCopy: Localized<HomeCopy> = {
       ],
       platziLabel: 'Platzi courses',
       platzi: [
-        'Cloud Digital Leader',
-        'Serverless Framework on AWS',
-        'FastAPI',
-        'Docker',
-        'High Concurrency Architecture',
-        'Software Architecture',
-        'Web Scraping with Python',
-        'N8N',
+        {
+          topic: 'Python and FastAPI',
+          courses: [
+            { name: 'FastAPI: Fundamentos, Path Operations y Validaciones', date: 'Jan 2023' },
+            { name: 'FastAPI: Modularización, Datos y Errores', date: 'Jan 2023' },
+            { name: 'Introducción a FastAPI: Path Operations, Validaciones y Autenticación', date: 'Mar 2023' },
+            { name: 'Python: Comprehensions, Funciones y Manejo de Errores', date: 'Mar 2023' },
+            { name: 'Complejidad Algorítmica con Python', date: 'Oct 2024' },
+            { name: 'Web Scraping with Python' },
+          ],
+        },
+        {
+          topic: 'Cloud and architecture',
+          courses: [
+            { name: 'Cloud Digital Leader' },
+            { name: 'Serverless Framework on AWS' },
+            { name: 'Docker' },
+            { name: 'Software Architecture' },
+            { name: 'High Concurrency Architecture' },
+          ],
+        },
+        { topic: 'Automation', courses: [{ name: 'N8N' }] },
+        { topic: 'Agile methods', courses: [{ name: 'Professional Scrum course', date: 'Apr 2022' }] },
       ],
       languagesTitle: 'Languages',
       languages: [

@@ -395,6 +395,17 @@ a:focus-visible {
   display: block;
 }
 
+.sc-topics > div + div {
+  margin-top: 20px;
+}
+
+.sc-group-title {
+  margin: 0 0 8px;
+  color: var(--sc-grey);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
 /* Cases */
 
 .sc-case {
