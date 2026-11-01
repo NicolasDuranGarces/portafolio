@@ -18,12 +18,12 @@ const text = ui.es
 
 const navItems = [
   { id: 'sobre-mi', label: text.nav.about },
+  { id: 'formacion', label: 'Formación' },
   { id: 'destacado', label: 'Destacado' },
   { id: 'casos', label: text.nav.cases },
   { id: 'trayectoria', label: 'Trayectoria' },
   { id: 'stack', label: 'Stack' },
   { id: 'proyectos', label: text.nav.projects },
-  { id: 'formacion', label: 'Formación' },
   { id: 'contacto', label: text.nav.contact },
 ]
 
@@ -499,6 +499,9 @@ function Page() {
         <Section id="sobre-mi" title={text.sections.about.title}>
           <About />
         </Section>
+        <Section id="formacion" title="Formación">
+          <Education />
+        </Section>
         <Section id="destacado" title="Destacado">
           <Featured />
         </Section>
@@ -513,9 +516,6 @@ function Page() {
         </Section>
         <Section id="proyectos" title={text.sections.projects.title} lead={text.sections.projects.lead}>
           <Projects />
-        </Section>
-        <Section id="formacion" title="Formación">
-          <Education />
         </Section>
         <Section id="contacto" title={text.sections.contact.title}>
           <Contact />
