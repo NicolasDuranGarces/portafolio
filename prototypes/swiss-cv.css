@@ -184,6 +184,27 @@ a:focus-visible {
   margin-top: 12px;
 }
 
+.sc-facts-side {
+  margin: 20px 0 0;
+}
+
+.sc-facts-side > div + div {
+  margin-top: 10px;
+}
+
+.sc-facts-side dt {
+  color: var(--sc-grey);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.sc-facts-side dd {
+  max-width: 40ch;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
 .sc-contact {
   margin-top: 24px;
   display: flex;
@@ -351,6 +372,66 @@ a:focus-visible {
   color: var(--sc-accent);
 }
 
+/* Featured case: big title, small facts on the grid. */
+
+.sc-title-link {
+  text-decoration: none;
+}
+
+.sc-title-link:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+.sc-feat-title {
+  max-width: 24ch;
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.sc-feat-summary {
+  margin-top: 16px;
+  max-width: 52ch;
+  font-size: 1.125rem;
+  line-height: 1.45;
+}
+
+.sc-facts {
+  margin: 32px 0 0;
+}
+
+.sc-facts > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  padding-block: 12px;
+  border-top: 1px solid var(--sc-line);
+}
+
+.sc-facts > div:last-child {
+  border-bottom: 1px solid var(--sc-line);
+}
+
+.sc-facts dt {
+  color: var(--sc-grey);
+  font-size: 0.875rem;
+}
+
+.sc-facts dd {
+  max-width: 64ch;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.sc-feat-links {
+  margin-top: 20px;
+}
+
 /* Trajectory: thin line on the left edge of the column, years, compact roles. */
 
 .sc-track {
@@ -506,6 +587,11 @@ a:focus-visible {
     grid-template-columns: 9rem minmax(0, 1fr);
     gap: var(--sc-gutter);
   }
+
+  .sc-facts > div {
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: var(--sc-gutter);
+  }
 }
 
 /* Desktop: sticky left column with indicator, scrolling right column. */
@@ -525,7 +611,7 @@ a:focus-visible {
     top: 0;
     height: 100vh;
     height: 100dvh;
-    padding-block: 48px 40px;
+    padding-block: 40px 32px;
     overflow-y: auto;
   }
 
@@ -540,17 +626,18 @@ a:focus-visible {
   }
 
   .sc-contact {
-    flex-direction: column;
-    gap: 2px;
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 2px 24px;
   }
 
   .sc-nav {
-    margin-top: 32px;
+    margin-top: 24px;
   }
 
   .sc-nav-list {
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
   }
 
   .sc-nav-mark {
@@ -564,7 +651,8 @@ a:focus-visible {
   .sc-now {
     display: block;
     margin-top: auto;
-    padding-top: 32px;
+    padding-top: 16px;
+    opacity: 0;
   }
 
   .sc-now-label {
@@ -574,20 +662,20 @@ a:focus-visible {
 
   .sc-now-year {
     margin-top: 4px;
-    color: var(--sc-grey);
-    font-size: clamp(4rem, 7vw, 6.5rem);
+    color: var(--sc-accent);
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
     font-variant-numeric: tabular-nums;
     font-weight: 700;
     letter-spacing: -0.05em;
     line-height: 0.9;
   }
 
-  .sc-now[data-live] .sc-now-year {
-    color: var(--sc-accent);
+  .sc-now[data-live] {
+    opacity: 1;
   }
 
   .sc-now-org {
-    margin-top: 12px;
+    margin-top: 8px;
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.25;
@@ -633,6 +721,10 @@ a:focus-visible {
     transition:
       color 0.15s ease-out,
       background-color 0.15s ease-out;
+  }
+
+  .sc-now {
+    transition: opacity 0.3s ease-out;
   }
 
   @keyframes sc-draw {

@@ -17,13 +17,38 @@ const copy = homeCopy.es
 const text = ui.es
 
 const navItems = [
-  { id: 'trayectoria', label: 'Trayectoria' },
+  { id: 'destacado', label: 'Destacado' },
   { id: 'casos', label: text.nav.cases },
+  { id: 'trayectoria', label: 'Trayectoria' },
   { id: 'stack', label: 'Stack' },
   { id: 'proyectos', label: text.nav.projects },
   { id: 'sobre-mi', label: text.nav.about },
   { id: 'contacto', label: text.nav.contact },
 ]
+
+const featuredSlug = 'bheex'
+
+/** First sentence of a paragraph, so each fact fits on a line or two. */
+const firstSentence = (paragraph: string) => {
+  const end = paragraph.indexOf('. ')
+  return end < 0 ? paragraph : paragraph.slice(0, end + 1)
+}
+
+/** Unique organizations in order; notes in parentheses dropped, anonymous ones skipped. */
+const companies = [
+  ...new Set(
+    experience
+      .map((entry) => entry.copy.es.organization.replace(/\s*\(.*\)/, '').trim())
+      .filter((name) => name !== 'Independiente' && !name.includes('Empresa de software')),
+  ),
+]
+
+/** Main technologies: the first items of the first stack groups. */
+const mainTech = [
+  ...stackGroups[0].items.slice(0, 3),
+  ...stackGroups[1].items.slice(0, 1),
+  ...stackGroups[2].items.slice(0, 3),
+].map((item) => item.name.es)
 
 type Experience = (typeof experience)[number]
 
@@ -109,6 +134,16 @@ function Side({ current, live, active }: SideProps) {
           <h1 className="sc-name">{copy.hero.name}</h1>
           <p className="sc-role">{copy.hero.role}</p>
           <p className="sc-statement">{copy.hero.statement}</p>
+          <dl className="sc-facts-side">
+            <div>
+              <dt>Ha trabajado con</dt>
+              <dd>{companies.join(', ')}</dd>
+            </div>
+            <div>
+              <dt>Tecnologías</dt>
+              <dd>{mainTech.join(', ')}</dd>
+            </div>
+          </dl>
           <p className="sc-small">{copy.hero.proof}</p>
         </div>
         <ul className="sc-contact" role="list">
@@ -239,10 +274,66 @@ function Trajectory({ currentId }: { currentId: string }) {
   )
 }
 
+/** The featured case, built only from the Bheex entry of `cases`. */
+function Featured() {
+  const c = cases.find((item) => item.slug === featuredSlug)
+  if (!c) return null
+  const k = c.copy.es
+  const decision = k.decisions[0]
+  return (
+    <article className="sc-feat">
+      <h3 className="sc-feat-title">
+        <a className="sc-title-link" href={pathOf({ page: 'case', lang: 'es', slug: c.slug })}>
+          {k.title}
+        </a>
+      </h3>
+      <p className="sc-feat-summary">{k.summary}</p>
+      <dl className="sc-facts">
+        <div>
+          <dt>Problema</dt>
+          <dd>{firstSentence(k.problem[0])}</dd>
+        </div>
+        <div>
+          <dt>Mi rol</dt>
+          <dd>
+            {k.role}, {k.organization}
+          </dd>
+        </div>
+        <div>
+          <dt>Decisión clave</dt>
+          <dd>
+            <span className="sc-strong">{decision.title}.</span> {firstSentence(decision.why)}
+          </dd>
+        </div>
+        <div>
+          <dt>Resultado</dt>
+          <dd>{firstSentence(k.result[0])}</dd>
+        </div>
+        <div>
+          <dt>Stack</dt>
+          <dd>{c.stack.join(', ')}</dd>
+        </div>
+      </dl>
+      <p className="sc-links sc-feat-links">
+        <a className="sc-link" href={pathOf({ page: 'case', lang: 'es', slug: c.slug })}>
+          {text.cases.viewCase} <span aria-hidden="true">→</span>
+        </a>
+        {c.link ? (
+          <a className="sc-link" href={c.link.href} target="_blank" rel="noopener noreferrer">
+            {c.link.label.es} <span aria-hidden="true">↗</span>
+          </a>
+        ) : null}
+      </p>
+    </article>
+  )
+}
+
+/** The other cases as compact rows. */
 function Cases() {
+  const others = cases.filter((item) => item.slug !== featuredSlug)
   return (
     <ol className="sc-cases" role="list">
-      {cases.map((c, i) => {
+      {others.map((c, i) => {
         const k = c.copy.es
         return (
           <li key={c.slug} className="sc-case">
@@ -257,7 +348,9 @@ function Cases() {
                 {k.role}, {k.period}
               </p>
               <p className="sc-text">{k.summary}</p>
-              <p className="sc-small">{c.stack.join(', ')}</p>
+              <p className="sc-text">
+                <span className="sc-strong">Resultado.</span> {firstSentence(k.result[0])}
+              </p>
               <p className="sc-more" aria-hidden="true">
                 {text.cases.viewCase} <span aria-hidden="true">→</span>
               </p>
@@ -394,11 +487,14 @@ function Page() {
     <div className="sc-page">
       <Side current={current} live={live} active={active} />
       <main className="sc-main">
+        <Section id="destacado" title="Destacado">
+          <Featured />
+        </Section>
+        <Section id="casos" title={text.sections.cases.title}>
+          <Cases />
+        </Section>
         <Section id="trayectoria" title="Trayectoria" lead={text.sections.experience.lead}>
           <Trajectory currentId={current.id} />
-        </Section>
-        <Section id="casos" title={text.sections.cases.title} lead={text.sections.cases.lead}>
-          <Cases />
         </Section>
         <Section id="stack" title="Stack" lead={text.sections.stack.lead}>
           <Stack />
