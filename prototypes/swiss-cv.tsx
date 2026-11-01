@@ -17,12 +17,13 @@ const copy = homeCopy.es
 const text = ui.es
 
 const navItems = [
+  { id: 'sobre-mi', label: text.nav.about },
   { id: 'destacado', label: 'Destacado' },
   { id: 'casos', label: text.nav.cases },
   { id: 'trayectoria', label: 'Trayectoria' },
   { id: 'stack', label: 'Stack' },
   { id: 'proyectos', label: text.nav.projects },
-  { id: 'sobre-mi', label: text.nav.about },
+  { id: 'formacion', label: 'Formación' },
   { id: 'contacto', label: text.nav.contact },
 ]
 
@@ -419,6 +420,14 @@ function About() {
           </p>
         ))}
       </Row>
+    </div>
+  )
+}
+
+function Education() {
+  const a = copy.about
+  return (
+    <div className="sc-rows">
       <Row label={<h3 className="sc-h3">{a.educationTitle}</h3>}>
         <ul className="sc-plain" role="list">
           {a.education.map((e) => (
@@ -487,6 +496,9 @@ function Page() {
     <div className="sc-page">
       <Side current={current} live={live} active={active} />
       <main className="sc-main">
+        <Section id="sobre-mi" title={text.sections.about.title}>
+          <About />
+        </Section>
         <Section id="destacado" title="Destacado">
           <Featured />
         </Section>
@@ -502,8 +514,8 @@ function Page() {
         <Section id="proyectos" title={text.sections.projects.title} lead={text.sections.projects.lead}>
           <Projects />
         </Section>
-        <Section id="sobre-mi" title={text.sections.about.title}>
-          <About />
+        <Section id="formacion" title="Formación">
+          <Education />
         </Section>
         <Section id="contacto" title={text.sections.contact.title}>
           <Contact />
