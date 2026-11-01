@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { caseSlugs } from './content/cases'
+import { homeSections } from './content/sections'
 import { listPages, renderRoute } from './entry-server'
 
 const pages = listPages()
@@ -43,6 +44,15 @@ describe('prerendered pages', () => {
     for (const slug of caseSlugs) {
       expect(es).toContain(`href="/casos/${slug}/"`)
       expect(en).toContain(`href="/en/cases/${slug}/"`)
+    }
+  })
+
+  it('prerenders every home section in page order, in both languages', () => {
+    for (const lang of ['es', 'en'] as const) {
+      const html = renderRoute({ page: 'home', lang }).html
+      const ids = [...html.matchAll(/<section id="([a-z]+)"/g)].map((match) => match[1])
+      expect(ids).toEqual([...homeSections])
+      expect(html).toContain('href="#stack"')
     }
   })
 

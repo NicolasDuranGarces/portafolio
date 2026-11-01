@@ -6,14 +6,14 @@ import { homePath } from '../lib/routes'
 export function NotFoundPage() {
   return (
     <main id="main" tabIndex={-1} className="wrap flex min-h-svh flex-col justify-center py-24">
-      <div className="max-w-[680px]">
-        <h1 className="hero-rise text-4xl font-semibold tracking-tight md:text-5xl">
+      <div className="max-w-2xl">
+        <h1 className="heading-rise text-4xl font-bold tracking-tighter md:text-5xl">
           <span className="block">{notFoundCopy.es.heading}</span>{' '}
           <span lang="en" className="block text-ink-muted">
             {notFoundCopy.en.heading}
           </span>
         </h1>
-        <div className="hero-rise mt-12 grid gap-8 sm:grid-cols-2" data-delay="1">
+        <div className="heading-rise mt-12 grid gap-8 sm:grid-cols-2" data-delay="1">
           {langs.map((lang) => (
             <section key={lang} lang={lang}>
               <p className="text-lg text-ink-muted">{notFoundCopy[lang].body}</p>

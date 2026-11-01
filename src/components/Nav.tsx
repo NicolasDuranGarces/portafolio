@@ -1,23 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
+import { homeSections } from '../content/sections'
 import { ui } from '../content/ui'
 import { useActiveSection } from '../hooks/useActiveSection'
-import { useTheme } from '../hooks/useTheme'
-import { otherLang } from '../lib/lang'
-import { homePath, pathOf, withLang, type PageRoute } from '../lib/routes'
-import { MoonIcon, SunIcon } from './icons'
+import { homePath, type PageRoute } from '../lib/routes'
+import { LanguageSwitch, ThemeToggle } from './Controls'
 
-const navKeys = ['cases', 'experience', 'projects', 'about', 'contact'] as const
+const navKeys = ['about', 'cases', 'experience', 'projects', 'contact'] as const
 type NavKey = (typeof navKeys)[number]
 
-/** Home sections watched for the active item. The stack section belongs to "experience". */
-const homeSections = ['hero', 'cases', 'experience', 'stack', 'projects', 'about', 'contact'] as const
 const noSections: readonly string[] = []
+/** The top nav is shorter than the section list: education and the stack belong to a neighbour. */
 const navKeyOfSection: Record<string, NavKey | undefined> = {
+  about: 'about',
+  education: 'about',
+  featured: 'cases',
   cases: 'cases',
   experience: 'experience',
   stack: 'experience',
   projects: 'projects',
-  about: 'about',
   contact: 'contact',
 }
 
@@ -28,8 +28,6 @@ type Props = { route: PageRoute }
 export function Nav({ route }: Props) {
   const { lang } = route
   const copy = ui[lang]
-  const other = otherLang(lang)
-  const { theme, toggle } = useTheme()
   const [open, setOpen] = useState(false)
   const menuButton = useRef<HTMLButtonElement>(null)
   const menu = useRef<HTMLElement>(null)
@@ -74,15 +72,15 @@ export function Nav({ route }: Props) {
   }))
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-4">
-      <nav
-        aria-label={copy.nav.label}
-        className="pointer-events-auto relative z-50 mx-auto mt-6 flex w-max max-w-full items-center gap-1 rounded-full border border-line bg-canvas/70 p-2 backdrop-blur-xl"
-      >
+    // On wide screens the home page carries its own side column with navigation, language and theme.
+    <header
+      className={`fixed inset-x-0 top-0 z-50 border-b border-line bg-canvas ${route.page === 'home' ? 'lg:hidden' : ''}`}
+    >
+      <nav aria-label={copy.nav.label} className="wrap relative z-50 flex items-center gap-2 py-2">
         <button
           ref={menuButton}
           type="button"
-          className="control control-ghost md:hidden"
+          className="control control-ghost -ml-3 md:hidden"
           aria-expanded={open}
           aria-controls="menu"
           aria-label={open ? copy.nav.closeMenu : copy.nav.openMenu}
@@ -96,7 +94,7 @@ export function Nav({ route }: Props) {
           {copy.nav.menu}
         </button>
 
-        <ul role="list" className="hidden items-center gap-1 md:flex">
+        <ul role="list" className="hidden items-center gap-1 md:-ml-3 md:flex">
           {links.map((link) => (
             <li key={link.key}>
               <a href={link.href} className="nav-link control control-ghost" aria-current={link.ariaCurrent}>
@@ -106,31 +104,17 @@ export function Nav({ route }: Props) {
           ))}
         </ul>
 
-        <a
-          href={pathOf(withLang(route, other))}
-          hrefLang={other}
-          lang={other}
-          className="control control-secondary"
-        >
-          <span aria-hidden="true">{copy.languageSwitch.short}</span>
-          <span className="sr-only">{copy.languageSwitch.name}</span>
-        </a>
-
-        <button
-          type="button"
-          className="control control-icon control-secondary"
-          aria-label={theme === 'dark' ? copy.theme.toLight : copy.theme.toDark}
-          onClick={toggle}
-        >
-          {theme === 'dark' ? <SunIcon size={20} aria-hidden="true" /> : <MoonIcon size={20} aria-hidden="true" />}
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <LanguageSwitch route={route} />
+          <ThemeToggle lang={lang} />
+        </div>
       </nav>
 
       <nav
         ref={menu}
         id="menu"
         aria-label={copy.nav.menu}
-        className="menu-overlay pointer-events-auto md:hidden"
+        className="menu-overlay md:hidden"
         data-open={open ? '' : undefined}
       >
         {links.map((link) => (

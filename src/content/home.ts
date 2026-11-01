@@ -4,16 +4,13 @@ type HomeCopy = {
   seo: { title: string; description: string; jobTitle: string }
   hero: {
     name: string
-    /** The role sentence and the statement sit on separate lines of the h1. */
+    /** Name is the page h1; role and statement follow it in the side column. */
     role: string
     statement: string
-    sub: string
     downloadCv: string
-    emailMe: string
     proof: string
     photoAlt: string
   }
-  tagline: { label: string; text: string }
   about: {
     paragraphs: string[]
     educationTitle: string
@@ -41,15 +38,9 @@ export const homeCopy: Localized<HomeCopy> = {
       name: 'Nicolás Durán Garcés',
       role: 'Ingeniero backend e IA.',
       statement: 'Construyo sistemas en producción con Python, Java y TypeScript sobre AWS.',
-      sub: 'Más de 5 años entregando APIs, automatización a gran escala e IoT. Fundador de Bheex, un SaaS de atención con IA en producción. Busco un rol senior con responsabilidad sobre la arquitectura.',
       downloadCv: 'Descargar CV',
-      emailMe: 'Escríbeme',
       proof: 'Armenia, Colombia · Remoto · Español nativo, inglés B1',
       photoAlt: 'Retrato de Nicolás Durán Garcés',
-    },
-    tagline: {
-      label: 'Cómo diseño sistemas',
-      text: 'Diseño sistemas que siguen funcionando cuando el volumen crece y nadie está mirando.',
     },
     about: {
       paragraphs: [
@@ -132,15 +123,9 @@ export const homeCopy: Localized<HomeCopy> = {
       name: 'Nicolás Durán Garcés',
       role: 'Backend and AI engineer.',
       statement: 'I build production systems in Python, Java and TypeScript on AWS.',
-      sub: '5+ years shipping APIs, large scale automation and IoT. Founder of Bheex, an AI customer service SaaS in production. Looking for a senior role with ownership of architecture.',
       downloadCv: 'Download resume',
-      emailMe: 'Email me',
       proof: 'Armenia, Colombia · Remote · Native Spanish, B1 English',
       photoAlt: 'Portrait of Nicolás Durán Garcés',
-    },
-    tagline: {
-      label: 'How I design systems',
-      text: 'I design systems that keep working when volume grows and nobody is watching.',
     },
     about: {
       paragraphs: [

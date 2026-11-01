@@ -4,11 +4,12 @@ import { caseSlugs, cases } from './cases'
 import { experience } from './experience'
 import { homeCopy } from './home'
 import { openProjects } from './projects'
-import { stackGroups } from './stack'
+import { coreTech, techGroups } from './stack'
 import { notFoundCopy, ui } from './ui'
 
 /** Every string a visitor can read: keys that only carry URLs and identifiers are skipped. */
-function visibleText(value: unknown, skip = new Set(['href', 'id', 'slug', 'caseSlug'])): string[] {
+/** `icon` carries SVG path data and source URLs, not copy. */
+function visibleText(value: unknown, skip = new Set(['href', 'id', 'slug', 'caseSlug', 'icon'])): string[] {
   if (typeof value === 'string') return [value]
   if (Array.isArray(value)) return value.flatMap((item) => visibleText(item, skip))
   if (value && typeof value === 'object') {
@@ -17,7 +18,7 @@ function visibleText(value: unknown, skip = new Set(['href', 'id', 'slug', 'case
   return []
 }
 
-const everything = visibleText({ cases, experience, openProjects, stackGroups, homeCopy, ui, notFoundCopy })
+const everything = visibleText({ cases, experience, openProjects, techGroups, coreTech, homeCopy, ui, notFoundCopy })
 
 describe('case studies', () => {
   it('has the four cases with unique slugs', () => {
@@ -85,7 +86,23 @@ describe('other content', () => {
       for (const link of project.links) expect(link.href).toMatch(/^https:\/\/github\.com\/NicolasDuranGarces\//)
     }
     expect(openProjects.find((project) => project.id === 'caturro')?.links).toHaveLength(4)
-    expect(stackGroups.map((group) => group.id)).toEqual(['backend', 'ai', 'cloud', 'data', 'automation', 'frontend'])
+    expect(techGroups.map((group) => group.id)).toEqual(['backend', 'ai', 'cloud', 'data', 'automation', 'frontend'])
+  })
+
+  it('names every technology in both languages and keeps the core list inside the catalog', () => {
+    const catalog = new Set(techGroups.flatMap((group) => group.items.map((tech) => tech.name.es)))
+    for (const tech of techGroups.flatMap((group) => group.items)) {
+      expect(tech.name.es.length, tech.name.es).toBeGreaterThan(0)
+      expect(tech.name.en.length, tech.name.es).toBeGreaterThan(0)
+    }
+    for (const group of techGroups) {
+      expect(group.practices?.es.length, group.id).toBe(group.practices?.en.length)
+    }
+    expect(coreTech).toHaveLength(8)
+    const entries = techGroups.flatMap((group) => group.items)
+    for (const tech of coreTech) expect(entries, tech.name.es).toContain(tech)
+    // The owner added these directly; they stay in the catalog.
+    for (const name of ['Playwright', 'Puppeteer', 'Appium']) expect(catalog.has(name), name).toBe(true)
   })
 })
 

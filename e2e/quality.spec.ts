@@ -65,15 +65,26 @@ for (const viewport of [
       })
       expect(expected).toBe(40)
 
-      const nav = page.getByRole('navigation')
+      // On the home page the controls live in the side column from lg, in the top nav below it.
       const controls = [
-        nav.getByRole('link', { name: 'English' }),
-        nav.getByRole('button', { name: 'Cambiar a tema oscuro' }),
-        page.getByRole('link', { name: 'Descargar CV' }).first(),
-        page.getByRole('link', { name: 'Escríbeme' }).first(),
-        viewport.width < 768 ? nav.getByRole('button', { name: 'Abrir menú' }) : nav.getByRole('link', { name: 'Casos' }),
+        page.getByRole('link', { name: 'English' }),
+        page.getByRole('button', { name: 'Cambiar a tema oscuro' }),
+        ...(viewport.width < 768 ? [page.getByRole('button', { name: 'Abrir menú' })] : []),
       ]
       for (const control of controls) {
+        const box = await control.boundingBox()
+        expect(box?.height).toBe(expected)
+      }
+
+      // Other pages always use the top nav and the primary buttons.
+      await page.goto('/casos/bheex/')
+      const others = [
+        page.getByRole('link', { name: 'English' }),
+        page.getByRole('button', { name: 'Cambiar a tema oscuro' }),
+        page.getByRole('link', { name: 'Escríbeme' }),
+        viewport.width < 768 ? page.getByRole('button', { name: 'Abrir menú' }) : page.getByRole('link', { name: 'Casos', exact: true }),
+      ]
+      for (const control of others) {
         const box = await control.boundingBox()
         expect(box?.height).toBe(expected)
       }
@@ -93,14 +104,14 @@ test.describe('Keyboard and focus', () => {
       return color
     })
 
-    const stops = 24
+    const stops = 40
     for (let index = 0; index < stops; index += 1) {
       await page.keyboard.press('Tab')
       // Read the ring in the same frame as the focus change: a transition would still show the old color or width.
       const ring = await page.evaluate(() => {
         const element = document.activeElement as HTMLElement
-        // A card that is one big link shows its ring on the card, not on the title text.
-        const target = element.closest<HTMLElement>('.card-link') ?? element
+        // A case row that is one big link shows its ring on the row, not on the title text.
+        const target = element.closest<HTMLElement>('.row-link') ?? element
         const style = getComputedStyle(target)
         return { name: `${element.tagName} ${(element.textContent ?? '').trim().slice(0, 30)}`, style: style.outlineStyle, width: style.outlineWidth, color: style.outlineColor }
       })
@@ -113,9 +124,9 @@ test.describe('Keyboard and focus', () => {
     await page.goto('/')
     await page.getByRole('button', { name: 'Abrir menú' }).click()
     const menu = page.locator('#menu')
-    await expect(menu.getByRole('link', { name: 'Experiencia' })).toBeVisible()
+    await expect(menu.getByRole('link', { name: 'Trayectoria' })).toBeVisible()
 
-    await menu.getByRole('link', { name: 'Experiencia' }).click()
+    await menu.getByRole('link', { name: 'Trayectoria' }).click()
     await expect(page).toHaveURL('/#experience')
     await expect(page.getByRole('button', { name: 'Abrir menú' })).toHaveAttribute('aria-expanded', 'false')
     await expect(page.locator('main')).not.toHaveAttribute('inert', /.*/)
@@ -134,14 +145,28 @@ test.describe('Motion', () => {
     await expect(block).toHaveCSS('opacity', '1', { timeout: 3000 })
   })
 
+  test('draws the trajectory rail with the scroll, driven by CSS only', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Scroll driven animations are checked where the engine supports them')
+    await page.goto('/')
+    const fill = page.locator('.track-fill')
+    const scaleY = () => fill.evaluate((element) => new DOMMatrix(getComputedStyle(element).transform).d)
+
+    await expect(fill).toHaveCSS('animation-timeline', '--track')
+    // Smooth scrolling is on, so wait for the page to arrive before reading the rail.
+    await page.locator('#experience').evaluate((element) => element.scrollIntoView({ block: 'start' }))
+    await expect.poll(scaleY).toBeGreaterThan(0)
+    const early = await scaleY()
+    await page.locator('#stack').evaluate((element) => element.scrollIntoView({ block: 'start' }))
+    await expect.poll(scaleY).toBeGreaterThan(early)
+  })
+
   test.describe('with reduced motion requested', () => {
     test.use({ reducedMotion: 'reduce' })
 
-    test('shows everything at once, with no hidden blocks and no muted tagline', async ({ page }) => {
+    test('shows everything at once, with no hidden blocks, no scroll animation and no smooth scrolling', async ({ page }) => {
       await page.goto('/')
       await expect(page.locator('#contact [data-reveal]').first()).toHaveCSS('opacity', '1')
-      const opacities = await page.locator('[data-word]').evaluateAll((words) => words.map((word) => getComputedStyle(word).opacity))
-      expect(new Set(opacities)).toEqual(new Set(['1']))
+      await expect(page.locator('.track-fill')).toBeHidden()
       expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe('auto')
     })
   })
@@ -182,7 +207,7 @@ test.describe('Delivery', () => {
     expect((await request.get('/')).status()).toBe(200)
   })
 
-  test('hero photo is the prioritized image: sized, eager, described', async ({ page }) => {
+  test('the portrait is the prioritized image: sized, eager, described', async ({ page }) => {
     await page.goto('/')
     const photo = page.getByRole('img', { name: 'Retrato de Nicolás Durán Garcés' })
     await expect(photo).toHaveAttribute('width', '576')
@@ -192,16 +217,18 @@ test.describe('Delivery', () => {
     expect(await photo.getAttribute('src')).toMatch(/^\/assets\/avatar-.+\.webp$/)
   })
 
-  test('self hosts the typeface and preloads it', async ({ page }) => {
+  test('uses the system Helvetica Neue stack: no font file, no preload, nothing from other origins', async ({ page }) => {
     const external: string[] = []
+    const fonts: string[] = []
     page.on('request', (request) => {
       if (!request.url().startsWith('http://127.0.0.1')) external.push(request.url())
+      if (request.resourceType() === 'font') fonts.push(request.url())
     })
     await page.goto('/')
     await page.waitForLoadState('networkidle')
-    await expect(page.locator('link[rel="preload"][as="font"]')).toHaveAttribute('href', /geist-latin-wght-normal-.+\.woff2$/)
+    await expect(page.locator('link[rel="preload"][as="font"]')).toHaveCount(0)
     expect(external).toEqual([])
-    expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain('Geist')
-    expect(await page.evaluate(() => document.fonts.check('16px Geist'))).toBe(true)
+    expect(fonts).toEqual([])
+    expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toMatch(/^"Helvetica Neue", Helvetica, Arial, sans-serif$/)
   })
 })

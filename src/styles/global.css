@@ -1,38 +1,30 @@
 @import 'tailwindcss' source('../');
 
-/* Geist, self hosted. Only the latin subset: it covers Spanish and English copy. */
-@font-face {
-  font-family: 'Geist';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2') format('woff2-variations');
-}
-
 /*
  * Design tokens. Every color goes through these variables, never a raw hex in a component.
  * light-dark() resolves against color-scheme: the system by default, or the explicit
- * <html data-theme> choice. Dark surfaces use only #000000, #181818, #1F1F1F, #272727 and #313131.
+ * <html data-theme> choice. Swiss style: white or near black paper, one ink, hairlines, one green accent.
  */
 @theme {
   --color-*: initial;
 
-  --color-canvas: light-dark(#ffffff, #000000);
-  --color-surface: light-dark(#f5f5f5, #181818);
-  --color-raised: light-dark(#ebebeb, #1f1f1f);
-  --color-line: light-dark(#e0e0e0, #272727);
-  --color-line-strong: light-dark(#c4c4c4, #313131);
-  --color-ink: light-dark(#0a0a0a, #ededed);
-  --color-ink-muted: light-dark(#595959, #a1a1a1);
-  --color-accent: light-dark(#0b5fcc, #62a8ff);
+  --color-canvas: light-dark(#ffffff, #111111);
+  --color-ink: light-dark(#111111, #f2f2f2);
+  --color-ink-muted: light-dark(#5f5f5f, #a3a3a3);
+  --color-line: light-dark(#d9d9d9, #3a3a3a);
+  --color-accent: light-dark(#0a7a3d, #4cc782);
 
-  /* Hero heading gradient: the only gradient on the site, text only. */
-  --color-hero-from: light-dark(#000000, #ffffff);
-  --color-hero-to: light-dark(#666666, #9b9b9b);
-
-  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
 }
+
+/*
+ * `tall`: the window is tall enough, for the width it has, to hold the whole home side column. Only then is the column
+ * pinned (sticky, as tall as the viewport); otherwise it is a normal block and the page scroll reaches everything.
+ * In em, not px, so larger text turns the pin off sooner. 80em is the `xl` width, where the column is wide enough
+ * for a two line name; below it more lines wrap and the column needs more height.
+ */
+@custom-variant tall (@media (min-width: 80em) and (min-height: 44em), (min-width: 64em) and (min-height: 56em));
 
 /*
  * What interactive elements animate: colors, opacity and the individual transform properties, on the fluid curve.
@@ -48,7 +40,7 @@
 @layer base {
   :root {
     color-scheme: light dark;
-    /* The one height shared by buttons, links styled as buttons and the nav controls. */
+    /* The one height shared by buttons, links styled as buttons and the language and theme controls. */
     --control-h: 2.5rem;
   }
   :root[data-theme='light'] {
@@ -61,10 +53,11 @@
   html {
     @apply bg-canvas;
     /* The fixed nav must never cover a focused element or an anchor target (WCAG 2.4.11). */
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 4rem;
   }
   body {
     @apply min-h-svh bg-canvas font-sans text-base text-ink antialiased;
+    text-rendering: optimizeLegibility;
   }
   h1,
   h2,
@@ -83,23 +76,23 @@
   button:not(:disabled) {
     cursor: pointer;
   }
-  /* The skip link moves focus to <main>, which is not interactive: no ring around the whole page. */
-  main:focus-visible {
+  /* The skip link moves focus to #main (the content column), which is not interactive: no ring around it. */
+  #main:focus-visible {
     outline: none;
   }
   ::selection {
-    background: color-mix(in oklab, var(--color-accent) 30%, transparent);
+    @apply bg-ink text-canvas;
   }
 }
 
 @layer components {
   .wrap {
-    @apply mx-auto w-full max-w-5xl px-6;
+    @apply mx-auto w-full max-w-360 px-4 md:px-8 xl:px-12;
   }
 
-  /* Controls: one height token, pill radius, physical press feedback. */
+  /* Controls: one height token, square corners, one hairline. */
   .control {
-    @apply inline-flex h-(--control-h) shrink-0 items-center justify-center gap-2 rounded-full px-3 text-sm font-semibold whitespace-nowrap text-ink transition-ui active:scale-98;
+    @apply inline-flex h-(--control-h) shrink-0 items-center justify-center gap-2 border border-transparent px-3 text-sm font-bold whitespace-nowrap text-ink transition-ui;
   }
   .control-lg {
     @apply text-base;
@@ -108,68 +101,143 @@
     @apply w-(--control-h) px-0;
   }
   .control-primary {
-    @apply bg-ink text-canvas hover:bg-ink/85;
+    @apply border-ink bg-ink text-canvas hover:border-accent hover:bg-accent;
   }
   .control-secondary {
-    @apply border border-line-strong bg-surface hover:bg-raised;
+    @apply border-ink hover:border-accent hover:text-accent;
   }
   .control-ghost {
-    @apply text-ink-muted hover:bg-raised hover:text-ink;
-  }
-  .control-text {
-    @apply px-0 underline-offset-4 hover:text-accent hover:underline;
+    @apply text-ink-muted hover:text-ink;
   }
   .nav-link[aria-current] {
-    @apply bg-raised text-ink;
+    @apply text-accent;
   }
 
-  .card {
-    @apply rounded-3xl border border-line bg-surface transition-ui;
-  }
-  /* Whole card is one link: the title link stretches over it. */
-  .card-link {
-    @apply relative hover:border-line-strong hover:bg-raised active:scale-98;
-  }
-  .card-link a::after {
-    content: '';
-    @apply absolute inset-0 rounded-3xl;
-  }
-  .card-link:has(:focus-visible) {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-  }
-  .card-link a:focus-visible {
-    outline: none;
+  /* Text link: bold, hairline underline. */
+  .prose-link {
+    @apply font-bold underline decoration-1 underline-offset-4 transition-ui hover:text-accent;
   }
 
   .chip {
-    @apply inline-flex items-center rounded-full border border-line-strong px-2 py-0.5 text-xs font-medium text-ink-muted;
+    @apply inline-flex items-center border border-line px-2 py-0.5 text-sm text-ink-muted;
   }
 
-  .prose-link {
-    @apply font-medium underline decoration-line-strong underline-offset-4 transition-ui hover:text-accent hover:decoration-accent;
-  }
-
-  /* Experience timeline: a 1px rail with one dot per role. Not a border. */
-  .timeline {
+  /* A row that is one link: the title link stretches over it. */
+  .row-link {
     @apply relative;
   }
-  .timeline::before {
+  .row-link a {
+    @apply transition-ui;
+    text-decoration: none;
+  }
+  .row-link a::after {
     content: '';
-    @apply absolute inset-y-0 left-1 w-px -translate-x-1/2 bg-line-strong;
+    @apply absolute inset-0;
   }
-  .timeline-item {
-    @apply relative pb-12 pl-6;
+  .row-link:has(a:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
-  .timeline-item:last-child {
+  .row-link a:focus-visible {
+    outline: none;
+  }
+  .row-link:hover :is(a, .row-more) {
+    @apply text-accent;
+  }
+  .row-more {
+    @apply transition-ui;
+  }
+
+  /* Section list in the side column: a small square marks the section being read. */
+  .side-link {
+    @apply inline-flex items-center gap-2 py-0.5 text-sm text-ink-muted transition-ui hover:text-ink;
+  }
+  .side-link::before {
+    content: '';
+    @apply size-2 shrink-0 bg-transparent transition-ui;
+  }
+  .side-link[aria-current] {
+    @apply font-bold text-accent;
+  }
+  .side-link[aria-current]::before {
+    @apply bg-accent;
+  }
+
+  /* Year and organization in view: shown only while the trajectory is read. */
+  .now {
+    @apply opacity-0 transition-ui;
+  }
+  .now[data-live] {
+    @apply opacity-100;
+  }
+
+  /* Technologies: monochrome marks on a strict grid. */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(9.5rem, 100%), 1fr));
+    gap: 16px 24px;
+  }
+  .tech-item {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    column-gap: 8px;
+    align-items: center;
+  }
+  /* A technology with a detail line takes the whole row. */
+  .tech-item:has(.tech-detail) {
+    grid-column: 1 / -1;
+  }
+  .tech-detail {
+    grid-column: 2;
+  }
+
+  /* Trajectory: a hairline rail on the left, one square per role, a year label per group. */
+  .track {
+    --track-off: 2rem;
+    @apply relative;
+  }
+  .track-line {
+    @apply absolute inset-y-0 left-0 w-0.5 bg-line;
+  }
+  /* The accent fill only exists where it can be driven by scroll (see the motion block). */
+  .track-fill {
+    @apply absolute inset-0 hidden origin-top bg-accent;
+  }
+  .track-group {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: var(--track-off);
+  }
+  .track-year {
+    @apply pb-1 text-sm font-bold text-ink-muted tabular-nums;
+  }
+  .track-entry {
+    @apply relative pb-8;
+  }
+  .track-group:last-child .track-entry:last-child {
     @apply pb-0;
   }
-  .timeline-item::before {
-    content: '';
-    @apply absolute top-2 left-0 size-2 rounded-full bg-line-strong;
+  .track-mark {
+    @apply absolute -top-6 size-2 bg-ink transition-ui;
+    left: calc(-1 * var(--track-off) - 3px);
   }
-  .timeline-item[data-current]::before {
+  .track-entry[data-active] .track-mark {
     @apply bg-accent;
+  }
+  @media (min-width: 40rem) {
+    .track {
+      --track-off: 6rem;
+    }
+    .track-group {
+      grid-template-columns: var(--track-off) minmax(0, 1fr);
+      padding-left: 0;
+    }
+    .track-year {
+      @apply pb-0 pl-6;
+    }
+    .track-mark {
+      @apply top-2;
+    }
   }
 
   /* Hamburger that morphs into an X. */
@@ -177,7 +245,7 @@
     @apply relative block size-6;
   }
   .burger > span {
-    @apply absolute inset-x-0.5 top-1/2 -mt-px h-0.5 rounded-full bg-current transition-ui;
+    @apply absolute inset-x-0.5 top-1/2 -mt-px h-0.5 bg-current transition-ui;
   }
   .burger > span:nth-child(1) {
     @apply -translate-y-2;
@@ -195,9 +263,12 @@
     @apply translate-y-0 -rotate-45;
   }
 
-  /* Full screen mobile menu: heavy glass, links rise out of an invisible box one after another. */
+  /* Full screen mobile menu: links rise out of an invisible box one after another. */
   .menu-overlay {
-    @apply invisible fixed inset-0 z-40 flex flex-col items-center justify-center gap-4 bg-canvas/80 opacity-0 backdrop-blur-3xl transition-[opacity,visibility] duration-700 ease-fluid;
+    @apply invisible fixed inset-0 z-40 flex flex-col items-start justify-center gap-4 bg-canvas px-4 opacity-0;
+    transition-property: opacity, visibility;
+    transition-duration: 700ms;
+    transition-timing-function: var(--ease-fluid);
     transition-delay: 0s, 700ms;
   }
   .menu-overlay[data-open] {
@@ -205,7 +276,7 @@
     transition-delay: 0s, 0s;
   }
   .menu-overlay a {
-    @apply translate-y-12 rounded-full px-6 py-2 text-3xl font-semibold text-ink-muted opacity-0 transition-ui;
+    @apply translate-y-12 py-2 text-3xl font-bold text-ink-muted opacity-0 transition-ui;
   }
   .menu-overlay a[aria-current] {
     @apply text-ink;
@@ -232,7 +303,7 @@
 
 /*
  * Motion. Everything below is off for people who ask for reduced motion.
- * Scroll reveals only hide content when <html class="js"> is set (see public/init.js).
+ * Content is only hidden when <html class="js"> is set (see public/init.js).
  */
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -240,48 +311,72 @@
   }
 
   .js [data-reveal]:not([data-in-view]) {
-    @apply translate-y-16 opacity-0 blur-md;
+    @apply translate-y-4 opacity-0;
   }
-  /* Reveal wrappers never carry their own hover transitions: put data-reveal on a wrapper, not on a card. */
+  /* Reveal wrappers never carry their own hover transitions: put data-reveal on a plain wrapper, not on the link or control itself. */
   [data-reveal] {
-    @apply transition-[opacity,filter,translate] duration-1000 ease-fluid;
+    transition-property: opacity, translate;
+    transition-duration: 700ms;
+    transition-timing-function: var(--ease-fluid);
   }
 
-  /* Hero plays on load with CSS only, so it never waits for JavaScript. */
-  .hero-rise {
-    animation: rise 1000ms var(--ease-fluid) both;
+  /* Page headings play on load with CSS only, so they never wait for JavaScript. */
+  .heading-rise {
+    animation: rise 700ms var(--ease-fluid) both;
   }
   [data-delay='1'] {
     transition-delay: 100ms;
     animation-delay: 100ms;
   }
-  [data-delay='2'] {
-    transition-delay: 200ms;
-    animation-delay: 200ms;
-  }
-  [data-delay='3'] {
-    transition-delay: 300ms;
-    animation-delay: 300ms;
-  }
-  [data-delay='4'] {
-    transition-delay: 400ms;
-    animation-delay: 400ms;
+
+  /* The year and organization swap in place each time another role crosses the reading band. */
+  .now-swap {
+    animation: swap 300ms var(--ease-fluid) both;
   }
 
-  /* Tagline words start muted (60%, still above 4.5:1 on both themes) and turn to the full text color one by one. */
-  [data-word] {
-    @apply transition-[opacity] duration-700 ease-fluid;
-  }
-  .js [data-word]:not([data-active]) {
-    @apply opacity-60;
+  /* The rail fills as the trajectory scrolls through the viewport. */
+  @supports (animation-timeline: view()) {
+    .track {
+      view-timeline: --track block;
+    }
+    .js .track-fill {
+      display: block;
+      transform: scaleY(0);
+      animation: draw linear forwards;
+      animation-timeline: --track;
+      animation-range: cover 0% cover 100%;
+    }
   }
 }
 
-/* Gradient text is invisible once the system forces its own colors: fall back to plain text. */
-@media (forced-colors: active) {
-  #hero-title {
-    background: none;
-    color: CanvasText;
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 calc(var(--spacing) * 4);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes swap {
+  from {
+    opacity: 0;
+    translate: 0 calc(var(--spacing) * 2);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
   }
 }
 
@@ -291,18 +386,5 @@
   .menu-overlay a,
   .burger > span {
     transition: none !important;
-  }
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    filter: blur(var(--blur-md));
-    translate: 0 calc(var(--spacing) * 16);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    translate: 0 0;
   }
 }

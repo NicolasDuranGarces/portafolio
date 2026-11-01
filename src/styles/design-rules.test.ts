@@ -27,7 +27,7 @@ describe('design rules', () => {
   it('uses only the spacing scale: 0, 2, 4, 8, 12, 16, 24, 32, 40, 48, 64, 80 and 96 px', () => {
     const allowed = ['0', '0.5', '1', '2', '3', '4', '6', '8', '10', '12', '16', '20', '24', 'px', 'auto']
     const spacing =
-      /(?<![\w-])-?(?:m[xytrbl]?|p[xytrbl]?|gap|gap-x|gap-y|space-x|space-y|inset|inset-x|inset-y|top|right|bottom|left|translate-x|translate-y)-(\d+(?:\.\d+)?|px|auto)(?![\w./%-])/g
+      /(?<![\w-])-?(?:m[xytrbl]?|p[xytrbl]?|gap|gap-x|gap-y|space-x|space-y|size|inset|inset-x|inset-y|top|right|bottom|left|translate-x|translate-y)-(\d+(?:\.\d+)?|px|auto)(?![\w./%-])/g
     const wrong = files.flatMap(({ file, text }) =>
       [...text.matchAll(spacing)].filter((match) => !allowed.includes(match[1])).map((match) => `${file}: ${match[0]}`),
     )
@@ -41,8 +41,13 @@ describe('design rules', () => {
     expect(offenders(/font-size:|line-height:/g, [{ file: 'global.css', text: css }])).toEqual([])
   })
 
-  it('keeps arbitrary values to the layout widths the design needs', () => {
-    const allowed = ['max-w-[680px]', 'md:grid-cols-[12rem_1fr]', 'lg:grid-cols-[minmax(0,680px)_1fr]', 'transition-[opacity,filter,translate]', 'transition-[opacity,visibility]', 'transition-[opacity]']
+  it('keeps arbitrary values to the layout values the design needs', () => {
+    const allowed = [
+      'min-h-[70vh]',
+      'grid-cols-[2.5rem_minmax(0,1fr)]',
+      'grid-cols-[8rem_minmax(0,1fr)]',
+      'grid-cols-[9rem_minmax(0,1fr)]',
+    ]
     const found = files.flatMap(({ file, text }) =>
       [...text.matchAll(/[\w:-]+-\[[^\]]+\]/g)].map((match) => `${file}: ${match[0]}`),
     )
@@ -53,21 +58,31 @@ describe('design rules', () => {
     expect(offenders(/\bitalic\b|font-(?:extrabold|black)|font-style:\s*italic|font-weight:\s*[89]00/g)).toEqual([])
   })
 
-  it('uses one typeface: Geist', () => {
-    expect(css.match(/font-family:/g)).toHaveLength(1)
-    expect(css).toContain("font-family: 'Geist'")
-    expect(offenders(/\bfont-(?:serif|mono)\b|Inter|Roboto|Arial|Helvetica/g)).toEqual([])
+  it('uses one typeface: the Helvetica Neue system stack, with nothing to download', () => {
+    const declarations = css.match(/(?:--font-sans|font-family):[^;]*;/g) ?? []
+    expect(declarations).toHaveLength(1)
+    expect(declarations[0]).toMatch(/:\s*'Helvetica Neue',/)
+    expect(css).not.toContain('@font-face')
+    expect(offenders(/\bfont-(?:serif|mono)\b|\bInter\b|Roboto|Geist/g)).toEqual([])
   })
 
-  it('draws flat backgrounds: the only gradient is the hero heading text', () => {
+  it('draws flat: no gradient anywhere', () => {
     expect(offenders(/(?:linear|radial|conic)-gradient\(/g)).toEqual([])
-    const gradientUsers = offenders(/\bbg-(?:linear|radial|conic|gradient)[\w-]*/g)
-    expect(gradientUsers).toHaveLength(1)
-    expect(gradientUsers[0]).toContain('Hero.tsx')
+    expect(offenders(/\bbg-(?:linear|radial|conic|gradient)[\w-]*|(?<![\w-])(?:from|via|to)-(?:canvas|ink|ink-muted|line|accent)\b/g)).toEqual([])
   })
 
-  it('never borders a single side', () => {
-    expect(offenders(/(?<![\w-])border-(?:t|b|l|r|x|y|s|e)(?:-\w+)?(?![\w-])|border-(?:top|bottom|left|right)\b/g)).toEqual([])
+  it('allows hairlines on top and bottom only, and never colors a side border with the accent', () => {
+    expect(offenders(/(?<![\w-])border-(?:l|r|s|e|x)(?:-\w+)?(?![\w-])|border-(?:left|right|inline)\b/g)).toEqual([])
+    expect(offenders(/border-(?:top|bottom|block)[^;\n]*accent/g)).toEqual([])
+
+    // A class list that sets a top or bottom border and an accent border color is a colored stripe.
+    const stripes = files.flatMap(({ file, text }) =>
+      [...text.matchAll(/["'`]([^"'`\n]*)["'`]|@apply ([^;\n]*);/g)]
+        .map((match) => match[1] ?? match[2] ?? '')
+        .filter((classes) => /(?<![\w-])border-(?:t|b|y)(?![\w-])/.test(classes) && /(?<![\w-])border-accent\b|border-(?:t|b|y)-accent/.test(classes))
+        .map((classes) => `${file}: ${classes}`),
+    )
+    expect(stripes).toEqual([])
   })
 
   it('colors everything through the tokens, never raw values or the default palette', () => {
@@ -91,6 +106,19 @@ describe('design rules', () => {
     expect(applyLines.length).toBeGreaterThan(0)
     for (const line of applyLines) expect(line, line).toMatch(/ease-fluid|transition-ui/)
     expect(offenders(/ease-(?:in|out|linear)(?![\w-])/g)).toEqual([])
+  })
+
+  it('drives scroll animations with a view timeline, forwards fill and a range that starts where the element first covers the viewport', () => {
+    const timelines = [...css.matchAll(/\{[^{}]*animation-timeline:[^{}]*\}/g)].map((match) => match[0])
+    expect(timelines.length).toBeGreaterThan(0)
+    for (const block of timelines) {
+      expect(block.indexOf('animation:'), block).toBeGreaterThan(-1)
+      expect(block.indexOf('animation:'), block).toBeLessThan(block.indexOf('animation-timeline:'))
+      expect(block, block).toMatch(/animation:[^;]*\bforwards\b/)
+      expect(block, block).not.toMatch(/animation:[^;]*\bboth\b/)
+      expect(block, block).toMatch(/animation-range:\s*cover 0%/)
+    }
+    expect(css).toContain('@supports (animation-timeline: view())')
   })
 
   it('never listens to scroll events: reveals use IntersectionObserver', () => {

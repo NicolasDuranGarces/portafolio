@@ -9,8 +9,8 @@ export function Footer({ lang }: { lang: Lang }) {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="py-12">
-      <div className="wrap flex flex-wrap items-center justify-between gap-4 text-sm text-ink-muted">
+    <footer className="wrap pb-12">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-4 text-sm text-ink-muted">
         <p>
           © <span suppressHydrationWarning>{year}</span> {site.name}. {copy.rights}
         </p>

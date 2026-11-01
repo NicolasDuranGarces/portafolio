@@ -12,7 +12,18 @@ describe('App shell', () => {
     const skip = screen.getByRole('link', { name: 'Skip to content' })
     expect(skip).toHaveFocus()
     expect(skip).toHaveAttribute('href', '#main')
+    // On home the target is the content column, so the side column with the name is not skipped along with the nav.
+    const target = document.getElementById('main')!
+    expect(target).toHaveAttribute('tabindex', '-1')
+    expect(screen.getByRole('main')).toContainElement(target)
+    expect(target).not.toContainElement(document.getElementById('top'))
+  })
+
+  it('targets <main> itself on pages without a side column', () => {
+    render(<App route={{ page: 'privacy', lang: 'es' }} />)
+    expect(screen.getByRole('link', { name: 'Saltar al contenido' })).toHaveAttribute('href', '#main')
     expect(screen.getByRole('main')).toHaveAttribute('id', 'main')
+    expect(screen.getByRole('main')).toHaveAttribute('tabindex', '-1')
   })
 
   it('renders exactly one h1 per page and keeps nav and footer around the content', () => {

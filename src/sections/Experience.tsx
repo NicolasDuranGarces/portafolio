@@ -1,48 +1,66 @@
-import { ArrowRightIcon } from '../components/icons'
 import { Section } from '../components/Section'
-import { experience } from '../content/experience'
 import { ui } from '../content/ui'
 import type { Lang } from '../lib/lang'
 import { pathOf } from '../lib/routes'
+import { startYear, yearGroups } from '../lib/trajectory'
 
-export function Experience({ lang }: { lang: Lang }) {
+/** Roles grouped by start year along a rail that fills with the scroll. `currentId` marks the role being read. */
+export function Experience({ lang, currentId }: { lang: Lang; currentId: string }) {
   const copy = ui[lang]
 
   return (
     <Section id="experience" title={copy.sections.experience.title} lead={copy.sections.experience.lead}>
-      <ol role="list" className="timeline">
-        {experience.map((entry) => {
-          const text = entry.copy[lang]
-          return (
-            <li key={entry.id} className="timeline-item" data-current={entry.current ? '' : undefined}>
-              <div data-reveal className="grid gap-x-8 gap-y-2 md:grid-cols-[12rem_1fr]">
-                <div>
-                  <p className="text-sm font-medium tabular-nums">{text.period}</p>
-                  <p className="text-sm text-ink-muted">{text.location}</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">{text.role}</h3>
-                  <p className="text-base text-ink-muted">{text.organization}</p>
-                  <ul className="mt-4 list-disc space-y-2 pl-6 text-base marker:text-ink-muted">
-                    {text.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
-                  </ul>
-                  {entry.caseSlug ? (
-                    <a
-                      href={pathOf({ page: 'case', lang, slug: entry.caseSlug })}
-                      className="control control-ghost mt-4 -ml-3"
+      <div className="track" data-track>
+        <div className="track-line" aria-hidden="true">
+          <span className="track-fill" />
+        </div>
+        <ol role="list">
+          {yearGroups(lang).map((group) => (
+            <li key={group.entries[0].id} className="track-group">
+              <p className="track-year">{group.year}</p>
+              <ol role="list">
+                {group.entries.map((entry) => {
+                  const text = entry.copy[lang]
+                  return (
+                    <li
+                      key={entry.id}
+                      className="track-entry"
+                      data-entry={entry.id}
+                      data-year={startYear(entry, lang)}
+                      data-org={text.organization}
+                      data-period={text.period}
+                      data-active={currentId === entry.id ? '' : undefined}
                     >
-                      {copy.cases.viewCase}
-                      <ArrowRightIcon size={20} aria-hidden="true" />
-                    </a>
-                  ) : null}
-                </div>
-              </div>
+                      <span className="track-mark" aria-hidden="true" />
+                      <div data-reveal className="space-y-1">
+                        <p className="text-sm text-ink-muted tabular-nums">{text.period}</p>
+                        <h3 className="font-bold">{text.role}</h3>
+                        <p className="text-ink-muted">
+                          {text.organization}, {text.location}
+                        </p>
+                        <ul role="list" className="space-y-2 pt-2">
+                          {text.bullets.map((bullet) => (
+                            <li key={bullet} className="relative max-w-prose pl-4 before:absolute before:top-3 before:left-0 before:h-px before:w-2 before:bg-ink-muted">
+                              {bullet}
+                            </li>
+                          ))}
+                        </ul>
+                        {entry.caseSlug ? (
+                          <p className="pt-2">
+                            <a className="prose-link" href={pathOf({ page: 'case', lang, slug: entry.caseSlug })}>
+                              {copy.cases.viewCase} <span aria-hidden="true">→</span>
+                            </a>
+                          </p>
+                        ) : null}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ol>
             </li>
-          )
-        })}
-      </ol>
+          ))}
+        </ol>
+      </div>
     </Section>
   )
 }

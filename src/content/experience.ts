@@ -13,6 +13,8 @@ type ExperienceEntry = {
   id: string
   /** True while the role is still ongoing. */
   current: boolean
+  /** The client cannot be named: the organization is left out of the "has worked with" list. */
+  anonymous?: true
   /** Case study that expands this role, when there is one. */
   caseSlug?: CaseSlug
   copy: Localized<ExperienceCopy>
@@ -59,6 +61,7 @@ export const experience: readonly ExperienceEntry[] = [
   {
     id: 'software-company',
     current: true,
+    anonymous: true,
     copy: {
       es: {
         role: 'Desarrollador backend (freelance)',
@@ -83,6 +86,7 @@ export const experience: readonly ExperienceEntry[] = [
   {
     id: 'independent',
     current: true,
+    anonymous: true,
     copy: {
       es: {
         role: 'Ingeniero full stack / backend (freelance)',
